@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="900.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.senecacollege.hotel.controllers.OtherController">
+    <children>
+        <BorderPane prefHeight="900.0" prefWidth="1400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <center>
+                <Label text="WORD" BorderPane.alignment="CENTER">
+                    <font>
+                        <Font name="System Bold Italic" size="96.0" />
+                    </font></Label>
+            </center>
+            <bottom>
+                <Label text="This is a placeholder view." BorderPane.alignment="BOTTOM_CENTER">
+                    <font>
+                        <Font name="System Italic" size="14.0" />
+                    </font></Label>
+            </bottom>
+        </BorderPane>
+    </children>
+</AnchorPane>
