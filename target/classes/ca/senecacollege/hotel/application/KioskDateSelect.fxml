@@ -56,12 +56,12 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Prev">
+            <Button mnemonicParsing="false" text="Prev" onAction="#backToCountPress">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Next">
+            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Next" onAction="#onToRoomPress">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>

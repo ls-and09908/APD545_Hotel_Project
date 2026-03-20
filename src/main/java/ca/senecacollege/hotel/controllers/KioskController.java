@@ -8,10 +8,9 @@ import javafx.scene.control.Button;
 
 import java.io.IOException;
 
+//TODO finish linking navigation between pages
+//TODO implement proper repositories
 public class KioskController implements SceneManagerAware {
-    @FXML
-    Button toDatesBtn;
-
     SceneManager sceneManager;
 
     //Currently unsure of what repositories this will be requiring
@@ -26,8 +25,22 @@ public class KioskController implements SceneManagerAware {
         this.sceneManager = sceneManager;
     }
 
+
+    //<editor-fold desc="pageNavigationControls">
     @FXML
     private void onToDatesPress() throws IOException {
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskDateSelect.fxml", null);
     }
+
+    @FXML
+    private void onToRoomPress() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskRoomSelect.fxml", null);
+    }
+
+    @FXML
+    private void backToCountPress() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskGuestCount.fxml", null);
+    }
+    //</editor-fold>
+
 }

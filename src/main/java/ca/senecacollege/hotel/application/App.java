@@ -13,6 +13,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+
+//TODO Set the initial scren to the actual initial screen (Currently stating on kiosk for testing)
 public class App extends Application {
     private static Injector injector;
 
