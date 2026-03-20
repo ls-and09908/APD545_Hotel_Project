@@ -1,6 +1,12 @@
 package ca.senecacollege.hotel.application;
 
 import ca.senecacollege.hotel.models.AdminUser;
+import ca.senecacollege.hotel.utilities.AppModule;
+import ca.senecacollege.hotel.utilities.FXMLLoadHelper;
+import ca.senecacollege.hotel.utilities.FXMLLoadResult;
+import ca.senecacollege.hotel.utilities.SceneManager;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import jakarta.persistence.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -8,13 +14,16 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
+    private static Injector injector;
+
     @Override
     public void start(Stage stage) throws Exception {
         //onInit();
 
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("Other.fxml"));
-        Scene scene = new Scene(loader.load());
-        stage.setScene(scene);
+        injector = Guice.createInjector(new AppModule()); //Might need stage
+        SceneManager sceneManager = new SceneManager(stage, injector);
+        FXMLLoadResult result = FXMLLoadHelper.loadWithSceneManagerController("/ca/senecacollege/hotel/application/KioskGuestCount.fxml", injector, sceneManager);
+        stage.setScene(new Scene(result.root));
         stage.setTitle("Hello!");
         stage.show();
     }
