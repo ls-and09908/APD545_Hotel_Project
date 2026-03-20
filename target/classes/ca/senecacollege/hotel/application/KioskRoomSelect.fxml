@@ -54,7 +54,7 @@
                   <Insets right="25.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Next">
+            <Button mnemonicParsing="false" text="Next" onAction="#toGuestDetailsPress">
                <HBox.margin>
                   <Insets left="25.0" />
                </HBox.margin>

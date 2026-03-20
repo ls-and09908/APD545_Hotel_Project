@@ -27,13 +27,13 @@
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
                   <Label text="No. Adults" />
-                  <Spinner />
+                  <Spinner fx:id="adultSpinner" />
                   <Label layoutX="597.0" layoutY="51.0" text="No. Children">
                      <padding>
                         <Insets left="50.0" />
                      </padding>
                   </Label>
-                  <Spinner layoutX="661.0" layoutY="47.0" />
+                  <Spinner fx:id="childSpinner" layoutX="661.0" layoutY="47.0" />
                </children>
             </HBox>
          </children>
@@ -42,7 +42,7 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="nextBtn" mnemonicParsing="false" text="Next" onAction="#onToDatesPress"/>
+            <Button fx:id="guestCountNextBtn" mnemonicParsing="false" onAction="#onToDatesPress" text="Next" />
          </children>
       </HBox>
    </bottom>
