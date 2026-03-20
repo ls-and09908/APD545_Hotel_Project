@@ -1,4 +1,7 @@
 package ca.senecacollege.hotel.utilities;
 
-public class AppModule {
+import com.google.inject.AbstractModule;
+
+public class AppModule extends AbstractModule {
+
 }
