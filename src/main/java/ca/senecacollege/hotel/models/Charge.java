@@ -2,20 +2,21 @@ package ca.senecacollege.hotel.models;
 
 import jakarta.persistence.*;
 
-//@Entity
+@Entity
 public class Charge {
-    //@Id
-    //@GeneratedValue
+    @Id
+    @GeneratedValue
+    @Column(name = "CHARGE_NUM")
     private int chargeNumber;
 
-    private ChargeSource source;
+    //private ChargeSource source;
     private Double discount;
     private int quantity;
-    private PricingModel pricing;
+    //private PricingModel pricing;
     private Double amount;
 
-    //@ManyToOne
-    //@JoinColumn(name = "bill_bill_number")
+    @ManyToOne
+    @JoinColumn(name = "BILL_NUM")
     private Billing bill;
 
     public Billing getBill() {
@@ -28,5 +29,28 @@ public class Charge {
 
     public Double getTotal(){
         return 0.0;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public Charge(Billing billing){
+        this.bill = billing;
+    }
+
+    public Charge(Double discount, int quantity, Double amount, Billing bill) {
+        this.discount = discount;
+        this.quantity = quantity;
+        this.amount = amount;
+        this.bill = bill;
     }
 }

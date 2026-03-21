@@ -11,7 +11,7 @@
             <property name="jakarta.persistence.provider" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
 
             <!-- May want to swap this to "none" later? I'm gonna read up on it more -->
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
 
             <property name="hibernate.show_sql" value="true"/>
 <!--            <property name="hibernate.format_sql" value="true"/>-->

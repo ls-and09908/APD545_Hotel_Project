@@ -11,7 +11,18 @@ public class AdminUser {
 
     private String username;
     private String passwordHash;
+
+    @ManyToOne
+    @JoinColumn(name = "role_type")
     private Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     public String getUsername() {
         return username;
