@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.senecacollege.hotel.controllers.KioskController">
    <top>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -30,7 +29,7 @@
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0">
                      <children>
                         <Label text="In Date:" />
-                        <DatePicker />
+                        <DatePicker fx:id="inDate" />
                      </children>
                   </VBox>
                </children>
@@ -40,14 +39,14 @@
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0">
                      <children>
                         <Label text="Out Date:" />
-                        <DatePicker />
+                        <DatePicker fx:id="outDate" />
                      </children>
                   </VBox>
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="1400.0">
                <children>
-                  <Label text="ERR" textFill="RED" />
+                  <Label fx:id="dateScreenErr" text="ERR" textFill="RED" />
                </children>
             </HBox>
          </children>
@@ -56,12 +55,12 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Prev" onAction="#backToCountPress">
+            <Button mnemonicParsing="false" onAction="#backToCountPress" text="Prev">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Next" onAction="#onToRoomPress">
+            <Button fx:id="rentalDatesBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#roomSelectFromDates" text="Next">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>

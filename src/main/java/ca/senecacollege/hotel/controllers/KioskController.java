@@ -7,9 +7,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 
@@ -20,12 +18,24 @@ public class KioskController implements SceneManagerAware {
     private SceneManager sceneManager;
 
     //<editor-fold desc="FXMLElements">
+    //<editor-fold desc="Screen1FXML">
     @FXML
     Spinner<Integer> adultSpinner;
     @FXML
     Spinner<Integer> childSpinner;
     @FXML
     Button guestCountNextBtn;
+    //</editor-fold>
+    //<editor-fold desc="Screen2FXML">
+    @FXML
+    DatePicker inDate;
+    @FXML
+    DatePicker outDate;
+    @FXML
+    Button rentalDatesBtn;
+    @FXML
+    Label dateScreenErr;
+    //</editor-fold>
     //</editor-fold>
 
     //Currently unsure of what repositories this will be requiring
@@ -40,30 +50,53 @@ public class KioskController implements SceneManagerAware {
         this.sceneManager = sceneManager;
     }
 
-    private void setSpinners(){
+    private void setGuestCountSpinners(){
         SpinnerValueFactory<Integer> avalueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 0, 1);
         SpinnerValueFactory<Integer> cvalueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 0, 1);
         adultSpinner.setValueFactory(avalueFactory);
         childSpinner.setValueFactory(cvalueFactory);
     }
 
+
     @FXML
     private void initialize(){
-        if(adultSpinner != null) { //This is necessary to stop the controller from attempting to call these function when not on the first kiosk scene
-            setSpinners();
-            disableNextButtons();
+        disableNextButtons();
         }
-    }
 
     private void disableNextButtons(){
-//        BooleanBinding noGuests = Bindings.lessThan(1, adultSpinner.getValue()).or(Bindings.isEmpty(childSpinner.promptTextProperty()));
-        guestCountNextBtn.disableProperty().bind(adultSpinner.valueProperty().isEqualTo(0).and(childSpinner.valueProperty().isEqualTo(0)));
+        //This is necessary to stop the controller from attempting to call these function when not on the first kiosk scene
+        if(adultSpinner != null) {
+            setGuestCountSpinners();
+            guestCountNextBtn.disableProperty().bind(adultSpinner.valueProperty().isEqualTo(0).and(childSpinner.valueProperty().isEqualTo(0)));
+        }
+        else if(inDate != null){
+            rentalDatesBtn.disableProperty().bind(inDate.valueProperty().isNull().or(outDate.valueProperty().isNull()));
+        }
     }
 
     //<editor-fold desc="pageNavigationControls">
     @FXML
     private void onToDatesPress() throws IOException {
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskDateSelect.fxml", null);
+    }
+
+    private boolean confirmDates(){
+        return !inDate.getValue().isAfter(outDate.getValue()); //Possibly adjust this
+    }
+
+    @FXML
+    private void roomSelectFromDates() throws IOException { //TODO add to rental dates page
+        try{
+            if(confirmDates()){
+                sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskRoomSelect.fxml", null);
+            }
+            else{
+                dateScreenErr.setText("Error: In after out");
+            }
+        }
+        catch (IOException e){
+            System.err.println(e);
+        }
     }
 
     @FXML
