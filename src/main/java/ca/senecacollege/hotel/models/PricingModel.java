@@ -1,4 +1,5 @@
 package ca.senecacollege.hotel.models;
 
-public class PricingModel {
+public interface PricingModel {
+    Double getPrice(Double price, int qty);
 }

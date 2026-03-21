@@ -1,4 +1,6 @@
 package ca.senecacollege.hotel.models;
 
-public class Role {
+class Role {
+    private String type;
+    private String discountMax;
 }

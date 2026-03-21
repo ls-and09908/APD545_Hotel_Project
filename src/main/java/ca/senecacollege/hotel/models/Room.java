@@ -1,10 +1,17 @@
 package ca.senecacollege.hotel.models;
 
-public class Room {
+public class Room implements ChargeSource {
+    private int roomNumber;
     private RoomStatus roomStatus;
     private RoomType roomType;
-    private int roomNumber;
 
+    @Override
+    public Double getBasePrice() {
+        return this.roomType.getPrice();
+    }
 
-
+    @Override
+    public Boolean isPaidNightly() {
+        return true;
+    }
 }

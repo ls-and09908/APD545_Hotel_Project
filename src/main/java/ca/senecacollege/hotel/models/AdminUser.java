@@ -10,6 +10,8 @@ public class AdminUser {
     private int userID;
 
     private String username;
+    private String passwordHash;
+    private Role role;
 
     public String getUsername() {
         return username;
