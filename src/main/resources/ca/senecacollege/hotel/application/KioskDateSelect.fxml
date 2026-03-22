@@ -60,7 +60,7 @@
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="rentalDatesBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#roomSelectFromDates" text="Next">
+            <Button fx:id="rentalDatesBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onToRoomPress" text="Next">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>

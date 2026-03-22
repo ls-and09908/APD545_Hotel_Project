@@ -11,7 +11,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.senecacollege.hotel.controllers.KioskController">
    <top>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -36,29 +35,29 @@
                </VBox.margin>
             </Label>
             <Label text="*Name: " />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="NameTxt" />
+            <Text fx:id="nameLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="NameTxt" />
             <HBox alignment="CENTER" prefHeight="29.0" prefWidth="563.0">
                <children>
-                  <TextField minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="nameTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
                   <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
-            <Button mnemonicParsing="false" text="Update" />
+            <Button fx:id="updateName" mnemonicParsing="false" text="Update" onAction="#onUpdateName" />
             <Label text="Loyalty: ">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
             </Label>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="LoyaltyTxt" />
+            <Text fx:id="loyaltyLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="LoyaltyTxt" />
             <HBox alignment="CENTER" prefHeight="0.0" prefWidth="563.0">
                <children>
-                  <TextField minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="loyaltyTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
                   <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="19.0" prefWidth="1400.0">
                <children>
-                  <Button mnemonicParsing="false" text="Update">
+                  <Button fx:id="updateLoyalty" mnemonicParsing="false" text="Update" onAction="#onUpdateLoyalty">
                      <HBox.margin>
                         <Insets left="25.0" right="25.0" />
                      </HBox.margin>
@@ -75,52 +74,52 @@
                   <Insets top="20.0" />
                </VBox.margin>
             </Label>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="PhoneTxt" />
+            <Text fx:id="phoneLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="PhoneTxt" />
             <HBox alignment="CENTER" prefHeight="15.0" prefWidth="1400.0">
                <children>
-                  <TextField minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="phoneTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
                   <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
-            <Button mnemonicParsing="false" text="Update" />
+            <Button fx:id="updatePhone" mnemonicParsing="false" text="Update" onAction="#onUpdatePhone"/>
             <Label text="*Email: ">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
             </Label>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="EmailTxt" />
+            <Text fx:id="emailLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="EmailTxt" />
             <HBox alignment="CENTER" prefHeight="6.0" prefWidth="1400.0">
                <children>
-                  <TextField prefWidth="180.0" />
+                  <TextField fx:id="emailTxt" prefWidth="180.0" />
                   <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
-            <Button mnemonicParsing="false" text="Update" />
+            <Button fx:id="updateEmail" mnemonicParsing="false" text="Update" onAction="#onUpdateEmail" />
             <Label layoutX="686.0" layoutY="494.0" text="*Country ">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
             </Label>
-            <Text layoutX="684.0" layoutY="526.0" strokeType="OUTSIDE" strokeWidth="0.0" text="countryTxt" />
+            <Text fx:id="countryLbl" layoutX="684.0" layoutY="526.0" strokeType="OUTSIDE" strokeWidth="0.0" text="countryTxt" />
             <HBox alignment="CENTER" layoutX="10.0" layoutY="530.0" prefHeight="6.0" prefWidth="1400.0">
                <children>
-                  <Spinner />
+                  <Spinner fx:id="countryTxt" />
                   <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
-            <Button layoutX="679.0" layoutY="574.0" mnemonicParsing="false" text="Update" />
+            <Button fx:id="updateCountry" layoutX="679.0" layoutY="574.0" mnemonicParsing="false" text="Update" onAction="#onUpdateCountry"/>
          </children>
       </VBox>
    </center>
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Prev" onAction="#onToRoomPress">
+            <Button mnemonicParsing="false" onAction="#onToRoomPress" text="Prev">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Next" onAction="#toAddonsPress">
+            <Button fx:id="clientDetailsNextBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAddonsPress" text="Next">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
