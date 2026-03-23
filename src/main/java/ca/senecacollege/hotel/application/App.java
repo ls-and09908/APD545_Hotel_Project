@@ -25,17 +25,28 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        onInit();
         injector = Guice.createInjector(new AppModule()); //Might need stage
+
+        onInit();
+
         SceneManager sceneManager = new SceneManager(stage, injector);
         FXMLLoadResult result = FXMLLoadHelper.loadWithSceneManagerController("/ca/senecacollege/hotel/application/Welcome.fxml", injector, sceneManager);
         stage.setScene(new Scene(result.root));
         stage.setTitle("Hello!");
         stage.show();
+
+    }
+
+    @Override
+    public void stop() throws Exception {
+        EntityManagerFactory emf = injector.getInstance(EntityManagerFactory.class);
+        if(emf.isOpen()){
+            emf.close();
+        }
     }
 
     private void onInit(){
-        DBTester tester = new DBTester();
+        DBTester tester = injector.getInstance(DBTester.class);
         tester.makeDB();
     }
 
