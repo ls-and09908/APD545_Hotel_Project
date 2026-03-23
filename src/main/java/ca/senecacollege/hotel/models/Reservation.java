@@ -67,5 +67,9 @@ public class Reservation {
         this.rooms.add(r);
     }
 
+    public int getReservationNumber(){
+        return reservationNumber;
+    }
+
 
 }
