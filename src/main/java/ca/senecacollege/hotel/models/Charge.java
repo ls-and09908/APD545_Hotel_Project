@@ -10,9 +10,9 @@ public class Charge {
     private int chargeNumber;
 
     private transient ChargeSource source;
-    private Double discount;
+    private transient PricingModel pricing;
+    private Double discount = 0.0; // percent value to discount on the charge (0.0-30.0)
     private int quantity;
-    private PricingModel pricing;
     private Double amount;
 
     @ManyToOne
@@ -27,6 +27,9 @@ public class Charge {
     @JoinColumn(name = "SRC_ROOM")
     private Room srcRoom = null;
 
+    @Column(name = "PRICING_MODEL")
+    private String pricingModelName;
+
     public Billing getBill() {
         return bill;
     }
@@ -35,8 +38,9 @@ public class Charge {
         this.bill = bill;
     }
 
+    // Returns total charge applied as amount * (remaining percent after discount)
     public Double getTotal(){
-        return 0.0;
+        return this.calcAmount() * ((this.discount > 0.0) ? (1.0 - this.discount/100) : 1.0);
     }
 
     public void setDiscount(Double discount) {
@@ -55,17 +59,23 @@ public class Charge {
         this.bill = billing;
     }
 
-    public Charge(Double discount, int quantity, Double amount, Billing bill, ChargeSource source) {
-        this.discount = discount;
-        this.quantity = quantity;
-        this.amount = amount;
+    public Double calcAmount(){
+        return pricing.getPrice(source.getBasePrice(), quantity);
+    }
+
+    public Charge(ChargeSource src, Billing bill, int qty, PricingModel model){
+        this.source = src;
         this.bill = bill;
-        this.source = source;
+        this.quantity = qty;
+        this.pricing = model;
+        this.pricingModelName = model.getName();
 
         if(source.getClass() == AddOn.class){
             this.srcAddOn = (AddOn) source;
         } else if (source.getClass() == Room.class) {
             this.srcRoom = (Room) source;
         }
+
+        this.amount = calcAmount();
     }
 }

@@ -67,6 +67,22 @@ public class Reservation {
         this.rooms.add(r);
     }
 
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public Set<AddOn> getAddOns() {
+        return addOns;
+    }
+
+    public LocalDate getCheckIn() {
+        return checkIn;
+    }
+
+    public LocalDate getCheckOut() {
+        return checkOut;
+    }
+
     public int getReservationNumber(){
         return reservationNumber;
     }
