@@ -10,8 +10,12 @@ import com.google.inject.Injector;
 import jakarta.persistence.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 
 
@@ -22,10 +26,9 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //onInit();
-
         injector = Guice.createInjector(new AppModule()); //Might need stage
         SceneManager sceneManager = new SceneManager(stage, injector);
-        FXMLLoadResult result = FXMLLoadHelper.loadWithSceneManagerController("/ca/senecacollege/hotel/application/KioskGuestCount.fxml", injector, sceneManager);
+        FXMLLoadResult result = FXMLLoadHelper.loadWithSceneManagerController("/ca/senecacollege/hotel/application/Welcome.fxml", injector, sceneManager);
         stage.setScene(new Scene(result.root));
         stage.setTitle("Hello!");
         stage.show();
