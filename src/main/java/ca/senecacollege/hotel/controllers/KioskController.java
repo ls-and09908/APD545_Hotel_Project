@@ -3,7 +3,10 @@ package ca.senecacollege.hotel.controllers;
 import ca.senecacollege.hotel.application.App;
 import ca.senecacollege.hotel.models.Guest;
 import ca.senecacollege.hotel.models.Reservation;
+import ca.senecacollege.hotel.models.Room;
+import ca.senecacollege.hotel.models.RoomType;
 import ca.senecacollege.hotel.services.LoyaltyService;
+import ca.senecacollege.hotel.services.RoomFactory;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
@@ -21,6 +24,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 //TODO Connect kiosk elements to functions
 //TODO Create kiosk functionality
@@ -38,7 +42,9 @@ public class KioskController implements SceneManagerAware {
     private static String email;
     private static String country;
     private static double addonCosts = 0;
+    private static List<Room> roomList;
     private LoyaltyService _loyaltyService;
+
 
     //<editor-fold desc="FXMLElements">
     //<editor-fold desc="WelcomeFXML">
@@ -187,6 +193,7 @@ public class KioskController implements SceneManagerAware {
             //TODO calculate costs for everything here
             billCustomerName.setText(name);
             billAddonCost.setText("$" + addonCosts);
+
             //TODO Calculate cost function goes here
         }
     }
@@ -222,6 +229,7 @@ public class KioskController implements SceneManagerAware {
         }
         else if(inDate != null){
             rentalDatesBtn.disableProperty().bind(inDate.valueProperty().isNull().or(outDate.valueProperty().isNull()));
+            dateScreenErr.setVisible(false);
         }
         else if(singleSpinner != null){
             setRoomCountSpinners();
@@ -316,6 +324,7 @@ public class KioskController implements SceneManagerAware {
             }
             else{
                 dateScreenErr.setText("Error: In after out");
+                dateScreenErr.setVisible(true);
                 return;
             }
         }
@@ -329,6 +338,20 @@ public class KioskController implements SceneManagerAware {
 
     @FXML
     private void toGuestDetailsPress() throws IOException {
+        if(singleSpinner != null){
+            int numSingle = singleSpinner.getValue();
+            int numDouble = doubleSpinner.getValue();
+            int numPen = pentSpinner.getValue();
+            for(int i = 0; i < numSingle; i++){
+                roomList.add(RoomFactory.createRoom(01, RoomType.SINGLE));
+            }
+            for(int i = 0; i < numDouble; i++){
+                roomList.add(RoomFactory.createRoom(01, RoomType.DOUBLE));
+            }
+            for(int i = 0; i < numPen; i++){
+                roomList.add(RoomFactory.createRoom(01, RoomType.PENTHOUSE));
+            }
+        }
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskGuestDetails.fxml", null);
     }
 
@@ -347,6 +370,9 @@ public class KioskController implements SceneManagerAware {
     private Guest confirmLoyalty(){
         //Check that loyalty value is an integer value
         int loyaltyNumber = -1;
+        name = nameLbl.getText();
+        phone = phoneLbl.getText();
+        email = emailLbl.getText();
         if(loyaltyLbl.getText().isBlank()){ //If there's no loyalty value we construct the guest without it
             return new Guest(nameLbl.getText(), phoneLbl.getText(), emailLbl.getText());
         }
@@ -356,9 +382,6 @@ public class KioskController implements SceneManagerAware {
             loyaltyErr.setText("Not a number");
             return null;
         }
-        name = nameLbl.getText();
-        phone = phoneLbl.getText();
-        email = emailLbl.getText();
         Guest temporaryGuest = new Guest(name, phone, email, loyaltyNumber);
         if(_loyaltyService.findLoyalGuest(temporaryGuest)){
             return temporaryGuest; //The guest has a loyalty number and it has been confirmed
@@ -392,6 +415,11 @@ public class KioskController implements SceneManagerAware {
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskConfirm.fxml", null);
     }
 
+    private void toFinalConfirmationPress() throws IOException {
+
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskFinalConfirm.fxml", null);
+    }
+
     @FXML
     private void toKiosk() throws IOException {
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskGuestCount.fxml", null);
@@ -407,8 +435,6 @@ public class KioskController implements SceneManagerAware {
         dialog.setDialogPane(dialogPane);
         dialog.show();
     }
-
-
 
     //</editor-fold>
 

@@ -39,7 +39,6 @@
             <HBox alignment="CENTER" prefHeight="29.0" prefWidth="563.0">
                <children>
                   <TextField fx:id="nameTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
-                  <Text fx:id="nameErr" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
             <Button fx:id="updateName" mnemonicParsing="false" onAction="#onUpdateName" text="Update" />
@@ -78,7 +77,6 @@
             <HBox alignment="CENTER" prefHeight="15.0" prefWidth="1400.0">
                <children>
                   <TextField fx:id="phoneTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
-                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
             <Button fx:id="updatePhone" mnemonicParsing="false" onAction="#onUpdatePhone" text="Update" />
@@ -91,7 +89,6 @@
             <HBox alignment="CENTER" prefHeight="6.0" prefWidth="1400.0">
                <children>
                   <TextField fx:id="emailTxt" prefWidth="180.0" />
-                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
             <Button fx:id="updateEmail" mnemonicParsing="false" onAction="#onUpdateEmail" text="Update" />
@@ -104,7 +101,6 @@
             <HBox alignment="CENTER" layoutX="10.0" layoutY="530.0" prefHeight="6.0" prefWidth="1400.0">
                <children>
                   <Spinner fx:id="countrySpinner" prefHeight="26.0" prefWidth="373.0" />
-                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
             <Button fx:id="updateCountry" layoutX="679.0" layoutY="574.0" mnemonicParsing="false" onAction="#onUpdateCountry" text="Update" />

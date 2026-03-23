@@ -147,7 +147,7 @@
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="85.0" layoutY="512.0" mnemonicParsing="false" text="Reports">
+            <Button layoutX="85.0" layoutY="512.0" mnemonicParsing="false" text="Reports" onAction="#reportsPress">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>

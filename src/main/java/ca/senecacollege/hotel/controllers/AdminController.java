@@ -55,8 +55,4 @@ public class AdminController implements SceneManagerAware {
         subtitleLbl.setText("Feedback");
     }
 
-
-
-
-
 }
