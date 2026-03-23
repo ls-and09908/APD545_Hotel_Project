@@ -1,6 +1,6 @@
 package ca.senecacollege.hotel.application;
 
-import ca.senecacollege.hotel.models.AdminUser;
+import ca.senecacollege.hotel.tests.DBTester;
 import ca.senecacollege.hotel.utilities.AppModule;
 import ca.senecacollege.hotel.utilities.FXMLLoadHelper;
 import ca.senecacollege.hotel.utilities.FXMLLoadResult;
@@ -12,6 +12,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
 
 
 //TODO Set the initial screen to the actual initial screen (Currently stating on kiosk for testing)
@@ -31,20 +32,8 @@ public class App extends Application {
     }
 
     private void onInit(){
-        // DB testing, uncomment it out from start when you don't have mysql running
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hotel-persistence-unit");
-
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-
-        AdminUser test1 = new AdminUser();
-        test1.setUsername("Sttco");
-
-        em.persist(test1);
-        em.getTransaction().commit();
-
-        em.close();
-        emf.close();
+        DBTester tester = new DBTester();
+        tester.makeDB();
     }
 
     public static void main(String[] args) {

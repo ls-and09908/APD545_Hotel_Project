@@ -6,6 +6,7 @@ module ca.senecacollege.application {
     requires java.sql;
     requires mysql.connector.j;
     requires org.hibernate.orm.core;
+    requires org.checkerframework.checker.qual;
 
 
     opens ca.senecacollege.hotel.application to javafx.fxml;
