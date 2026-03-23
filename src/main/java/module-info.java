@@ -6,6 +6,7 @@ module ca.senecacollege.application {
     requires java.sql;
     requires mysql.connector.j;
     requires org.hibernate.orm.core;
+    requires org.checkerframework.checker.qual;
 
 
     opens ca.senecacollege.hotel.application to javafx.fxml;
@@ -13,5 +14,7 @@ module ca.senecacollege.application {
     exports ca.senecacollege.hotel.controllers;
     exports ca.senecacollege.hotel.services to com.google.guice;
     opens ca.senecacollege.hotel.controllers to javafx.fxml;
-    opens ca.senecacollege.hotel.models to org.hibernate.orm.core, net.bytebuddy, jakarta.persistence;
+    opens ca.senecacollege.hotel.models;
+    opens ca.senecacollege.hotel.services to com.google.guice;
+    exports ca.senecacollege.hotel.services;
 }

@@ -1,4 +1,7 @@
 package ca.senecacollege.hotel.models;
 
-public class PaymentMethod {
+enum PaymentMethod {
+    CREDIT,
+    CASH,
+    LOYALTY
 }

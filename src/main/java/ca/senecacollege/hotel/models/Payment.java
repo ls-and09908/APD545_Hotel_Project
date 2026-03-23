@@ -22,7 +22,8 @@ public class Payment {
     @JoinColumn(name = "GUEST_ID")
     private Guest payee;
 
-    //private PaymentMethod method;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod method;
 
     private LocalDate date;
 
