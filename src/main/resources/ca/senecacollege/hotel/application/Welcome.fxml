@@ -24,33 +24,33 @@
    <center>
       <ImageView fitHeight="440.0" fitWidth="870.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
          <image>
-            <Image url="@../../../../../../Pictures/Screenshots/Screenshot%20from%202026-03-09%2010-33-28.png" />
+<!--            <Image url="@../../../../../../Pictures/Screenshots/Screenshot%20from%202026-03-09%2010-33-28.png" />-->
          </image></ImageView>
    </center>
    <right>
       <VBox alignment="CENTER" prefHeight="790.0" prefWidth="270.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Next" textAlignment="CENTER">
+            <Button fx:id="nextSlideBtn" mnemonicParsing="false" text="Next" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="50.0" />
                </VBox.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Prev" />
+            <Button fx:id="prevSlideBtn" mnemonicParsing="false" text="Prev" />
          </children>
       </VBox>
    </right>
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button layoutX="710.0" layoutY="18.0" mnemonicParsing="false" prefHeight="84.0" prefWidth="368.0" text="Feedback" textAlignment="CENTER">
+            <Button fx:id="feedbackBtn" layoutX="710.0" layoutY="18.0" mnemonicParsing="false" prefHeight="84.0" prefWidth="368.0" text="Feedback" textAlignment="CENTER" onAction="#onFeedbackPress">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin></Button>
-            <Button mnemonicParsing="false" prefHeight="84.0" prefWidth="368.0" text="Continue to Booking" textAlignment="CENTER" onAction="#toKiosk">
+            <Button mnemonicParsing="false" onAction="#toKiosk" prefHeight="84.0" prefWidth="368.0" text="Continue to Booking" textAlignment="CENTER">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin></Button>
-            <Button layoutX="526.0" layoutY="18.0" mnemonicParsing="false" prefHeight="84.0" prefWidth="368.0" text="Admin login" textAlignment="CENTER">
+            <Button fx:id="adminLoginBtn" layoutX="526.0" layoutY="18.0" mnemonicParsing="false" prefHeight="84.0" prefWidth="368.0" text="Admin login" textAlignment="CENTER" onAction="#onAdminLoginPress">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin></Button>
@@ -60,7 +60,7 @@
    <left>
       <VBox alignment="CENTER" prefHeight="690.0" prefWidth="226.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" prefHeight="327.0" prefWidth="182.0" text="Rules and Regulations" textAlignment="CENTER" wrapText="true">
+            <Button fx:id="rulesBtn" mnemonicParsing="false" prefHeight="327.0" prefWidth="182.0" text="Rules and Regulations" textAlignment="CENTER" wrapText="true" onAction="#rulesAndRegDialog">
                <font>
                   <Font size="26.0" />
                </font>

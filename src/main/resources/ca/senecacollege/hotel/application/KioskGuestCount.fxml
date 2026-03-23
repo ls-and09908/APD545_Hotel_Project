@@ -42,7 +42,15 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="guestCountNextBtn" mnemonicParsing="false" onAction="#onToDatesPress" text="Next" />
+            <Button mnemonicParsing="false" text="Rules and Reg" onAction="#rulesAndRegDialog">
+               <HBox.margin>
+                  <Insets right="50.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="guestCountNextBtn" mnemonicParsing="false" onAction="#onToDatesPress" text="Next">
+               <HBox.margin>
+                  <Insets left="50.0" />
+               </HBox.margin></Button>
          </children>
       </HBox>
    </bottom>

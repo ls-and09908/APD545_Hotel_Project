@@ -25,6 +25,9 @@
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER" prefHeight="32.0" prefWidth="1400.0">
+                <padding>
+                    <Insets bottom="50" top="50" />
+                </padding>
                <children>
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0">
                      <children>
@@ -54,12 +57,16 @@
    </center>
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+          <padding>
+              <Insets bottom="50" top="50" />
+          </padding>
          <children>
             <Button mnemonicParsing="false" onAction="#backToCountPress" text="Prev">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
             </Button>
+            <Button mnemonicParsing="false" text="Rules and Reg" onAction="#rulesAndRegDialog"/>
             <Button fx:id="rentalDatesBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onToRoomPress" text="Next">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />

@@ -1,6 +1,7 @@
 package ca.senecacollege.hotel.tests;
 
 import ca.senecacollege.hotel.models.*;
+import ca.senecacollege.hotel.services.RoomFactory;
 import com.google.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -32,8 +33,8 @@ public class DBTester {
         AddOn a3 = new AddOn("wifi3", "..", 153.00, true);
         AddOn a4 = new AddOn("wifi4", "..", 154.00, false);
 
-        Room r1 = new Room(420, new RoomType("Penthouse"));
-        Room r2 = new Room(200, new RoomType("Single"));
+        Room r1 = RoomFactory.createRoom(420, RoomType.PENTHOUSE);
+        Room r2 = RoomFactory.createRoom(200, RoomType.SINGLE);
 
         Reservation res = new Reservation(guest, 3, 2, date, date);
         Billing bill = res.getBilling();

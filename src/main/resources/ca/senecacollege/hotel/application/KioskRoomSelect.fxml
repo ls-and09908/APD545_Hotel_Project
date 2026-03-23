@@ -53,6 +53,7 @@
                   <Insets right="25.0" />
                </HBox.margin>
             </Button>
+            <Button mnemonicParsing="false" text="Rules and Reg" onAction="#rulesAndRegDialog"/>
             <Button fx:id="roomSelectNextBtn" mnemonicParsing="false" onAction="#toGuestDetailsPress" text="Next">
                <HBox.margin>
                   <Insets left="25.0" />

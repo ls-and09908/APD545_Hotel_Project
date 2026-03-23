@@ -27,7 +27,7 @@ public class App extends Application {
     public void start(Stage stage) throws Exception {
         injector = Guice.createInjector(new AppModule()); //Might need stage
 
-        onInit();
+//        onInit();
 
         SceneManager sceneManager = new SceneManager(stage, injector);
         FXMLLoadResult result = FXMLLoadHelper.loadWithSceneManagerController("/ca/senecacollege/hotel/application/Welcome.fxml", injector, sceneManager);

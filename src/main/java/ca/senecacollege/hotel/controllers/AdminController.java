@@ -1,15 +1,62 @@
 package ca.senecacollege.hotel.controllers;
 
 import ca.senecacollege.hotel.services.AuthService;
+import ca.senecacollege.hotel.utilities.SceneManager;
+import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import org.w3c.dom.Text;
 
-public class AdminController {
+import java.io.IOException;
+
+public class AdminController implements SceneManagerAware {
+
+    @FXML
+    Label subtitleLbl;
 
     private AuthService _authService;
+    SceneManager sceneManager;
 
     @Inject
     public AdminController(AuthService authService){
         _authService = authService;
     }
+
+    @Override
+    public void setSceneManager(SceneManager sceneManager){
+        this.sceneManager = sceneManager;
+    }
+
+    @FXML
+    public void loginPress() throws IOException {
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", null);
+    }
+
+    @FXML
+    public void reportsPress() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/Reports.fxml", null);
+    }
+
+    @FXML
+    public void revenuePress(){
+        subtitleLbl.setText("Revenue");
+    }
+    @FXML
+    public void occupancyPress(){
+        subtitleLbl.setText("Occupancy");
+    }
+    @FXML
+    public void activityPress(){
+        subtitleLbl.setText("Activity");
+    }
+    @FXML
+    public void feedbackPress(){
+        subtitleLbl.setText("Feedback");
+    }
+
+
+
+
 
 }

@@ -29,6 +29,7 @@
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
             </Button>
+            <Button mnemonicParsing="false" text="Rules and Reg" onAction="#rulesAndRegDialog" />
             <Button fx:id="addonsNextBtn" layoutX="680.0" layoutY="47.0" mnemonicParsing="false" onAction="#toBillingPress" text="Next">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />

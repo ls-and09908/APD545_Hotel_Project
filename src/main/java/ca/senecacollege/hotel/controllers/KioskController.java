@@ -9,9 +9,14 @@ import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -182,7 +187,7 @@ public class KioskController implements SceneManagerAware {
             //TODO calculate costs for everything here
             billCustomerName.setText(name);
             billAddonCost.setText("$" + addonCosts);
-            //Calculate cost function goes here
+            //TODO Calculate cost function goes here
         }
     }
 
@@ -232,6 +237,7 @@ public class KioskController implements SceneManagerAware {
             emailLbl.setText("");
             phoneLbl.setText("");
             countryLbl.setText("");
+            loyaltyLbl.setText("");
             setCountrySpinner();
             clientDetailsNextBtn.disableProperty().bind(nameLbl.textProperty().isEmpty().or(phoneLbl.textProperty().isEmpty().or(emailLbl.textProperty().isEmpty().or(countryLbl.textProperty().isEmpty()))));
         }
@@ -341,7 +347,7 @@ public class KioskController implements SceneManagerAware {
     private Guest confirmLoyalty(){
         //Check that loyalty value is an integer value
         int loyaltyNumber = -1;
-        if(loyaltyLbl.getText().isEmpty()){ //If there's no loyalty value we construct the guest without it
+        if(loyaltyLbl.getText().isBlank()){ //If there's no loyalty value we construct the guest without it
             return new Guest(nameLbl.getText(), phoneLbl.getText(), emailLbl.getText());
         }
         try{
@@ -390,6 +396,19 @@ public class KioskController implements SceneManagerAware {
     private void toKiosk() throws IOException {
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskGuestCount.fxml", null);
     }
+
+    @FXML
+    public void rulesAndRegDialog() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca/senecacollege/hotel/application/RulesAndReg.fxml"));
+        DialogPane dialogPane = loader.load();
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Rules and Regulations");
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.setDialogPane(dialogPane);
+        dialog.show();
+    }
+
+
 
     //</editor-fold>
 
