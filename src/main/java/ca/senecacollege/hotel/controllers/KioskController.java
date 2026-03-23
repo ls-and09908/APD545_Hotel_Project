@@ -3,6 +3,7 @@ package ca.senecacollege.hotel.controllers;
 import ca.senecacollege.hotel.application.App;
 import ca.senecacollege.hotel.models.Guest;
 import ca.senecacollege.hotel.models.Reservation;
+import ca.senecacollege.hotel.services.LoyaltyService;
 import ca.senecacollege.hotel.utilities.FXMLLoadResult;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
@@ -20,6 +21,8 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 //TODO Connect kiosk elements to functions
 //TODO Create kiosk functionality
@@ -36,7 +39,8 @@ public class KioskController implements SceneManagerAware {
     private static String phone;
     private static String email;
     private static String country;
-
+    private static ArrayList<String> addons;
+    private LoyaltyService _loyaltyService;
 
     //<editor-fold desc="FXMLElements">
     //<editor-fold desc="Screen1FXML">
@@ -72,13 +76,13 @@ public class KioskController implements SceneManagerAware {
 
 //<editor-fold desc="Screen4FXML">
     @FXML
+    Spinner<String> countrySpinner;
+    @FXML
     TextField nameTxt;
     @FXML
     TextField loyaltyTxt;
     @FXML
     TextField phoneTxt;
-    @FXML
-    Spinner<String> countrySpinner;
     @FXML
     TextField emailTxt;
     @FXML
@@ -103,6 +107,8 @@ public class KioskController implements SceneManagerAware {
     Button updateCountry;
     @FXML
     Button updateLoyalty;
+    @FXML
+    private Text loyaltyErr;
     //</editor-fold>
 
     //<editor-fold desc="Screen5FXML">
@@ -122,7 +128,8 @@ public class KioskController implements SceneManagerAware {
 
     //Currently unsure of what repositories this will be requiring
     @Inject
-    public KioskController(){
+    public KioskController(LoyaltyService loyaltyService){
+        _loyaltyService = loyaltyService;
     }
 
     //Sets the SceneManager object (Called on instantiation)
@@ -173,7 +180,7 @@ public class KioskController implements SceneManagerAware {
             setRoomCountSpinners();
             roomSelectNextBtn.disableProperty().bind(singleSpinner.valueProperty().isEqualTo(0).and(doubleSpinner.valueProperty().isEqualTo(0)).and(pentSpinner.valueProperty().isEqualTo(0)));
         }
-        else if(nameTxt != null){
+        else if(countrySpinner != null){
             nameLbl.setVisible(false);
             loyaltyLbl.setVisible(false);
             phoneLbl.setVisible(false);
@@ -182,8 +189,9 @@ public class KioskController implements SceneManagerAware {
             nameLbl.setText("");
             emailLbl.setText("");
             phoneLbl.setText("");
+            countryLbl.setText("");
             setCountrySpinner();
-            clientDetailsNextBtn.disableProperty().bind(nameLbl.textProperty().isEmpty().or(phoneLbl.textProperty().isEmpty().or(emailLbl.textProperty().isEmpty().or(countrySpinner.valueProperty().isNotNull()))));
+            clientDetailsNextBtn.disableProperty().bind(nameLbl.textProperty().isEmpty().or(phoneLbl.textProperty().isEmpty().or(emailLbl.textProperty().isEmpty().or(countryLbl.textProperty().isEmpty()))));
         }
     }
 
@@ -269,10 +277,28 @@ public class KioskController implements SceneManagerAware {
     @FXML
     private void toAddonsPress() throws IOException {
         if(nameLbl != null){
-
+//            confirmLoyalty();
+            tempGuest = new Guest();
         }
 
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskAddonSelect.fxml", null);
+    }
+
+    //TODO implement this with the loyalty repository once it's ready
+    private boolean confirmLoyalty(){
+        //Check that loyalty value is an integer value
+        int loyaltyNumber = -1;
+        try{
+            loyaltyNumber = Integer.parseInt(loyaltyLbl.getText());
+        }catch (NumberFormatException e){
+            loyaltyErr.setText("Not a number");
+            return false;
+        }
+        Guest temporaryGuest = new Guest(nameLbl.getText(), phoneLbl.getText(), emailLbl.getText(), loyaltyNumber);
+        if(_loyaltyService.findLoyalGuest(temporaryGuest)){
+            return true; //It's very late when I wrote this. Test tomorrow probably
+        }
+        return false;
     }
 
     @FXML

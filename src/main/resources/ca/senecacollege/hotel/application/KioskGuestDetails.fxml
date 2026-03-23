@@ -39,10 +39,10 @@
             <HBox alignment="CENTER" prefHeight="29.0" prefWidth="563.0">
                <children>
                   <TextField fx:id="nameTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
-                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
+                  <Text fx:id="nameErr" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
-            <Button fx:id="updateName" mnemonicParsing="false" text="Update" onAction="#onUpdateName" />
+            <Button fx:id="updateName" mnemonicParsing="false" onAction="#onUpdateName" text="Update" />
             <Label text="Loyalty: ">
                <VBox.margin>
                   <Insets top="20.0" />
@@ -52,12 +52,12 @@
             <HBox alignment="CENTER" prefHeight="0.0" prefWidth="563.0">
                <children>
                   <TextField fx:id="loyaltyTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
-                  <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
+                  <Text fx:id="loyaltyErr" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="19.0" prefWidth="1400.0">
                <children>
-                  <Button fx:id="updateLoyalty" mnemonicParsing="false" text="Update" onAction="#onUpdateLoyalty">
+                  <Button fx:id="updateLoyalty" mnemonicParsing="false" onAction="#onUpdateLoyalty" text="Update">
                      <HBox.margin>
                         <Insets left="25.0" right="25.0" />
                      </HBox.margin>
@@ -81,7 +81,7 @@
                   <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
-            <Button fx:id="updatePhone" mnemonicParsing="false" text="Update" onAction="#onUpdatePhone"/>
+            <Button fx:id="updatePhone" mnemonicParsing="false" onAction="#onUpdatePhone" text="Update" />
             <Label text="*Email: ">
                <VBox.margin>
                   <Insets top="20.0" />
@@ -94,7 +94,7 @@
                   <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
-            <Button fx:id="updateEmail" mnemonicParsing="false" text="Update" onAction="#onUpdateEmail" />
+            <Button fx:id="updateEmail" mnemonicParsing="false" onAction="#onUpdateEmail" text="Update" />
             <Label layoutX="686.0" layoutY="494.0" text="*Country ">
                <VBox.margin>
                   <Insets top="20.0" />
@@ -103,11 +103,11 @@
             <Text fx:id="countryLbl" layoutX="684.0" layoutY="526.0" strokeType="OUTSIDE" strokeWidth="0.0" text="countryTxt" />
             <HBox alignment="CENTER" layoutX="10.0" layoutY="530.0" prefHeight="6.0" prefWidth="1400.0">
                <children>
-                  <Spinner fx:id="countryTxt" />
+                  <Spinner fx:id="countrySpinner" prefHeight="26.0" prefWidth="373.0" />
                   <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
                </children>
             </HBox>
-            <Button fx:id="updateCountry" layoutX="679.0" layoutY="574.0" mnemonicParsing="false" text="Update" onAction="#onUpdateCountry"/>
+            <Button fx:id="updateCountry" layoutX="679.0" layoutY="574.0" mnemonicParsing="false" onAction="#onUpdateCountry" text="Update" />
          </children>
       </VBox>
    </center>

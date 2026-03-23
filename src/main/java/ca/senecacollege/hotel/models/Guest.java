@@ -19,11 +19,28 @@ public class Guest {
 
     private String email;
 
+    private int loyaltyNum = -1;
+
     public Guest(){}
 
     public Guest(String name, String phone, String email) {
         this.name = name;
         this.phone = phone;
         this.email = email;
+    }
+
+    public Guest(String name, String phone, String email, int loyaltyNum) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.loyaltyNum = loyaltyNum;
+    }
+
+    public void setLoyalty(int loyaltyNum){
+        this.loyaltyNum = loyaltyNum;
+    }
+
+    public boolean isLoyal(){
+        return loyaltyNum != -1;
     }
 }
