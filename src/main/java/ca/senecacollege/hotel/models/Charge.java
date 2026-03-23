@@ -12,7 +12,7 @@ public class Charge {
     private transient ChargeSource source;
     private Double discount;
     private int quantity;
-    //private PricingModel pricing;
+    private PricingModel pricing;
     private Double amount;
 
     @ManyToOne

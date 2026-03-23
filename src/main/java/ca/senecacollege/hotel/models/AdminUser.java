@@ -2,7 +2,6 @@ package ca.senecacollege.hotel.models;
 
 import jakarta.persistence.*;
 
-
 @Entity
 public class AdminUser {
     @Id

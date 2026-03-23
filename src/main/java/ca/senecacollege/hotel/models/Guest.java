@@ -19,6 +19,8 @@ public class Guest {
 
     private String email;
 
+    private String country;
+
     private transient int loyaltyNum = -1;
 
     public Guest(){}

@@ -11,7 +11,6 @@ public class Payment {
     @Column(name = "PAYMENT_NUM")
     private int paymentNumber;
 
-
     @ManyToOne
     @JoinColumn(name = "BILL_NUM")
     private Billing bill;

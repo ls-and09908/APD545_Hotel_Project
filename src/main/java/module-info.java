@@ -8,7 +8,6 @@ module ca.senecacollege.application {
     requires org.hibernate.orm.core;
     requires org.checkerframework.checker.qual;
 
-
     opens ca.senecacollege.hotel.application to javafx.fxml;
     exports ca.senecacollege.hotel.application;
     exports ca.senecacollege.hotel.controllers;
@@ -16,4 +15,6 @@ module ca.senecacollege.application {
     opens ca.senecacollege.hotel.models;
     opens ca.senecacollege.hotel.services to com.google.guice;
     exports ca.senecacollege.hotel.services;
+    exports ca.senecacollege.hotel.utilities;
+    exports ca.senecacollege.hotel.tests;
 }
