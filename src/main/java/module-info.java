@@ -12,6 +12,7 @@ module ca.senecacollege.application {
     opens ca.senecacollege.hotel.application to javafx.fxml;
     exports ca.senecacollege.hotel.application;
     exports ca.senecacollege.hotel.controllers;
+    exports ca.senecacollege.hotel.services to com.google.guice;
     opens ca.senecacollege.hotel.controllers to javafx.fxml;
     opens ca.senecacollege.hotel.models;
     opens ca.senecacollege.hotel.services to com.google.guice;
