@@ -4,25 +4,18 @@ import ca.senecacollege.hotel.application.App;
 import ca.senecacollege.hotel.models.Guest;
 import ca.senecacollege.hotel.models.Reservation;
 import ca.senecacollege.hotel.services.LoyaltyService;
-import ca.senecacollege.hotel.utilities.FXMLLoadResult;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 //TODO Connect kiosk elements to functions
 //TODO Create kiosk functionality
@@ -39,10 +32,12 @@ public class KioskController implements SceneManagerAware {
     private static String phone;
     private static String email;
     private static String country;
-    private static ArrayList<String> addons;
+    private static double addonCosts = 0;
     private LoyaltyService _loyaltyService;
 
     //<editor-fold desc="FXMLElements">
+    //<editor-fold desc="WelcomeFXML">
+    //</editor-fold>
     //<editor-fold desc="Screen1FXML">
     @FXML
     Spinner<Integer> adultSpinner;
@@ -74,7 +69,7 @@ public class KioskController implements SceneManagerAware {
     Button roomSelectNextBtn;
     //</editor-fold>
 
-//<editor-fold desc="Screen4FXML">
+    //<editor-fold desc="Screen4FXML">
     @FXML
     Spinner<String> countrySpinner;
     @FXML
@@ -124,6 +119,46 @@ public class KioskController implements SceneManagerAware {
     Button addonsNextBtn;
     //</editor-fold>
 
+    //<editor-fold desc="Screen6FXML">
+    @FXML
+    private Text billBaseCost;
+    @FXML
+    private Text billAddonCost;
+    @FXML
+    private Text billSeasonalCost;
+    @FXML
+    private Text billDiscountCost;
+    @FXML
+    private Text billTotalCost;
+    @FXML
+    private Text billCustomerName;
+    @FXML
+    private Text billCardNumber;
+    @FXML
+    private Text billRemainingBalance;
+    @FXML
+    private Text billDepositCost;
+    //</editor-fold>
+
+    //<editor-fold desc="Screen7FXML">
+    @FXML
+    Text conNameTxt;
+    @FXML
+    Text conPhoneTxt;
+    @FXML
+    Text conEmailTxt;
+    @FXML
+    Text conCostTxt;
+    @FXML
+    Text addonTxt1;
+    @FXML
+    Text addonTxt2;
+    @FXML
+    Text addonTxt3;
+    @FXML
+    Text addonTxt4;
+    //</editor-fold>
+
     //</editor-fold>
 
     //Currently unsure of what repositories this will be requiring
@@ -137,6 +172,18 @@ public class KioskController implements SceneManagerAware {
     @Override
     public void setSceneManager(SceneManager sceneManager){
         this.sceneManager = sceneManager;
+    }
+
+    @FXML
+    private void initialize(){
+        disableNextButtons();
+        if(billBaseCost != null){
+            //TODO set all the appropriate text values
+            //TODO calculate costs for everything here
+            billCustomerName.setText(name);
+            billAddonCost.setText("$" + addonCosts);
+            //Calculate cost function goes here
+        }
     }
 
     private void setGuestCountSpinners(){
@@ -159,11 +206,6 @@ public class KioskController implements SceneManagerAware {
         ObservableList<String> countries = FXCollections.observableArrayList("United States of America", "Canada", "China", "Indonesia", "Vietnam", "Estonia", "Other");
         SpinnerValueFactory<String> cvalueFactory = new SpinnerValueFactory.ListSpinnerValueFactory<>(countries);
         countrySpinner.setValueFactory(cvalueFactory);
-    }
-
-    @FXML
-    private void initialize(){
-        disableNextButtons();
     }
 
     //This function considers which screen the user is currently on and disables the "next" button if the user has not input data
@@ -245,6 +287,16 @@ public class KioskController implements SceneManagerAware {
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskDateSelect.fxml", null);
     }
 
+    @FXML
+    private void onAdminLoginPress() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminLogin.fxml", null);
+    }
+    @FXML
+    private void onFeedbackPress() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/Feedback.fxml", null);
+    }
+
+
     private boolean confirmDates(){
         return !inDate.getValue().isAfter(outDate.getValue()); //Possibly adjust this
     }
@@ -277,40 +329,60 @@ public class KioskController implements SceneManagerAware {
     @FXML
     private void toAddonsPress() throws IOException {
         if(nameLbl != null){
-//            confirmLoyalty();
-            tempGuest = new Guest();
+            tempGuest = confirmLoyalty();
+            if(tempGuest == null){
+                return;
+            }
         }
-
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskAddonSelect.fxml", null);
     }
 
     //TODO implement this with the loyalty repository once it's ready
-    private boolean confirmLoyalty(){
+    private Guest confirmLoyalty(){
         //Check that loyalty value is an integer value
         int loyaltyNumber = -1;
+        if(loyaltyLbl.getText().isEmpty()){ //If there's no loyalty value we construct the guest without it
+            return new Guest(nameLbl.getText(), phoneLbl.getText(), emailLbl.getText());
+        }
         try{
             loyaltyNumber = Integer.parseInt(loyaltyLbl.getText());
         }catch (NumberFormatException e){
             loyaltyErr.setText("Not a number");
-            return false;
+            return null;
         }
-        Guest temporaryGuest = new Guest(nameLbl.getText(), phoneLbl.getText(), emailLbl.getText(), loyaltyNumber);
+        name = nameLbl.getText();
+        phone = phoneLbl.getText();
+        email = emailLbl.getText();
+        Guest temporaryGuest = new Guest(name, phone, email, loyaltyNumber);
         if(_loyaltyService.findLoyalGuest(temporaryGuest)){
-            return true; //It's very late when I wrote this. Test tomorrow probably
+            return temporaryGuest; //The guest has a loyalty number and it has been confirmed
         }
-        return false;
+        loyaltyErr.setText("Loyalty not found");
+        return null;
     }
 
     @FXML
     private void toBillingPress() throws IOException {
         if(wifiBox != null){
-
+            if(wifiBox.isSelected()){
+                addonCosts += 25;
+            }
+            if(breakfastBox.isSelected()){
+                addonCosts += 50;
+            }
+            if(spaBox.isSelected()){
+                addonCosts += 80;
+            }
+            if(parkingBox.isSelected()){
+                addonCosts += 5;
+            }
         }
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskBillEstimate.fxml", null);
     }
 
     @FXML
     private void toConfirmationPress() throws IOException {
+        tempReservation = new Reservation(tempGuest, numAdult, numChildren, checkInDate, checkOutDate);
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskConfirm.fxml", null);
     }
 

@@ -1,4 +1,4 @@
 package ca.senecacollege.hotel.repositories;
 
-public class AdminUserRepository {
+public class AdminUserRepository implements IAdminUserRepository {
 }
