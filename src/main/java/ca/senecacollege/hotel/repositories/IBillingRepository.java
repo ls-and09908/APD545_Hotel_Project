@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface IBillingRepository {
     List<Billing> getAllBillings();
-    void saveBill(Billing r);
+    void saveBill(Billing b);
     Billing getBill(int billNum);
 }

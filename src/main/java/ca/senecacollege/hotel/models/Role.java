@@ -12,4 +12,6 @@ class Role {
 
     private String type;
     private String discountMax;
+
+    public Role(){}
 }

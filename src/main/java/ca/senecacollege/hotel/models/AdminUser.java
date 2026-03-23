@@ -1,6 +1,7 @@
 package ca.senecacollege.hotel.models;
 
 import jakarta.persistence.*;
+import ca.senecacollege.hotel.models.Role;
 
 @Entity
 public class AdminUser {

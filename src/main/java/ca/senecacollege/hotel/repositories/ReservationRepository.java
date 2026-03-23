@@ -35,10 +35,8 @@ public class ReservationRepository implements IReservationRepository {
             e.printStackTrace();
         } finally {
             em.close();
+            return results;
         }
-
-
-        return List.of();
     }
 
     @Override

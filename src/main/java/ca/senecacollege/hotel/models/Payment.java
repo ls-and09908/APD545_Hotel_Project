@@ -42,6 +42,10 @@ public class Payment {
         this.bill = bill;
     }
 
+    public Double getAmount() {
+        return amount;
+    }
+
     public Payment(Billing bill, Double amount, Guest payee, LocalDate date) {
         this.bill = bill;
         this.amount = amount;
