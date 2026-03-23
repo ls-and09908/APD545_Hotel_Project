@@ -16,4 +16,7 @@ module ca.senecacollege.application {
     opens ca.senecacollege.hotel.models;
     opens ca.senecacollege.hotel.services to com.google.guice;
     exports ca.senecacollege.hotel.services;
+    opens ca.senecacollege.hotel.utilities to com.google.guice;
+    exports ca.senecacollege.hotel.utilities;
+    exports ca.senecacollege.hotel.tests;
 }
