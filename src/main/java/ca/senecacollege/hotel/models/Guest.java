@@ -19,7 +19,7 @@ public class Guest {
 
     private String email;
 
-    private int loyaltyNum = -1;
+    private transient int loyaltyNum = -1;
 
     public Guest(){}
 

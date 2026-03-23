@@ -9,7 +9,7 @@ public class Charge {
     @Column(name = "CHARGE_NUM")
     private int chargeNumber;
 
-    //private ChargeSource source;
+    private transient ChargeSource source;
     private Double discount;
     private int quantity;
     //private PricingModel pricing;
@@ -18,6 +18,14 @@ public class Charge {
     @ManyToOne
     @JoinColumn(name = "BILL_NUM")
     private Billing bill;
+
+    @ManyToOne
+    @JoinColumn(name="SRC_ADD_ON")
+    private AddOn srcAddOn = null;
+
+    @ManyToOne
+    @JoinColumn(name = "SRC_ROOM")
+    private Room srcRoom = null;
 
     public Billing getBill() {
         return bill;
@@ -47,10 +55,17 @@ public class Charge {
         this.bill = billing;
     }
 
-    public Charge(Double discount, int quantity, Double amount, Billing bill) {
+    public Charge(Double discount, int quantity, Double amount, Billing bill, ChargeSource source) {
         this.discount = discount;
         this.quantity = quantity;
         this.amount = amount;
         this.bill = bill;
+        this.source = source;
+
+        if(source.getClass() == AddOn.class){
+            this.srcAddOn = (AddOn) source;
+        } else if (source.getClass() == Room.class) {
+            this.srcRoom = (Room) source;
+        }
     }
 }

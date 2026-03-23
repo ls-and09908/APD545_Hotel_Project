@@ -13,13 +13,13 @@ public class AddOn implements ChargeSource {
     private int id;
 
     private String name;
-    private String desc;
+    private String description;
     private Double price;
     private Boolean chargedNightly;
 
     public AddOn(String name, String desc, Double price, Boolean chargedNightly) {
         this.name = name;
-        this.desc = desc;
+        this.description = desc;
         this.price = price;
         this.chargedNightly = chargedNightly;
     }
@@ -36,18 +36,5 @@ public class AddOn implements ChargeSource {
 
     public int getId() {
         return id;
-    }
-
-    public boolean equals(Object obj){
-        if (obj == null){ return false; }
-        if (!this.getClass().equals(obj.getClass())){ return false; }
-
-        AddOn tempObj = (AddOn) obj;
-        return this.id == tempObj.getId();
-    }
-
-    public int hashCode(){
-        // TODO write hashCode func
-        return 0;
     }
 }

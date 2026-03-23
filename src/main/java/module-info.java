@@ -13,5 +13,7 @@ module ca.senecacollege.application {
     exports ca.senecacollege.hotel.application;
     exports ca.senecacollege.hotel.controllers;
     opens ca.senecacollege.hotel.controllers to javafx.fxml;
-    opens ca.senecacollege.hotel.models to org.hibernate.orm.core, net.bytebuddy, jakarta.persistence;
+    opens ca.senecacollege.hotel.models;
+    opens ca.senecacollege.hotel.services to com.google.guice;
+    exports ca.senecacollege.hotel.services;
 }
