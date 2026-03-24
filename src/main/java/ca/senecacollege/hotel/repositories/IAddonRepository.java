@@ -8,4 +8,5 @@ public interface IAddonRepository {
     List<AddOn> getAllAddOns();
     void saveAddOn(AddOn r);
     AddOn getAddOn(int addOnID);
+    AddOn getAddOn(String name);
 }

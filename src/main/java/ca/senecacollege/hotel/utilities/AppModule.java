@@ -3,10 +3,7 @@ package ca.senecacollege.hotel.utilities;
 import ca.senecacollege.hotel.models.PricingModel;
 import ca.senecacollege.hotel.models.StandardPricingModel;
 import ca.senecacollege.hotel.models.WeekendPricingModel;
-import ca.senecacollege.hotel.repositories.AdminUserRepository;
-import ca.senecacollege.hotel.repositories.BillingRepository;
-import ca.senecacollege.hotel.repositories.IAdminUserRepository;
-import ca.senecacollege.hotel.repositories.IBillingRepository;
+import ca.senecacollege.hotel.repositories.*;
 import ca.senecacollege.hotel.services.*;
 import ca.senecacollege.hotel.tests.DBTester;
 import ca.senecacollege.hotel.services.*;
@@ -27,6 +24,7 @@ public class AppModule extends AbstractModule {
         bind(LoyaltyService.class).in(Singleton.class);
         bind(AuthService.class).in(Singleton.class);
 
+        bind(IRoomRepository.class).to(RoomRepository.class).in(Singleton.class);
         bind(IBillingRepository.class).to(BillingRepository.class).in(Singleton.class);
         bind(IBillingService.class).to(BillingService.class).in(Singleton.class);
         bind(PricingModel.class).annotatedWith(Names.named("standard")).to(StandardPricingModel.class).in(Singleton.class);

@@ -1,13 +1,14 @@
 package ca.senecacollege.hotel.tests;
 
 import ca.senecacollege.hotel.models.*;
+import ca.senecacollege.hotel.repositories.IRoomRepository;
 import ca.senecacollege.hotel.services.BillingService;
 import ca.senecacollege.hotel.services.RoomFactory;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+
 
 import java.time.LocalDate;
 
@@ -16,13 +17,15 @@ public class DBTester {
     private BillingService _bs;
     private PricingModel _stdPrice;
     private PricingModel _wkndPrice;
+    private IRoomRepository _rmRepo;
 
     @Inject
-    public DBTester(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd){
+    public DBTester(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo){
         this.emf = emf;
         this._bs = bs;
         this._stdPrice = std;
         this._wkndPrice = wknd;
+        this._rmRepo = rmRepo;
     }
 
     public void makeDB(){
@@ -52,7 +55,7 @@ public class DBTester {
         bill.addPayment(new Payment(bill, 60.0, guest, date));
         _bs.checkUpdateBillBalance(bill);
 
-        Reservation res2 = new Reservation(guest, 1, 4, date, date);
+        Reservation res2 = new Reservation(guest, 1, 4, date, date.plusDays(2));
         Billing bill2 = res2.getBilling();
         // bill2.setBalance(340.60);
 
@@ -98,5 +101,8 @@ public class DBTester {
         em.getTransaction().commit();
 
         em.close();
+
+        System.out.println(_rmRepo.getAvailableRooms());
+        System.out.println(_rmRepo.getAvailableRooms(date.plusDays(6), date.plusDays(12)));
     }
 }

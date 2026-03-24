@@ -1,8 +1,6 @@
 package ca.senecacollege.hotel.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import javafx.beans.property.StringProperty;
 
 @Entity
@@ -12,10 +10,13 @@ public class Room implements ChargeSource {
     private int roomNumber;
 
     private transient RoomStatus roomStatus;
-    private transient RoomType roomType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ROOM_TYPE")
+    private RoomType roomType;
+
     int maxOccupancy;
     double price;
-
 
     @Override
     public Double getBasePrice() {
@@ -44,6 +45,8 @@ public class Room implements ChargeSource {
             price = 100;
         }
     }
+
+    public Room(){}
 
     //Returns type as a String.
     public RoomType getType(){
