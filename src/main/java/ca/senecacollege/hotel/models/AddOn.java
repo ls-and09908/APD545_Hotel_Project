@@ -17,6 +17,8 @@ public class AddOn implements ChargeSource {
     private Double price;
     private Boolean chargedNightly;
 
+    public AddOn(){}
+
     public AddOn(String name, String desc, Double price, Boolean chargedNightly) {
         this.name = name;
         this.description = desc;

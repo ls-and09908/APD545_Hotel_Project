@@ -1,6 +1,6 @@
 package ca.senecacollege.hotel.application;
 
-import ca.senecacollege.hotel.tests.DBTester;
+import ca.senecacollege.hotel.utilities.DBInitializer;
 import ca.senecacollege.hotel.utilities.AppModule;
 import ca.senecacollege.hotel.utilities.FXMLLoadHelper;
 import ca.senecacollege.hotel.utilities.FXMLLoadResult;
@@ -27,7 +27,7 @@ public class App extends Application {
     public void start(Stage stage) throws Exception {
         injector = Guice.createInjector(new AppModule());
 
-//        onInit();
+        onInit();
 
         SceneManager sceneManager = new SceneManager(stage, injector);
         FXMLLoadResult result = FXMLLoadHelper.loadWithSceneManagerController("/ca/senecacollege/hotel/application/Welcome.fxml", injector, sceneManager);
@@ -46,8 +46,8 @@ public class App extends Application {
     }
 
     private void onInit(){
-        DBTester tester = injector.getInstance(DBTester.class);
-        tester.makeDB();
+        DBInitializer initializer = injector.getInstance(DBInitializer.class);
+        initializer.makeDB();
     }
 
     public static void main(String[] args) {

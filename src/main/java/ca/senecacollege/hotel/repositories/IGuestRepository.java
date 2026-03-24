@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IGuestRepository {
     List<Guest> getAllGuests();
-    void saveGuest(Guest r);
+    void saveGuest(Guest g);
     Guest getGuest(int guestID);
-
+    List<Guest> getLoyalGuests();
 }

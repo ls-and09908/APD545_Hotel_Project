@@ -24,13 +24,17 @@ public class AppModule extends AbstractModule {
         bind(LoyaltyService.class).in(Singleton.class);
         bind(AuthService.class).in(Singleton.class);
 
+        bind(IReservationRepository.class).to(ReservationRepository.class).in(Singleton.class);
+        bind(IAddonRepository.class).to(AddonRepository.class).in(Singleton.class);
         bind(IRoomRepository.class).to(RoomRepository.class).in(Singleton.class);
         bind(IBillingRepository.class).to(BillingRepository.class).in(Singleton.class);
+
         bind(IBillingService.class).to(BillingService.class).in(Singleton.class);
+
         bind(PricingModel.class).annotatedWith(Names.named("standard")).to(StandardPricingModel.class).in(Singleton.class);
         bind(PricingModel.class).annotatedWith(Names.named("weekend")).to(WeekendPricingModel.class).in(Singleton.class);
-        bind(DBTester.class).asEagerSingleton();
-        bind(ReservationService.class).in(Singleton.class);
+        bind(DBInitializer.class).asEagerSingleton();
+
     }
 
     @Provides

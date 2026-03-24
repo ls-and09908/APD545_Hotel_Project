@@ -1,4 +1,4 @@
-package ca.senecacollege.hotel.tests;
+package ca.senecacollege.hotel.utilities;
 
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.IAddonRepository;
@@ -10,10 +10,9 @@ import com.google.inject.name.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
-
 import java.time.LocalDate;
 
-public class DBTester {
+public class DBInitializer {
     private EntityManagerFactory emf;
     private BillingService _bs;
     private PricingModel _stdPrice;
@@ -22,7 +21,7 @@ public class DBTester {
     private IAddonRepository _aoRepo;
 
     @Inject
-    public DBTester(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo){
+    public DBInitializer(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo){
         this.emf = emf;
         this._bs = bs;
         this._stdPrice = std;
@@ -32,22 +31,17 @@ public class DBTester {
     }
 
     public void makeDB(){
-        // DB testing, comment it out from start when you don't have mysql running
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-//        AdminUser test1 = new AdminUser();
-//        test1.setUsername("Sttco");
-//
-//        em.persist(test1);
         LocalDate date = LocalDate.now();
         Guest guest = new Guest("Gab", "1800-8556021", "help@google.com");
         Guest guest2 = new Guest("Lou", "4168971201", "loulou@yahoo.com");
 
-        AddOn a1 = new AddOn("wifi", ".....", 15.00, false);
-        AddOn a2 = new AddOn("colour", "..", 243.77, false);
-        AddOn a3 = new AddOn("magic", "....", 81.08, true);
-        AddOn a4 = new AddOn("scott", "( '~')7", 78.44, false);
+        AddOn a1 = new AddOn("wifi", ".....", 25.00, false);
+        AddOn a2 = new AddOn("breakfast", "..", 50.00, false);
+        AddOn a3 = new AddOn("parking", "....", 5.00, true);
+        AddOn a4 = new AddOn("spa", ".....", 80.00, false);
 
         Room r1 = RoomFactory.createRoom(420, RoomType.PENTHOUSE);
         Room r2 = RoomFactory.createRoom(200, RoomType.SINGLE);
@@ -60,20 +54,22 @@ public class DBTester {
 
         Reservation res = new Reservation(guest, 3, 2, date, date.plusDays(2));
         Billing bill = res.getBilling();
-
         bill.addCharge(new Charge(a2, bill, 1, _stdPrice));
         bill.addPayment(new Payment(bill, 60.0, guest, date));
+        res.addAddOn(a2);
+        res.addRoom(r2);
         _bs.checkUpdateBillBalance(bill);
 
-        Reservation res2 = new Reservation(guest2, 1, 4, date, date.plusDays(2));
+        Reservation res2 = new Reservation(guest2, 1, 4, date.minusDays(2), date.plusDays(5));
         Billing bill2 = res2.getBilling();
-
         bill2.addCharge(new Charge(a4, bill2, 1, _stdPrice));
         bill2.addCharge(new Charge(a3, bill2, 2, _stdPrice));
         bill2.addPayment(new Payment(bill2, 100.0, guest2, date));
+        res2.addAddOn(a1);
+        res2.addAddOn(a3);
+        res2.addRoom(r1);
         _bs.checkUpdateBillBalance(bill2);
 
-        // Billing service small tests
         Reservation res3 = new Reservation(guest, 3, 2, date.plusDays(6), date.plusDays(12));
         res3.addRoom(r2);
         Billing bill3 = _bs.generateBill(res3);
@@ -82,14 +78,8 @@ public class DBTester {
         res3.setBilling(bill3);
         _bs.checkUpdateBillBalance(bill3);
 
-        res.addAddOn(a2);
-        res2.addAddOn(a1);
-        res2.addAddOn(a3);
-
-        res.addRoom(r2);
-        res2.addRoom(r1);
-
         em.persist(guest);
+        em.persist(guest2);
         em.persist(res);
         em.persist(bill);
 
@@ -103,6 +93,12 @@ public class DBTester {
 
         em.persist(r1);
         em.persist(r2);
+        em.persist(r3);
+        em.persist(r4);
+        em.persist(r5);
+        em.persist(r6);
+        em.persist(r7);
+        em.persist(r8);
 
         em.persist(res3);
         em.persist(bill3);
@@ -110,5 +106,6 @@ public class DBTester {
         em.getTransaction().commit();
 
         em.close();
+
     }
 }

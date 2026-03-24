@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IAddonRepository {
     List<AddOn> getAllAddOns();
-    void saveAddOn(AddOn r);
+    void saveAddOn(AddOn a);
     AddOn getAddOn(int addOnID);
     AddOn getAddOn(String name);
 }
