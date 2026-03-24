@@ -24,8 +24,8 @@ public class ReservationService implements IReservationService {
 
     @Override
     public void saveReservation(Reservation reservation) {
-        _guestRepo.saveGuest(reservation.getGuest());
         _resRepo.saveRes(reservation);
+        _guestRepo.saveGuest(reservation.getGuest());
     }
 
     @Override

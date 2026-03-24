@@ -28,6 +28,7 @@ public class AppModule extends AbstractModule {
         bind(IAddonRepository.class).to(AddonRepository.class).in(Singleton.class);
         bind(IRoomRepository.class).to(RoomRepository.class).in(Singleton.class);
         bind(IBillingRepository.class).to(BillingRepository.class).in(Singleton.class);
+        bind(IGuestRepository.class).to(GuestRepository.class).in(Singleton.class);
 
         bind(IBillingService.class).to(BillingService.class).in(Singleton.class);
 

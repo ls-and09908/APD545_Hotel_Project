@@ -491,12 +491,14 @@ public class KioskController implements SceneManagerAware {
 
     @FXML
     private void toConfirmationPress() throws IOException {
+        System.out.println(tempReservation);
+        _reservationService.saveReservation(tempReservation);
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskConfirm.fxml", null);
     }
 
     @FXML
     private void toFinalConfirmationPress() throws IOException {
-        _reservationService.saveReservation(tempReservation);
+
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskFinalConfirm.fxml", null);
     }
 
