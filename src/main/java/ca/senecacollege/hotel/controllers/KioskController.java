@@ -31,8 +31,8 @@ import java.util.List;
 //TODO implement proper repositories
 public class KioskController implements SceneManagerAware {
     private SceneManager sceneManager;
-    private Reservation tempReservation;
-    private Guest tempGuest;
+    private static Reservation tempReservation;
+    private static Guest tempGuest;
     private static double finalCost;
     private static int numAdult = 0;
     private static int numChildren = 0;
@@ -491,7 +491,6 @@ public class KioskController implements SceneManagerAware {
 
     @FXML
     private void toConfirmationPress() throws IOException {
-        System.out.println(tempReservation);
         _reservationService.saveReservation(tempReservation);
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskConfirm.fxml", null);
     }
