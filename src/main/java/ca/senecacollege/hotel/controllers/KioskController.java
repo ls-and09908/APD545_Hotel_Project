@@ -344,7 +344,7 @@ public class KioskController implements SceneManagerAware {
             dateScreenErr.setVisible(true);
             return false;
         }
-        else if(inDate.getValue().isAfter(LocalDate.now()) || outDate.getValue().isAfter(LocalDate.now())){
+        else if(inDate.getValue().isBefore(LocalDate.now()) || outDate.getValue().isBefore(LocalDate.now())){
             dateScreenErr.setText("Error: Must check IN on or after today");
             dateScreenErr.setVisible(true);
             return false;
