@@ -26,9 +26,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO Connect kiosk elements to functions
-//TODO Create kiosk functionality
-//TODO implement proper repositories
 public class KioskController implements SceneManagerAware {
     private SceneManager sceneManager;
     private static Reservation tempReservation;
@@ -210,6 +207,7 @@ public class KioskController implements SceneManagerAware {
 
     private void setBillingData(){
         tempReservation = new Reservation(tempGuest, numAdult, numChildren, checkInDate, checkOutDate);
+
         for(Room i: roomList){
             tempReservation.addRoom(i);
         }
@@ -243,7 +241,9 @@ public class KioskController implements SceneManagerAware {
             }
             tempReservation.addAddOn(new AddOn(i, desc, addCost, nightly));
         }
-        _billingService.generateBill(tempReservation);
+        Billing bill = _billingService.generateBill(tempReservation);
+        _billingService.checkUpdateBillBalance(bill);
+        _billingService.saveBill(bill);
     }
 
     private void setBillingDisplay(){
