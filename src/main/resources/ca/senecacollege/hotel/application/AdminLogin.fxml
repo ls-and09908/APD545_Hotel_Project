@@ -59,7 +59,7 @@
                   <Font size="26.0" />
                </font>
             </Button>
-            <Label text="ERR" textFill="RED">
+            <Label text="ERR" textFill="RED" visible="false">
                <font>
                   <Font size="48.0" />
                </font>

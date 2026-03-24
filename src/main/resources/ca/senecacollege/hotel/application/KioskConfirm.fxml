@@ -134,7 +134,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="162.0" prefWidth="1400.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#backToCountPress" scaleX="2.0" scaleY="2.0" scaleZ="2.0" text="Restart">
+                  <Button mnemonicParsing="false" onAction="#toHome" scaleX="2.0" scaleY="2.0" scaleZ="2.0" text="Restart">
                      <HBox.margin>
                         <Insets left="100.0" right="100.0" />
                      </HBox.margin>
@@ -144,7 +144,7 @@
                         <Insets left="100.0" right="100.0" />
                      </HBox.margin>
                   </Button>
-                  <Button layoutX="680.0" layoutY="78.0" mnemonicParsing="false" scaleX="2.0" scaleY="2.0" scaleZ="2.0" text="Confirm">
+                  <Button layoutX="680.0" layoutY="78.0" mnemonicParsing="false" scaleX="2.0" scaleY="2.0" scaleZ="2.0" text="Confirm" onAction="#toFinalConfirmationPress">
                      <HBox.margin>
                         <Insets left="100.0" right="100.0" />
                      </HBox.margin>

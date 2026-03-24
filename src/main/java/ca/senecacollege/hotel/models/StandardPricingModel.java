@@ -6,7 +6,7 @@ public class StandardPricingModel implements PricingModel{
     private String name = "Standard Pricing";
 
     @Inject
-    StandardPricingModel(){}
+    public StandardPricingModel(){}
 
     @Override
     public Double getPrice(Double price, int qty) {

@@ -3,10 +3,7 @@ package ca.senecacollege.hotel.services;
 import ca.senecacollege.hotel.models.Reservation;
 import ca.senecacollege.hotel.models.Room;
 import ca.senecacollege.hotel.models.RoomType;
-import ca.senecacollege.hotel.repositories.IReservationRepository;
-import ca.senecacollege.hotel.repositories.IRoomRepository;
-import ca.senecacollege.hotel.repositories.ReservationRepository;
-import ca.senecacollege.hotel.repositories.RoomRepository;
+import ca.senecacollege.hotel.repositories.*;
 import com.google.inject.Inject;
 
 import java.time.LocalDate;
@@ -16,15 +13,18 @@ import java.util.List;
 public class ReservationService implements IReservationService {
     private IReservationRepository _resRepo;
     private IRoomRepository _roomRepo;
+    private IGuestRepository _guestRepo;
 
     @Inject
-    public ReservationService(IReservationRepository resRepo, IRoomRepository roomRepo){
+    public ReservationService(IReservationRepository resRepo, IRoomRepository roomRepo, IGuestRepository guestRepo){
         this._resRepo = resRepo;
         this._roomRepo = roomRepo;
+        this._guestRepo = guestRepo;
     }
 
     @Override
     public void saveReservation(Reservation reservation) {
+        _guestRepo.saveGuest(reservation.getGuest());
         _resRepo.saveRes(reservation);
     }
 

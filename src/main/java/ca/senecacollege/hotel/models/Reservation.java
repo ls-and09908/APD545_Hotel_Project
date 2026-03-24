@@ -59,6 +59,10 @@ public class Reservation {
         this.checkOut = checkOut;
     }
 
+    public Guest getGuest(){
+        return guest;
+    }
+
     public void addAddOn(AddOn a){
         this.addOns.add(a);
     }

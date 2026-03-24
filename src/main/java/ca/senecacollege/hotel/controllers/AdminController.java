@@ -55,4 +55,17 @@ public class AdminController implements SceneManagerAware {
         subtitleLbl.setText("Feedback");
     }
 
+    @FXML
+    private void toHome() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/Welcome.fxml", null);
+    }
+    @FXML
+    private void toDash() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", null);
+    }
+
+    @FXML
+    private void toAddEditBooking() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/AddUpdateBooking.fxml", null);
+    }
 }
