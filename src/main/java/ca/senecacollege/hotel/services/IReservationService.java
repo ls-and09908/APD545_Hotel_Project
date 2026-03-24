@@ -10,4 +10,5 @@ public interface IReservationService {
     void saveReservation(Reservation r);
     List<Room> findAvailableRoom(Reservation r, RoomType type);
     void addRoom(Reservation r, Room rm);
+    public Reservation getReservation(int reservationNumber);
 }

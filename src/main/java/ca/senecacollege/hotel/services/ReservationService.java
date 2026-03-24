@@ -12,7 +12,12 @@ public class ReservationService implements IReservationService {
 
     @Override
     public void saveReservation(Reservation reservation) {
-//        _reservationRepository.add(reservation);
+        _reservationRepository.saveRes(reservation);
+    }
+
+    @Override
+    public Reservation getReservation(int reservationNumber){
+        return _reservationRepository.getRes(reservationNumber);
     }
 
     @Override

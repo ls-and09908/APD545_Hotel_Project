@@ -25,7 +25,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        injector = Guice.createInjector(new AppModule()); //Might need stage
+        injector = Guice.createInjector(new AppModule());
 
 //        onInit();
 

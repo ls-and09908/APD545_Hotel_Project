@@ -1,10 +1,8 @@
 package ca.senecacollege.hotel.controllers;
 
 import ca.senecacollege.hotel.application.App;
-import ca.senecacollege.hotel.models.Guest;
-import ca.senecacollege.hotel.models.Reservation;
-import ca.senecacollege.hotel.models.Room;
-import ca.senecacollege.hotel.models.RoomType;
+import ca.senecacollege.hotel.models.*;
+import ca.senecacollege.hotel.services.BillingService;
 import ca.senecacollege.hotel.services.LoyaltyService;
 import ca.senecacollege.hotel.services.RoomFactory;
 import ca.senecacollege.hotel.utilities.SceneManager;
@@ -42,7 +40,9 @@ public class KioskController implements SceneManagerAware {
     private static String email;
     private static String country;
     private static double addonCosts = 0;
-    private static List<Room> roomList;
+    private static ArrayList<Room> roomList = new ArrayList<>();
+    private static Billing bill;
+    private BillingService _billingService;
     private LoyaltyService _loyaltyService;
 
 
@@ -174,8 +174,9 @@ public class KioskController implements SceneManagerAware {
 
     //Currently unsure of what repositories this will be requiring
     @Inject
-    public KioskController(LoyaltyService loyaltyService){
+    public KioskController(LoyaltyService loyaltyService, BillingService billingService){
         _loyaltyService = loyaltyService;
+        _billingService = billingService;
     }
 
     //Sets the SceneManager object (Called on instantiation)
@@ -191,9 +192,20 @@ public class KioskController implements SceneManagerAware {
         if(billBaseCost != null){
             //TODO set all the appropriate text values
             //TODO calculate costs for everything here
-            billCustomerName.setText(name);
-            billAddonCost.setText("$" + addonCosts);
-
+            double cost = bill.getTotalCharges();
+            double deposit = 500.00 - bill.getTotalPayments();
+            if(deposit < 0.00){
+                deposit = 0.00;
+            }
+            billBaseCost.setText(" $" + cost);
+            billDepositCost.setText(" $" + deposit);
+            billRemainingBalance.setText(" $" + bill.getTotalPayments());
+            billDiscountCost.setText(" N/A");
+            billSeasonalCost.setText(" N/A");
+            billCardNumber.setText(" N/A");
+            billCustomerName.setText(" " + name);
+            billAddonCost.setText(" $" + addonCosts);
+            ;
             //TODO Calculate cost function goes here
         }
     }
@@ -246,6 +258,7 @@ public class KioskController implements SceneManagerAware {
             phoneLbl.setText("");
             countryLbl.setText("");
             loyaltyLbl.setText("");
+            loyaltyErr.setVisible(false);
             setCountrySpinner();
             clientDetailsNextBtn.disableProperty().bind(nameLbl.textProperty().isEmpty().or(phoneLbl.textProperty().isEmpty().or(emailLbl.textProperty().isEmpty().or(countryLbl.textProperty().isEmpty()))));
         }
@@ -311,10 +324,6 @@ public class KioskController implements SceneManagerAware {
     }
 
 
-    private boolean confirmDates(){
-        return !inDate.getValue().isAfter(outDate.getValue()); //Possibly adjust this
-    }
-
     @FXML
     private void onToRoomPress() throws IOException{
         if(inDate != null){
@@ -323,12 +332,24 @@ public class KioskController implements SceneManagerAware {
                 checkOutDate = outDate.getValue();
             }
             else{
-                dateScreenErr.setText("Error: In after out");
-                dateScreenErr.setVisible(true);
                 return;
             }
         }
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskRoomSelect.fxml", null);
+    }
+
+    private boolean confirmDates(){
+        if(inDate.getValue().isAfter(outDate.getValue())){
+            dateScreenErr.setText("Error: In after out");
+            dateScreenErr.setVisible(true);
+            return false;
+        }
+        else if(inDate.getValue().isBefore(LocalDate.now()) || outDate.getValue().isBefore(LocalDate.now())){
+            dateScreenErr.setText("Error: Must check IN on or after today");
+            dateScreenErr.setVisible(true);
+            return false;
+        }
+        return true;
     }
 
     @FXML
@@ -366,7 +387,6 @@ public class KioskController implements SceneManagerAware {
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskAddonSelect.fxml", null);
     }
 
-    //TODO implement this with the loyalty repository once it's ready
     private Guest confirmLoyalty(){
         //Check that loyalty value is an integer value
         int loyaltyNumber = -1;
@@ -380,6 +400,7 @@ public class KioskController implements SceneManagerAware {
             loyaltyNumber = Integer.parseInt(loyaltyLbl.getText());
         }catch (NumberFormatException e){
             loyaltyErr.setText("Not a number");
+            loyaltyErr.setVisible(true);
             return null;
         }
         Guest temporaryGuest = new Guest(name, phone, email, loyaltyNumber);
@@ -387,6 +408,8 @@ public class KioskController implements SceneManagerAware {
             return temporaryGuest; //The guest has a loyalty number and it has been confirmed
         }
         loyaltyErr.setText("Loyalty not found");
+        loyaltyErr.setVisible(true);
+
         return null;
     }
 
@@ -405,13 +428,15 @@ public class KioskController implements SceneManagerAware {
             if(parkingBox.isSelected()){
                 addonCosts += 5;
             }
+            tempReservation = new Reservation(tempGuest, numAdult, numChildren, checkInDate, checkOutDate);
+            bill = new Billing(tempReservation);
         }
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskBillEstimate.fxml", null);
     }
 
     @FXML
     private void toConfirmationPress() throws IOException {
-        tempReservation = new Reservation(tempGuest, numAdult, numChildren, checkInDate, checkOutDate);
+
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskConfirm.fxml", null);
     }
 
