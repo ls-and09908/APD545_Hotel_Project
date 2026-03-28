@@ -46,7 +46,7 @@ public class AddonRepository implements IAddonRepository {
         try {
             em.getTransaction().begin();
 
-            em.persist(a);
+            em.merge(a);
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -61,7 +61,7 @@ public class AddonRepository implements IAddonRepository {
 
     @Override
     public AddOn getAddOn(int addOnID) {
-        AddOn result = null;
+        List<AddOn> result = null;
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -69,13 +69,17 @@ public class AddonRepository implements IAddonRepository {
             Root<AddOn> addOn = cq.from(AddOn.class);
             cq.select(addOn).where(cb.equal(addOn.get("ADDON_ID"), addOnID));
 
-            result = em.createQuery(cq).getSingleResult();
+            result = em.createQuery(cq).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             em.close();
         }
-        return result;
+        if(result.isEmpty()){
+            return null;
+        } else {
+            return result.get(0);
+        }
     }
 
     @Override
@@ -86,7 +90,7 @@ public class AddonRepository implements IAddonRepository {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<AddOn> cq = cb.createQuery(AddOn.class);
             Root<AddOn> addOn = cq.from(AddOn.class);
-            cq.select(addOn).where(cb.like(addOn.get("name"), name));
+            cq.select(addOn).where(cb.like(addOn.get("name"), name.toUpperCase()));
 
             result = em.createQuery(cq).getResultList();
         } catch (Exception e) {

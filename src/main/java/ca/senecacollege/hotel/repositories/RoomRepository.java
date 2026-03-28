@@ -46,7 +46,7 @@ public class RoomRepository implements IRoomRepository {
         try {
             em.getTransaction().begin();
 
-            em.persist(r);
+            em.merge(r);
 
             em.getTransaction().commit();
         } catch (Exception e) {

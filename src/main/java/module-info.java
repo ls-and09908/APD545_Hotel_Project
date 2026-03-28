@@ -10,7 +10,6 @@ module ca.senecacollege.application {
     requires javafx.base;
     requires javafx.graphics;
 
-
     opens ca.senecacollege.hotel.application to javafx.fxml;
     exports ca.senecacollege.hotel.application;
     exports ca.senecacollege.hotel.controllers;

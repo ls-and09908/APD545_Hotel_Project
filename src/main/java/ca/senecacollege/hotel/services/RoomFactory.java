@@ -12,6 +12,8 @@ public class RoomFactory {
                 return new Room(nextAvailableRoom, type);
             case DOUBLE:
                 return new Room(nextAvailableRoom, type);
+            case DELUXE:
+                return new Room(nextAvailableRoom, type);
         }
         return null;
     }

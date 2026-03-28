@@ -63,6 +63,8 @@ public class Charge {
         return pricing.getPrice(source.getBasePrice(), quantity);
     }
 
+    public Charge(){}
+
     public Charge(ChargeSource src, Billing bill, int qty, PricingModel model){
         this.source = src;
         this.bill = bill;
@@ -77,5 +79,9 @@ public class Charge {
         }
 
         this.amount = calcAmount();
+    }
+
+    public ChargeSource getSource() {
+        return source;
     }
 }

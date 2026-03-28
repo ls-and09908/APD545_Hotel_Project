@@ -5,4 +5,6 @@ import ca.senecacollege.hotel.repositories.GuestRepository;
 
 public interface ILoyaltyService {
     boolean findLoyalGuest(Guest checkingGuest);
+    Guest getLoyalGuest(int loyaltyNum);
+    int getNewLoyaltyNum();
 }

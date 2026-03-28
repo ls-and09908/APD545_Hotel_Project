@@ -4,5 +4,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public enum RoomType{
-    SINGLE, DOUBLE, PENTHOUSE
+    SINGLE,
+    DOUBLE,
+    PENTHOUSE,
+    DELUXE
 }

@@ -28,7 +28,7 @@ import java.util.List;
 
 public class KioskController implements SceneManagerAware {
     private SceneManager sceneManager;
-    private static Reservation tempReservation;
+    private static Reservation tempReservation = new Reservation();
     private static Guest tempGuest;
     private static double finalCost;
     private static int numAdult = 0;
@@ -41,7 +41,6 @@ public class KioskController implements SceneManagerAware {
     private static String country;
     private static ArrayList<String> addonNames = new ArrayList<>();
     private static double displayAddons = 0.00;
-    private static ArrayList<Room> roomList = new ArrayList<>();
     private BillingService _billingService;
     private LoyaltyService _loyaltyService;
     private ReservationService _reservationService;
@@ -77,7 +76,11 @@ public class KioskController implements SceneManagerAware {
     @FXML
     Spinner<Integer> pentSpinner;
     @FXML
+    Spinner<Integer> deluxeSpinner;
+    @FXML
     Button roomSelectNextBtn;
+    @FXML
+    Label suggestionSuccessLbl;
     //</editor-fold>
 
     //<editor-fold desc="Screen4FXML">
@@ -115,6 +118,8 @@ public class KioskController implements SceneManagerAware {
     Button updateLoyalty;
     @FXML
     private Text loyaltyErr;
+    @FXML
+    Button signupBtn;
     //</editor-fold>
 
     //<editor-fold desc="Screen5FXML">
@@ -206,49 +211,22 @@ public class KioskController implements SceneManagerAware {
     }
 
     private void setBillingData(){
-        tempReservation = new Reservation(tempGuest, numAdult, numChildren, checkInDate, checkOutDate);
-
-        for(Room i: roomList){
-            tempReservation.addRoom(i);
-        }
-        String desc;
-        double addCost = 0.00;
-        boolean nightly;
-        for(String i: addonNames){
-            if(i.equals("Wifi")) {
-                desc = "Guest has access to hotel wifi during their stay";
-                addCost = 25;
-                displayAddons += addCost;
-                nightly = false;
-            }
-            else if(i.equals("Breakfast")) {
-                desc = "Guest gets breakfast";
-                addCost = 50;
-                displayAddons += (addCost * ChronoUnit.DAYS.between(checkInDate, checkOutDate));
-                nightly = true;
-            }
-            else if(i.equals("Spa")) {
-                desc = "Guest gets access to spa";
-                addCost = 80;
-                displayAddons += addCost;
-                nightly = false;
-            }
-            else{
-                desc = "Guest gets daily parking";
-                addCost = 5;
-                displayAddons += (addCost * ChronoUnit.DAYS.between(checkInDate, checkOutDate));
-                nightly = true;
-            }
-            tempReservation.addAddOn(new AddOn(i, desc, addCost, nightly));
+        tempReservation.setGuest(tempGuest);
+        tempReservation.setAdults(numAdult);
+        tempReservation.setChildren(numChildren);
+        tempReservation.setCheckIn(checkInDate);
+        tempReservation.setCheckOut(checkOutDate);
+        for(String name: addonNames){
+            tempReservation.addAddOn(_reservationService.getAddOn(name));
         }
         Billing bill = _billingService.generateBill(tempReservation);
         _billingService.checkUpdateBillBalance(bill);
-        _billingService.saveBill(bill);
+        displayAddons = bill.getAddOnCharges();
     }
 
     private void setBillingDisplay(){
         finalCost = tempReservation.getBilling().getTotalCharges();
-        double deposit = 500.00 - tempReservation.getBilling().getTotalPayments();
+        double deposit = 500.00 - tempReservation.getBilling().getTotalPayments(); // no payments will have been made at this point ?
         if(deposit < 0.00){
             deposit = 0.00;
         }
@@ -274,9 +252,11 @@ public class KioskController implements SceneManagerAware {
         SpinnerValueFactory<Integer> svalueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 0, 1);
         SpinnerValueFactory<Integer> dvalueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 0, 1);
         SpinnerValueFactory<Integer> pvalueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 0, 1);
+        SpinnerValueFactory<Integer> devalueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 0, 1);
         singleSpinner.setValueFactory(svalueFactory);
         doubleSpinner.setValueFactory(dvalueFactory);
         pentSpinner.setValueFactory(pvalueFactory);
+        deluxeSpinner.setValueFactory(devalueFactory);
     }
 
     private void setCountrySpinner(){
@@ -298,7 +278,7 @@ public class KioskController implements SceneManagerAware {
         }
         else if(singleSpinner != null){
             setRoomCountSpinners();
-            roomSelectNextBtn.disableProperty().bind(singleSpinner.valueProperty().isEqualTo(0).and(doubleSpinner.valueProperty().isEqualTo(0)).and(pentSpinner.valueProperty().isEqualTo(0)));
+            roomSelectNextBtn.disableProperty().bind(singleSpinner.valueProperty().isEqualTo(0).and(doubleSpinner.valueProperty().isEqualTo(0)).and(pentSpinner.valueProperty().isEqualTo(0).and(deluxeSpinner.valueProperty().isEqualTo(0))));
         }
         else if(countrySpinner != null){
             nameLbl.setVisible(false);
@@ -392,12 +372,12 @@ public class KioskController implements SceneManagerAware {
 
     private boolean confirmDates(){
         if(inDate.getValue().isAfter(outDate.getValue())){
-            dateScreenErr.setText("Error: In after out");
+            dateScreenErr.setText("Error: Check-in date must be before check-out");
             dateScreenErr.setVisible(true);
             return false;
         }
         else if(inDate.getValue().isBefore(LocalDate.now()) || outDate.getValue().isBefore(LocalDate.now())){
-            dateScreenErr.setText("Error: Must check IN on or after today");
+            dateScreenErr.setText("Error: Check-in date must be on or after the current date");
             dateScreenErr.setVisible(true);
             return false;
         }
@@ -411,19 +391,47 @@ public class KioskController implements SceneManagerAware {
 
     @FXML
     private void toGuestDetailsPress() throws IOException {
+        // TODO: handle adding to waitlist if the requested rooms are not available (might need a new screen/error messages)
         if(singleSpinner != null){
             int numSingle = singleSpinner.getValue();
             int numDouble = doubleSpinner.getValue();
             int numPen = pentSpinner.getValue();
-            for(int i = 0; i < numSingle; i++){
-                roomList.add(RoomFactory.createRoom(01, RoomType.SINGLE));
+            int numDeluxe = deluxeSpinner.getValue();
+            // changed to add rooms from the database instead of creating new rooms
+            List<Room> openRooms;
+            if(numSingle != 0){
+                openRooms = _reservationService.findAvailableRoom(checkInDate, checkOutDate, RoomType.SINGLE);
+                if(openRooms != null && openRooms.size() >= numSingle){
+                    for(int i = 0; i < numSingle; i++){
+                        tempReservation.addRoom(openRooms.get(i));
+                    }
+                }
             }
-            for(int i = 0; i < numDouble; i++){
-                roomList.add(RoomFactory.createRoom(01, RoomType.DOUBLE));
+            if(numDouble != 0) {
+                openRooms = _reservationService.findAvailableRoom(checkInDate, checkOutDate, RoomType.DOUBLE);
+                if (openRooms != null && openRooms.size() >= numDouble) {
+                    for (int i = 0; i < numDouble; i++) {
+                        tempReservation.addRoom(openRooms.get(i));
+                    }
+                }
             }
-            for(int i = 0; i < numPen; i++){
-                roomList.add(RoomFactory.createRoom(01, RoomType.PENTHOUSE));
+            if(numPen != 0) {
+                openRooms = _reservationService.findAvailableRoom(checkInDate, checkOutDate, RoomType.PENTHOUSE);
+                if (openRooms != null && openRooms.size() >= numPen) {
+                    for (int i = 0; i < numPen; i++) {
+                        tempReservation.addRoom(openRooms.get(i));
+                    }
+                }
             }
+            if(numDeluxe != 0) {
+                openRooms = _reservationService.findAvailableRoom(checkInDate, checkOutDate, RoomType.DELUXE);
+                if (openRooms != null && openRooms.size() >= numDeluxe) {
+                    for (int i = 0; i < numDeluxe; i++) {
+                        tempReservation.addRoom(openRooms.get(i));
+                    }
+                }
+            }
+            suggestionSuccessLbl.setVisible(false);
         }
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskGuestDetails.fxml", null);
     }
@@ -445,8 +453,11 @@ public class KioskController implements SceneManagerAware {
         name = nameLbl.getText();
         phone = phoneLbl.getText();
         email = emailLbl.getText();
-        if(loyaltyLbl.getText().isBlank()){ //If there's no loyalty value we construct the guest without it
-            return new Guest(nameLbl.getText(), phoneLbl.getText(), emailLbl.getText());
+        country = countryLbl.getText(); // added missing guest country info
+
+        Guest temporaryGuest = new Guest(name, phone, email, country);
+        if(loyaltyLbl.getText().isBlank()){ //If there's no loyalty value
+            return temporaryGuest;
         }
         try{
             loyaltyNumber = Integer.parseInt(loyaltyLbl.getText());
@@ -455,9 +466,13 @@ public class KioskController implements SceneManagerAware {
             loyaltyErr.setVisible(true);
             return null;
         }
-        Guest temporaryGuest = new Guest(name, phone, email, loyaltyNumber);
-        if(_loyaltyService.findLoyalGuest(temporaryGuest)){
-            return temporaryGuest; //The guest has a loyalty number and it has been confirmed
+        if(loyaltyTxt.isDisabled()){ // they clicked sign up, so make the guest a new loyalty member
+            temporaryGuest.makeLoyaltyMember(loyaltyNumber);
+            return temporaryGuest;
+        }
+        temporaryGuest = _loyaltyService.getLoyalGuest(loyaltyNumber);
+        if(temporaryGuest != null){ // found the guest's loyaltyNumber
+            return temporaryGuest;
         }
         loyaltyErr.setText("Loyalty not found");
         loyaltyErr.setVisible(true);
@@ -491,13 +506,14 @@ public class KioskController implements SceneManagerAware {
 
     @FXML
     private void toConfirmationPress() throws IOException {
-        _reservationService.saveReservation(tempReservation);
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskConfirm.fxml", null);
     }
 
     @FXML
     private void toFinalConfirmationPress() throws IOException {
-
+        tempReservation.setStatus(ReservationStatus.BOOKED);
+        _reservationService.saveReservation(tempReservation);
+        //_billingService.saveBill(tempReservation.getBilling());
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskFinalConfirm.fxml", null);
     }
 
@@ -518,5 +534,34 @@ public class KioskController implements SceneManagerAware {
     }
 
     //</editor-fold>
+
+    @FXML
+    private void suggestRooms(){
+        List<RoomSet> suggestion = _reservationService.getRoomSuggestion(numAdult, numChildren);
+        deluxeSpinner.getValueFactory().setValue(0);
+        pentSpinner.getValueFactory().setValue(0);
+        for (RoomSet rm : suggestion){
+            if (rm.getType() == RoomType.DOUBLE){
+                doubleSpinner.getValueFactory().setValue(rm.getQuantity());
+            } else {
+                singleSpinner.getValueFactory().setValue(rm.getQuantity());
+            }
+        }
+        suggestionSuccessLbl.setVisible(true);
+    }
+
+    @FXML
+    private void onSignupClick(){
+        if (!loyaltyTxt.isDisabled()) { // if they haven't clicked signup already, disables the textbox and gets a loyalty number for them
+            int loyaltyNum = _loyaltyService.getNewLoyaltyNum();
+            loyaltyTxt.setText(String.valueOf(loyaltyNum));
+            loyaltyTxt.setDisable(true);
+            signupBtn.setText("Cancel Sign up");
+        } else {
+            signupBtn.setText("Click to Sign up");
+            loyaltyTxt.setDisable(false);
+            loyaltyTxt.setText("");
+        }
+    }
 
 }

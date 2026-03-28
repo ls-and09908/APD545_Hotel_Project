@@ -32,17 +32,26 @@ public class Room implements ChargeSource {
         this.roomNumber = roomNumber;
         this.roomType = type;
 
-        if(roomType == RoomType.PENTHOUSE ){
-            maxOccupancy = 2;
-            price = 150;
-        }
-        else if(roomType == RoomType.SINGLE){
-            maxOccupancy = 2;
-            price = 100;
-        }
-        else{
-            maxOccupancy = 4;
-            price = 100;
+        switch(type) {
+            case PENTHOUSE:
+                maxOccupancy = 2;
+                price = 350;
+                break;
+            case SINGLE:
+                maxOccupancy = 2;
+                price = 100;
+                break;
+            case DOUBLE:
+                maxOccupancy = 4;
+                price = 200;
+                break;
+            case DELUXE:
+                maxOccupancy = 2;
+                price = 250;
+                break;
+            default:
+                maxOccupancy = 0;
+                price = 0;
         }
     }
 

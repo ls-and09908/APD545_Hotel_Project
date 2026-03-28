@@ -46,7 +46,7 @@ public class BillingRepository implements IBillingRepository {
         try {
             em.getTransaction().begin();
 
-            em.persist(b);
+            em.merge(b);
 
             em.getTransaction().commit();
         } catch (Exception e) {

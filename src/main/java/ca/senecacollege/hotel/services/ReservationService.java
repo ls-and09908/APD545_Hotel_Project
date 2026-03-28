@@ -1,8 +1,6 @@
 package ca.senecacollege.hotel.services;
 
-import ca.senecacollege.hotel.models.Reservation;
-import ca.senecacollege.hotel.models.Room;
-import ca.senecacollege.hotel.models.RoomType;
+import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.*;
 import com.google.inject.Inject;
 
@@ -14,18 +12,20 @@ public class ReservationService implements IReservationService {
     private IReservationRepository _resRepo;
     private IRoomRepository _roomRepo;
     private IGuestRepository _guestRepo;
+    private IAddonRepository _addonRepo;
 
     @Inject
-    public ReservationService(IReservationRepository resRepo, IRoomRepository roomRepo, IGuestRepository guestRepo){
+    public ReservationService(IReservationRepository resRepo, IRoomRepository roomRepo, IGuestRepository guestRepo, IAddonRepository addonRepo){
         this._resRepo = resRepo;
         this._roomRepo = roomRepo;
         this._guestRepo = guestRepo;
+        this._addonRepo = addonRepo;
     }
 
     @Override
     public void saveReservation(Reservation reservation) {
-        _resRepo.saveRes(reservation);
         _guestRepo.saveGuest(reservation.getGuest());
+        _resRepo.saveRes(reservation);
     }
 
     @Override
@@ -50,7 +50,26 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public void addRoom(Reservation r, Room rm) {
-        r.addRoom(rm);
+    public AddOn getAddOn(String name) {
+        return _addonRepo.getAddOn(name);
     }
+
+    @Override
+    public List<RoomSet> getRoomSuggestion(int nAdults, int nChildren) {
+        List<RoomSet> rooms = new ArrayList<>();
+        int totalGuests = nAdults + nChildren;
+        int doubleRooms = 0;
+        if(totalGuests > 2){
+            doubleRooms = totalGuests/4;
+            if (totalGuests%4 > 2){
+                doubleRooms += 1;
+            } else {
+                rooms.add(new RoomSet(RoomType.SINGLE, 1));
+            }
+            rooms.add(new RoomSet(RoomType.DOUBLE, doubleRooms));
+        } else {
+            rooms.add(new RoomSet(RoomType.SINGLE, 1));
+        }
+            return rooms;
+        }
 }

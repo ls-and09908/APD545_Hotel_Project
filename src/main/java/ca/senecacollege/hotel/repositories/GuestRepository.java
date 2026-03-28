@@ -7,31 +7,9 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class GuestRepository implements IGuestRepository {
-    /*//Just storing guests in memory for now. Will update
-    private ObservableList<Guest> guestList = FXCollections.observableArrayList();
-
-    public void addGuest(Guest g){
-        guestList.add(g);
-    }
-
-    //This should theoretically return all the loyal guests of all the guests. Willing to hear another way of doing it with SQL
-    public HashSet<Guest> getLoyalGuests(){
-        HashSet<Guest> loyalGuests = new HashSet<>();
-        for(Guest i : guestList){
-            if(i.isLoyal()){
-                loyalGuests.add(i);
-            }
-        }
-        return loyalGuests;
-    }*/
     private EntityManagerFactory emf;
 
     @Inject
@@ -66,7 +44,7 @@ public class GuestRepository implements IGuestRepository {
         try {
             em.getTransaction().begin();
 
-            em.persist(g);
+            em.merge(g);
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -81,7 +59,7 @@ public class GuestRepository implements IGuestRepository {
 
     @Override
     public Guest getGuest(int guestID) {
-        Guest result = null;
+        List<Guest> result = null;
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -89,13 +67,40 @@ public class GuestRepository implements IGuestRepository {
             Root<Guest> guest = cq.from(Guest.class);
             cq.select(guest).where(cb.equal(guest.get("GUEST_ID"), guestID));
 
-            result = em.createQuery(cq).getSingleResult();
+            result = em.createQuery(cq).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             em.close();
         }
-        return result;
+        if(result.isEmpty()){
+            return null;
+        } else {
+            return result.get(0);
+        }
+    }
+
+    @Override
+    public Guest getLoyaltyMember(int loyaltyNum) {
+        List<Guest> result = null;
+        EntityManager em = emf.createEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Guest> cq = cb.createQuery(Guest.class);
+            Root<Guest> guest = cq.from(Guest.class);
+            cq.select(guest).where(cb.equal(guest.get("loyaltyNum"), loyaltyNum));
+
+            result = em.createQuery(cq).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        if(result.isEmpty()){
+            return null;
+        } else {
+            return result.get(0);
+        }
     }
 
     @Override
@@ -115,7 +120,29 @@ public class GuestRepository implements IGuestRepository {
             e.printStackTrace();
         } finally {
             em.close();
-            return results;
         }
+        return results;
+    }
+
+    @Override
+    public int getNewLoyaltyNumber() {
+        Integer result = 0;
+        EntityManager em = emf.createEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+            Root<Guest> root = cq.from(Guest.class);
+            cq.select(cb.max(root.get("loyaltyNum")));
+
+            result = em.createQuery(cq).getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        if (result == null){
+            result = 0;
+        }
+        return result + 1;
     }
 }

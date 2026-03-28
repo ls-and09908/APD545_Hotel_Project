@@ -23,6 +23,8 @@ public class Billing {
 
     private Double balance;
 
+    public Billing(){}
+
     public Billing(Reservation r){
         this.reservation = r;
     }
@@ -42,6 +44,16 @@ public class Billing {
             total += c.getTotal();
         }
 
+        return total;
+    }
+
+    public Double getAddOnCharges(){
+        Double total = 0.0;
+        for (Charge c: charges){
+            if (c.getSource().getClass() == AddOn.class){
+                total += c.getTotal();
+            }
+        }
         return total;
     }
 

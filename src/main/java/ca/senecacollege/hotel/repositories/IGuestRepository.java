@@ -10,4 +10,6 @@ public interface IGuestRepository {
     void saveGuest(Guest g);
     Guest getGuest(int guestID);
     List<Guest> getLoyalGuests();
+    Guest getLoyaltyMember(int loyaltyNum);
+    int getNewLoyaltyNumber(); // gets a new loyalty number as +1 from the previous loyalty member number
 }

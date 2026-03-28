@@ -16,7 +16,7 @@ public class Reservation {
     @Column(name = "RES_NUM")
     private int reservationNumber;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "GUEST_ID")
     private Guest guest;
     private int adults;
@@ -26,17 +26,17 @@ public class Reservation {
     private LocalDate checkOut;
 
     @Enumerated(EnumType.STRING)
-    private ReservationStatus status = ReservationStatus.BOOKED;
+    private ReservationStatus status = ReservationStatus.BOOKING;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(name = "RESERVATION_ADDON", joinColumns = @JoinColumn(name = "RES_NUM"), inverseJoinColumns = @JoinColumn(name="ADDON_ID"))
     private Set<AddOn> addOns = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(name = "RESERVATION_ROOM", joinColumns = @JoinColumn(name = "RES_NUM"), inverseJoinColumns = @JoinColumn(name="ROOM_NUM"))
     private List<Room> rooms = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "BILL_NUM")
     private Billing billing;
 
@@ -46,6 +46,15 @@ public class Reservation {
 
     public void setBilling(Billing billing) {
         this.billing = billing;
+    }
+
+    public Reservation(){
+        this.guest = null;
+        this.billing = null;
+        this.adults = 0;
+        this.children = 0;
+        this.checkIn = null;
+        this.checkOut = null;
     }
 
     public Reservation(Guest guest, int adults, int children, LocalDate checkIn, LocalDate checkOut){
@@ -67,8 +76,16 @@ public class Reservation {
         this.addOns.add(a);
     }
 
+    public void addAddOns(List<AddOn> a){
+        this.addOns.addAll(a);
+    }
+
     public void addRoom(Room r){
         this.rooms.add(r);
+    }
+
+    public void addRooms(List<Room> r){
+        this.rooms.addAll(r);
     }
 
     public List<Room> getRooms() {
@@ -91,5 +108,27 @@ public class Reservation {
         return reservationNumber;
     }
 
+    public void setStatus(ReservationStatus status) {
+        this.status = status;
+    }
 
+    public void setGuest(Guest guest) {
+        this.guest = guest;
+    }
+
+    public void setAdults(int adults) {
+        this.adults = adults;
+    }
+
+    public void setChildren(int children) {
+        this.children = children;
+    }
+
+    public void setCheckIn(LocalDate checkIn) {
+        this.checkIn = checkIn;
+    }
+
+    public void setCheckOut(LocalDate checkOut) {
+        this.checkOut = checkOut;
+    }
 }

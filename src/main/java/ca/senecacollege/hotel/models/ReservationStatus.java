@@ -1,7 +1,8 @@
 package ca.senecacollege.hotel.models;
 
-enum ReservationStatus {
+public enum ReservationStatus {
     CANCELLED,
+    BOOKING,
     BOOKED,
     CHECKEDIN,
     CHECKEDOUT

@@ -41,8 +41,8 @@ public class DBTester {
 //
 //        em.persist(test1);
         LocalDate date = LocalDate.now();
-        Guest guest = new Guest("Gab", "1800-8556021", "help@google.com");
-        Guest guest2 = new Guest("Lou", "4168971201", "loulou@yahoo.com");
+        Guest guest = new Guest("Gab", "1800-8556021", "help@google.com", "Canada");
+        Guest guest2 = new Guest("Lou", "4168971201", "loulou@yahoo.com", "Canada");
 
         AddOn a1 = new AddOn("wifi", ".....", 15.00, false);
         AddOn a2 = new AddOn("colour", "..", 243.77, false);
