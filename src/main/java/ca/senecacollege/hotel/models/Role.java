@@ -1,11 +1,9 @@
 package ca.senecacollege.hotel.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
-class Role {
+public class Role {
     @Id
     @GeneratedValue
     private int roleID;
@@ -13,5 +11,8 @@ class Role {
     private String type;
     private String discountMax;
 
-    public Role(){}
+    public Role(String type, String discountMax){
+        this.type = type;
+        this.discountMax = discountMax;
+    }
 }
