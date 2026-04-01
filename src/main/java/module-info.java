@@ -9,6 +9,8 @@ module ca.senecacollege.application {
     requires org.checkerframework.checker.qual;
     requires javafx.base;
     requires javafx.graphics;
+    requires org.slf4j;
+    requires java.naming;
 
     opens ca.senecacollege.hotel.application to javafx.fxml;
     exports ca.senecacollege.hotel.application;

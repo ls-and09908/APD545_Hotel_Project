@@ -5,14 +5,13 @@ import ca.senecacollege.hotel.models.StandardPricingModel;
 import ca.senecacollege.hotel.models.WeekendPricingModel;
 import ca.senecacollege.hotel.repositories.*;
 import ca.senecacollege.hotel.services.*;
-import ca.senecacollege.hotel.tests.DBTester;
-import ca.senecacollege.hotel.services.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import org.hibernate.SessionFactory;
 
 public class AppModule extends AbstractModule {
     @Override
@@ -30,8 +29,10 @@ public class AppModule extends AbstractModule {
         bind(IBillingRepository.class).to(BillingRepository.class).in(Singleton.class);
         bind(IGuestRepository.class).to(GuestRepository.class).in(Singleton.class);
         bind(IWaitlistRepository.class).to(WaitlistRepository.class).in(Singleton.class);
+        bind(IFeedbackRepository.class).to(FeedbackRepository.class).in(Singleton.class);
 
         bind(IBillingService.class).to(BillingService.class).in(Singleton.class);
+        bind(IFeedbackService.class).to(FeedbackService.class).in(Singleton.class);
 
         bind(PricingModel.class).annotatedWith(Names.named("standard")).to(StandardPricingModel.class).in(Singleton.class);
         bind(PricingModel.class).annotatedWith(Names.named("weekend")).to(WeekendPricingModel.class).in(Singleton.class);
@@ -44,4 +45,11 @@ public class AppModule extends AbstractModule {
     public EntityManagerFactory provideEMF(){
         return Persistence.createEntityManagerFactory("hotel-persistence-unit");
     }
+
+    @Provides
+    @Singleton
+    public SessionFactory providesSessionFactory() {
+        return HibernateUtil.buildSessionFactory();
+    }
+
 }

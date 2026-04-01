@@ -20,10 +20,20 @@ public class Feedback {
     private Reservation reservation;
 
     @Column
-
-    private int rating;
+    private int rating = 0;
     private LocalDate date;
     private String comments;
+    @Enumerated(EnumType.STRING)
     private Sentiment sentiment;
 
+    public Feedback(){}
+
+    public Feedback(Guest guest, Reservation reservation, int rating, LocalDate date, String comments, Sentiment sentiment) {
+        this.guest = guest;
+        this.reservation = reservation;
+        this.rating = rating;
+        this.date = date;
+        this.comments = comments;
+        this.sentiment = sentiment;
+    }
 }

@@ -7,15 +7,20 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ReservationRepository implements IReservationRepository {
     private EntityManagerFactory emf;
+    private final SessionFactory sessionFactory;
 
     @Inject
-    ReservationRepository(EntityManagerFactory emf){
+    ReservationRepository(EntityManagerFactory emf,SessionFactory sessionFactory){
         this.emf = emf;
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
@@ -66,7 +71,7 @@ public class ReservationRepository implements IReservationRepository {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Reservation> cq = cb.createQuery(Reservation.class);
             Root<Reservation> reservation = cq.from(Reservation.class);
-            cq.select(reservation).where(cb.equal(reservation.get("RES_NUM"), resNum));
+            cq.select(reservation).where(cb.equal(reservation.get("reservationNumber"), resNum));
 
             result = em.createQuery(cq).getSingleResult();
         } catch (Exception e) {
@@ -74,6 +79,13 @@ public class ReservationRepository implements IReservationRepository {
         } finally {
             em.close();
             return result;
+        }
+    }
+
+    @Override
+    public Optional<Reservation> findById(int id) {
+        try(Session session = sessionFactory.openSession()){
+            return Optional.ofNullable(session.get(Reservation.class, id));
         }
     }
 }

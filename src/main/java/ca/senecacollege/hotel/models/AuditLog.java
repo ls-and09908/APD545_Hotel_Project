@@ -19,6 +19,6 @@ public class AuditLog {
     private LocalDateTime timestamp;
     private String action;
     private String entityType;
-    private Object entity;
+    private String entity;
     private String message;
 }
