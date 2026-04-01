@@ -1,4 +1,4 @@
 package ca.senecacollege.hotel.repositories;
 
-public class PaymentRepository {
+public class PaymentRepository implements IPaymentRepository {
 }

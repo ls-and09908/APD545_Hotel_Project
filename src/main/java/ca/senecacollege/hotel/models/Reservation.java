@@ -131,4 +131,6 @@ public class Reservation {
     public void setCheckOut(LocalDate checkOut) {
         this.checkOut = checkOut;
     }
+
+    public String toString(){ return String.valueOf(checkIn) + " - " + String.valueOf(checkOut); }
 }

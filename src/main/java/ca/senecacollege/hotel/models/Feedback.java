@@ -36,4 +36,27 @@ public class Feedback {
         this.comments = comments;
         this.sentiment = sentiment;
     }
+
+    public Integer getRating(){
+        return rating;
+    }
+
+    public String getReservationAsString(){
+        return reservation.toString();
+    }
+
+    public Guest getGuest(){
+        return guest;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+    public Sentiment getSentiment(){
+        return sentiment;
+    }
 }

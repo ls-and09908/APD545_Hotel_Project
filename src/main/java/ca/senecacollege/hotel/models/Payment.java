@@ -55,8 +55,6 @@ public class Payment {
         this.date = date;
     }
 
-    public Payment(){}
-
     public int calculatePoints(){
         return 0;
     }

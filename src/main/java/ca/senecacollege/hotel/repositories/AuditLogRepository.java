@@ -1,4 +1,4 @@
 package ca.senecacollege.hotel.repositories;
 
-public class AuditLogRepository {
+public class AuditLogRepository implements IAuditLogRepository {
 }

@@ -127,23 +127,22 @@ public class DBInitializer {
             em.merge(res2);
             em.merge(res3);
     //Scott's AdminUser table below. Please let me know if I did it incorrect:
-        String salt = BCrypt.gensalt(12);
-        String testAdminPw = BCrypt.hashpw("admin", salt);
-        String testManagerPw = BCrypt.hashpw("manager", salt);
-        Role manager = new Role("manager", "30");
-        Role admin = new Role("admin", "15");
+            String salt = BCrypt.gensalt(12);
+            String testAdminPw = BCrypt.hashpw("admin", salt);
+            String testManagerPw = BCrypt.hashpw("manager", salt);
+            Role manager = new Role("manager", "30");
+            Role admin = new Role("admin", "15");
 
+            List<AdminUser> adminUsers = List.of(
+                new AdminUser("admin", testAdminPw, admin),
+                new AdminUser("manager", testManagerPw, manager)
+            );
 
-
-        List<AdminUser> adminUsers = List.of(
-            new AdminUser("admin", testAdminPw, admin),
-            new AdminUser("manager", testManagerPw, manager)
-        );
-
-        for(AdminUser a: adminUsers){
-            em.persist(a);
-        }
-        //Scott section ends here        em.getTransaction().commit();
+            for(AdminUser a: adminUsers){
+                em.persist(a);
+            }
+        //Scott section ends here
+            em.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
             if (em.getTransaction().isActive()) {

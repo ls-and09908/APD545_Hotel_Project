@@ -47,4 +47,9 @@ public class Guest {
         this.loyaltyNum = loyaltyNum;
         this.loyaltyPoints = 0;
     }
+
+    @Override
+    public String toString(){
+        return name + email;
+    }
 }

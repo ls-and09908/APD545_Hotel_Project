@@ -22,15 +22,19 @@ public class AppModule extends AbstractModule {
 
         bind(LoyaltyService.class).in(Singleton.class);
         bind(AuthService.class).in(Singleton.class);
+        bind(ReportingService.class).in(Singleton.class);
 
         bind(IReservationRepository.class).to(ReservationRepository.class).in(Singleton.class);
+        bind(IPaymentRepository.class).to(PaymentRepository.class).in(Singleton.class);
         bind(IAddonRepository.class).to(AddonRepository.class).in(Singleton.class);
+        bind(IAuditLogRepository.class).to(AuditLogRepository.class).in(Singleton.class);
         bind(IRoomRepository.class).to(RoomRepository.class).in(Singleton.class);
         bind(IBillingRepository.class).to(BillingRepository.class).in(Singleton.class);
         bind(IGuestRepository.class).to(GuestRepository.class).in(Singleton.class);
         bind(IWaitlistRepository.class).to(WaitlistRepository.class).in(Singleton.class);
         bind(IFeedbackRepository.class).to(FeedbackRepository.class).in(Singleton.class);
 
+        bind(IReportingService.class).to(ReportingService.class).in(Singleton.class);
         bind(IBillingService.class).to(BillingService.class).in(Singleton.class);
         bind(IFeedbackService.class).to(FeedbackService.class).in(Singleton.class);
 
