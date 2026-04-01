@@ -2,6 +2,7 @@ package ca.senecacollege.hotel.utilities;
 
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.IAddonRepository;
+import ca.senecacollege.hotel.repositories.IAdminUserRepository;
 import ca.senecacollege.hotel.repositories.IRoomRepository;
 import ca.senecacollege.hotel.services.BillingService;
 import ca.senecacollege.hotel.services.RoomFactory;
@@ -9,6 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,15 +23,17 @@ public class DBInitializer {
     private PricingModel _wkndPrice;
     private IRoomRepository _rmRepo;
     private IAddonRepository _aoRepo;
+    private IAdminUserRepository _adRepo;
 
     @Inject
-    public DBInitializer(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo){
+    public DBInitializer(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo, IAdminUserRepository adRepo){
         this.emf = emf;
         this._bs = bs;
         this._stdPrice = std;
         this._wkndPrice = wknd;
         this._rmRepo = rmRepo;
         this._aoRepo = aoRepo;
+        this._adRepo = adRepo;
     }
 
     public void makeDB(){
@@ -110,11 +114,11 @@ public class DBInitializer {
                 em.persist(g);
             }
 
-            // persist addons
+            // persist rooms
             for (Room r : rooms) {
                 em.persist(r);
             }
-
+            // persist addons
             for (AddOn a : addons) {
                 em.persist(a);
             }
@@ -122,7 +126,24 @@ public class DBInitializer {
             em.merge(res);
             em.merge(res2);
             em.merge(res3);
-            em.getTransaction().commit();
+    //Scott's AdminUser table below. Please let me know if I did it incorrect:
+        String salt = BCrypt.gensalt(12);
+        String testAdminPw = BCrypt.hashpw("admin", salt);
+        String testManagerPw = BCrypt.hashpw("manager", salt);
+        Role manager = new Role("manager", "30");
+        Role admin = new Role("admin", "15");
+
+
+
+        List<AdminUser> adminUsers = List.of(
+            new AdminUser("admin", testAdminPw, admin),
+            new AdminUser("manager", testManagerPw, manager)
+        );
+
+        for(AdminUser a: adminUsers){
+            em.persist(a);
+        }
+        //Scott section ends here        em.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
             if (em.getTransaction().isActive()) {

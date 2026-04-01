@@ -6,6 +6,7 @@ import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
@@ -14,6 +15,12 @@ public class AdminController implements SceneManagerAware {
 
     @FXML
     Label subtitleLbl;
+    @FXML
+    Label errLbl;
+    @FXML
+    TextField usernameInput;
+    @FXML
+    TextField passwordInput;
 
     private AuthService _authService;
     SceneManager sceneManager;
@@ -30,7 +37,14 @@ public class AdminController implements SceneManagerAware {
 
     @FXML
     public void loginPress() throws IOException {
-        sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", null);
+        String user = usernameInput.getText();
+        String pass = passwordInput.getText();
+        if(_authService.authetnicateLogin(user, pass)) {
+            sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", null);
+        }
+        else {
+            errLbl.setText("User not found");
+        }
     }
 
     @FXML
