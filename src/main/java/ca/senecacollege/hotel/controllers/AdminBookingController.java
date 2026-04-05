@@ -1,7 +1,7 @@
 package ca.senecacollege.hotel.controllers;
 
 
-import ca.senecacollege.hotel.models.Charge;
+import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.models.Reservation;
 import ca.senecacollege.hotel.models.Room;
 import ca.senecacollege.hotel.models.RoomType;
@@ -10,6 +10,8 @@ import ca.senecacollege.hotel.services.IReservationService;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class AdminBookingController implements SceneManagerAware {
     private final IBillingService _billService;
     private final IReservationService _resService;
+    private BooleanProperty isMember = new SimpleBooleanProperty(false);
     private SceneManager sceneManager;
     private Reservation res;
 
@@ -33,7 +36,7 @@ public class AdminBookingController implements SceneManagerAware {
     public void initialize(){
         setupCountryBox();
         setupGuestSpinners();
-
+        setupPaymentTypes();
 
         saveBtn.disableProperty().bind(nameError.visibleProperty()
                 .or(loyaltyError.visibleProperty())
@@ -43,26 +46,50 @@ public class AdminBookingController implements SceneManagerAware {
                 .or(checkoutError.visibleProperty())
         );
 
-        if(res == null){
-            // initialize form for a new reservation
-            res = new Reservation();
-            String requiredError = "* required";
+        loyaltyInput.disableProperty().bind(signUp.selectedProperty());
 
-            adminBookingHeader.setText("Create New Booking");
-            nameError.setText(requiredError);
-            nameError.setVisible(true);
-            phoneError.setText(requiredError);
-            phoneError.setVisible(true);
-            emailError.setText(requiredError);
-            emailError.setVisible(true);
-            phoneError.setText(requiredError);
-            phoneError.setVisible(true);
+        isMember.bind(loyaltyTxt.visibleProperty());
+
+        if(res == null){
+            setupNewBooking();
 
         } else {
             // initialize form for an existing reservation
 
+            // TODO:
+            // populate fields with reservation info
+            // populate room lists
+            //
         }
 
+        isMember.addListener(((observable, oldValue, newValue) -> {
+            if(!newValue){
+                paymentTypeBox.getItems().removeIf(p -> p.equals(PaymentMethod.LOYALTY.label()));
+            } else {
+                paymentTypeBox.getItems().add(PaymentMethod.LOYALTY.label());
+            }
+        }));
+    }
+
+    private void setupNewBooking(){
+        // initialize form for a new reservation
+        res = new Reservation();
+        String requiredError = "* required";
+
+        adminBookingHeader.setText("Create New Booking");
+        nameError.setText(requiredError);
+        nameError.setVisible(true);
+        phoneError.setText(requiredError);
+        phoneError.setVisible(true);
+        emailError.setText(requiredError);
+        emailError.setVisible(true);
+        phoneError.setText(requiredError);
+        phoneError.setVisible(true);
+    }
+
+    private void setupPaymentTypes(){
+        ObservableList<String> paymentTypes = FXCollections.observableArrayList(PaymentMethod.labels());
+        paymentTypeBox.setItems(paymentTypes);
     }
 
     private void setupCountryBox(){
@@ -138,6 +165,12 @@ public class AdminBookingController implements SceneManagerAware {
     private Label pointsTxt;
     @FXML
     private Label pointsLbl;
+    @FXML
+    private Label pointsEarned;
+    @FXML
+    private Label billPoints;
+    @FXML
+    private Label billPointsChange;
 
     @FXML
     private TextField nameInput;

@@ -74,7 +74,7 @@ public class DBInitializer {
             res.addRoom(rooms.get(5));
             res.addRoom(rooms.get(7));
             Billing bill = _bs.generateBill(res);
-            bill.addPayment(new Payment(bill, 360.0, guests.get(0), date));
+            bill.addPayment(new Payment(bill, 360.0, guests.get(0), date, PaymentMethod.CASH));
             _bs.checkUpdateBillBalance(bill);
 
             Reservation res2 = new Reservation(guests.get(1), 1, 4, date.minusDays(2), date.plusDays(5));
@@ -83,20 +83,20 @@ public class DBInitializer {
             res2.addAddOn(addons.get(0));
             res2.addRoom(rooms.get(18));
             Billing bill2 = _bs.generateBill(res);
-            bill2.addPayment(new Payment(bill2, 100.60, guests.get(1), date));
+            bill2.addPayment(new Payment(bill2, 100.60, guests.get(1), date, PaymentMethod.CREDIT));
             _bs.checkUpdateBillBalance(bill2);
 
             Reservation res3 = new Reservation(guests.get(0), 3, 2, date.plusDays(6), date.plusDays(17));
             res3.addRoom(rooms.get(43));
             Billing bill3 = _bs.generateBill(res3);
-            bill3.addPayment(new Payment(bill3, 16.23, guests.get(0), date));
-            bill3.addPayment(new Payment(bill3, 500.00, guests.get(0), date.minusDays(16)));
+            bill3.addPayment(new Payment(bill3, 16.23, guests.get(0), date, PaymentMethod.LOYALTY));
+            bill3.addPayment(new Payment(bill3, 500.00, guests.get(0), date.minusDays(16), PaymentMethod.CREDIT));
             _bs.checkUpdateBillBalance(bill3);
 
             Reservation res4 = new Reservation(guests.get(4), 1, 1, date.minusDays(8), date.minusDays(1));
             res4.addRoom(rooms.get(8));
             Billing bill4 = _bs.generateBill(res4);
-            bill4.addPayment(new Payment(bill4, 1400.00, guests.get(4), date.minusDays(2)));
+            bill4.addPayment(new Payment(bill4, 1400.00, guests.get(4), date.minusDays(2), PaymentMethod.CASH));
             res4.setStatus(ReservationStatus.CHECKEDOUT);
             _bs.checkUpdateBillBalance(bill4);
 

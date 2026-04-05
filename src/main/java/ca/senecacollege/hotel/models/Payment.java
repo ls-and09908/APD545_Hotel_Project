@@ -52,11 +52,12 @@ public class Payment {
 
     public Payment(){}
 
-    public Payment(Billing bill, Double amount, Guest payee, LocalDate date) {
+    public Payment(Billing bill, Double amount, Guest payee, LocalDate date, PaymentMethod method) {
         this.bill = bill;
         this.amount = amount;
         this.payee = payee;
         this.date = date;
+        this.method = method;
     }
 
     public int calculatePoints(){
