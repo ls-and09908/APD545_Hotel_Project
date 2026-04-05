@@ -7,6 +7,8 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 public class AuthService implements IAuthService{
     private IAdminUserRepository adminRepo;
     private IActivityLogService _logService;
@@ -19,11 +21,11 @@ public class AuthService implements IAuthService{
 
     @Override
     public boolean authetnicateLogin(String user, String password){
-        AdminUser comparedUser = adminRepo.getAdminUser(user);
-        boolean authenticated = comparedUser != null && BCrypt.checkpw(password, comparedUser.getPasswordHash());
-        _logService.loginAttempt(comparedUser, authenticated);
+        Optional<AdminUser> comparedUser = adminRepo.getAdminUser(user);
+        boolean authenticated = comparedUser.isPresent() && BCrypt.checkpw(password, comparedUser.get().getPasswordHash());
+
+        // if the user was not found, no logging occurs
+        comparedUser.ifPresent(adminUser -> _logService.loginAttempt(adminUser, authenticated));
         return authenticated;
     }
-
-
 }

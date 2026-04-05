@@ -48,12 +48,6 @@ public class AppModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public EntityManagerFactory provideEMF(){
-        return Persistence.createEntityManagerFactory("hotel-persistence-unit");
-    }
-
-    @Provides
-    @Singleton
     public SessionFactory providesSessionFactory() {
         return HibernateUtil.buildSessionFactory();
     }

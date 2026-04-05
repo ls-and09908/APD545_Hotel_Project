@@ -24,7 +24,7 @@ public class Guest {
     @Column(unique = true, nullable = true)
     private Integer loyaltyNum = null;
 
-    private int loyaltyPoints;
+    private int loyaltyPoints = 0;
 
     public Guest(){}
 

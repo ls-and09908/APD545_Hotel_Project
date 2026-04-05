@@ -2,147 +2,72 @@ package ca.senecacollege.hotel.repositories;
 
 import ca.senecacollege.hotel.models.Guest;
 import com.google.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
 import java.util.List;
+import java.util.Optional;
 
 public class GuestRepository implements IGuestRepository {
-    private EntityManagerFactory emf;
+    private final SessionFactory sessionFactory;
 
     @Inject
-    GuestRepository(EntityManagerFactory emf){
-        this.emf = emf;
+    GuestRepository(SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public List<Guest> getAllGuests() {
-        List<Guest> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Guest> cq = cb.createQuery(Guest.class);
-            Root<Guest> guest = cq.from(Guest.class);
-            cq.select(guest);
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-            return results;
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Guest", Guest.class);
+            return q.list();
         }
     }
 
     @Override
     public void saveGuest(Guest g) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            em.merge(g);
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
+        Transaction tx=null;
+        try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
+            session.merge(g);
+            tx.commit();
+        }catch(RuntimeException e){
+            if(tx!=null) tx.rollback();
+            throw e;
         }
     }
 
     @Override
-    public Guest getGuest(int guestID) {
-        List<Guest> result = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Guest> cq = cb.createQuery(Guest.class);
-            Root<Guest> guest = cq.from(Guest.class);
-            cq.select(guest).where(cb.equal(guest.get("GUEST_ID"), guestID));
-
-            result = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-        if(result.isEmpty()){
-            return null;
-        } else {
-            return result.get(0);
+    public Optional<Guest> getGuest(int guestID) {
+        try(Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Guest.class, guestID));
         }
     }
 
     @Override
-    public Guest getLoyaltyMember(int loyaltyNum) {
-        List<Guest> result = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Guest> cq = cb.createQuery(Guest.class);
-            Root<Guest> guest = cq.from(Guest.class);
-            cq.select(guest).where(cb.equal(guest.get("loyaltyNum"), loyaltyNum));
-
-            result = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-        if(result.isEmpty()){
-            return null;
-        } else {
-            return result.get(0);
+    public Optional<Guest> getLoyaltyMember(int loyaltyNum) {
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Guest g WHERE g.loyaltyNum = :num", Guest.class);
+            q.setParameter("num", loyaltyNum);
+            return q.uniqueResultOptional();
         }
     }
 
     @Override
     public List<Guest> getLoyalGuests() {
-        List<Guest> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Guest> cq = cb.createQuery(Guest.class);
-            Root<Guest> guest = cq.from(Guest.class);
-            cq.select(guest).where(cb.notEqual(guest.get("loyaltyNum"), -1));
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Guest g WHERE g.loyaltyNum IS NOT NULL", Guest.class);
+            return q.list();
         }
-        return results;
     }
 
     @Override
-    public int getNewLoyaltyNumber() {
-        Integer result = 0;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
-            Root<Guest> root = cq.from(Guest.class);
-            cq.select(cb.max(root.get("loyaltyNum")));
-
-            result = em.createQuery(cq).getSingleResult();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+    public Optional<Integer> getNewLoyaltyNumber() {
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("SELECT MAX(g.loyaltyNum) FROM Guest g", int.class);
+            return q.uniqueResultOptional();
         }
-        if (result == null){
-            result = 0;
-        }
-        return result + 1;
     }
 }

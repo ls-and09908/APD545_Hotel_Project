@@ -21,31 +21,16 @@ import java.util.List;
 
 public class DBInitializer {
     private final SessionFactory sessionFactory;
-    //private EntityManagerFactory emf;
     private BillingService _bs;
-    private PricingModel _stdPrice;
-    private PricingModel _wkndPrice;
-    private IRoomRepository _rmRepo;
-    private IAddonRepository _aoRepo;
-    private IAdminUserRepository _adRepo;
+
 
     @Inject
-    public DBInitializer(SessionFactory sessionFactory,  BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo, IAdminUserRepository adRepo){
+    public DBInitializer(SessionFactory sessionFactory,  BillingService bs){
         this.sessionFactory = sessionFactory;
-        //this.emf = emf;EntityManagerFactory emf
         this._bs = bs;
-        this._stdPrice = std;
-        this._wkndPrice = wknd;
-        this._rmRepo = rmRepo;
-        this._aoRepo = aoRepo;
-        this._adRepo = adRepo;
     }
 
     public void makeDB(){
-//        EntityManager em = emf.createEntityManager();
-//        try {
-//
-//            em.getTransaction().begin();
         Transaction tx=null;
         try(Session session = sessionFactory.openSession()){
             tx = session.beginTransaction();
@@ -122,26 +107,18 @@ public class DBInitializer {
             res4.setStatus(ReservationStatus.CHECKEDOUT);
             _bs.checkUpdateBillBalance(bill4);
 
-            // persist guests
             for (Guest g : guests) {
-                //em.persist(g);
                 session.persist(g);
             }
 
-            // persist rooms
             for (Room r : rooms) {
-                //em.persist(r);
                 session.persist(r);
             }
-            // persist addons
+
             for (AddOn a : addons) {
-                //em.persist(a);
                 session.persist(a);
             }
 
-//            em.merge(res);
-//            em.merge(res2);
-//            em.merge(res3);
             session.merge(res);
             session.merge(res2);
             session.merge(res3);
@@ -161,15 +138,6 @@ public class DBInitializer {
                 session.persist(a);
             }
         //Scott section ends here
-//            em.getTransaction().commit();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            if (em.getTransaction().isActive()) {
-//                em.getTransaction().rollback();
-//            }
-//        } finally {
-//            em.close();
-//        }
 
             tx.commit();
         }catch(RuntimeException e){

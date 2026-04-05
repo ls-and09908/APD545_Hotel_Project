@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import java.util.List;
+import java.util.Optional;
 
 public class LoyaltyService implements ILoyaltyService {
     private IGuestRepository _guestRepo;
@@ -30,13 +31,16 @@ public class LoyaltyService implements ILoyaltyService {
 
     @Override
     public Guest getLoyalGuest(int loyaltyNum) {
-        Guest guest = _guestRepo.getLoyaltyMember(loyaltyNum);
-        return guest;
+        Optional<Guest> guest = _guestRepo.getLoyaltyMember(loyaltyNum);
+        return guest.orElse(null);
     }
 
+    /**
+     * Retrieves the next number to be used for a new loyalty member
+     */
     @Override
     public int getNewLoyaltyNum() {
-        return _guestRepo.getNewLoyaltyNumber();
+        return _guestRepo.getNewLoyaltyNumber().orElse(1);
     }
 
     /**

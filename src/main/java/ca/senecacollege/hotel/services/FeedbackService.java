@@ -23,17 +23,12 @@ public class FeedbackService implements IFeedbackService {
     @Override
     public Feedback makeFeedback(Reservation reservation, int rating, String comments, Sentiment sentiment){
         Feedback feedback = new Feedback(reservation.getGuest(), reservation, rating, LocalDate.now(), comments, sentiment);
-        //_fbRepo.saveFeedback(feedback);
         _fbRepo.saveFeedback(feedback);
         return feedback;
     }
 
     @Override
     public Reservation findReservation(int resNum) {
-        return _resRepo.getRes(resNum);
-    }
-
-    public Optional<Reservation> getit(int resNum){
-        return _resRepo.findById(resNum);
+        return _resRepo.getRes(resNum).orElse(null);
     }
 }

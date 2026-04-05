@@ -1,5 +1,6 @@
 package ca.senecacollege.hotel.repositories;
 
+import ca.senecacollege.hotel.models.AddOn;
 import ca.senecacollege.hotel.models.Feedback;
 import com.google.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -12,35 +13,21 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.Optional;
 
 public class FeedbackRepository implements IFeedbackRepository {
-    private EntityManagerFactory emf;
     private final SessionFactory sessionFactory;
 
     @Inject
-    FeedbackRepository(EntityManagerFactory emf, SessionFactory sessionFactory){
-        this.emf = emf;
+    FeedbackRepository(SessionFactory sessionFactory){
         this.sessionFactory = sessionFactory;
     }
 
     @Override
     public List<Feedback> getAllFeedbacks() {
-        List<Feedback> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Feedback> cq = cb.createQuery(Feedback.class);
-            Root<Feedback> feedback = cq.from(Feedback.class);
-            cq.select(feedback);
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-            return results;
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Feedback", Feedback.class);
+            return q.list();
         }
     }
 
@@ -58,25 +45,9 @@ public class FeedbackRepository implements IFeedbackRepository {
     }
 
     @Override
-    public Feedback getFeedback(int feedbackId) {
-        List<Feedback> result = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Feedback> cq = cb.createQuery(Feedback.class);
-            Root<Feedback> feedback = cq.from(Feedback.class);
-            cq.select(feedback).where(cb.equal(feedback.get("FEEDBACK_ID"), feedbackId));
-
-            result = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-        if(result.isEmpty()){
-            return null;
-        } else {
-            return result.get(0);
+    public Optional<Feedback> getFeedback(int feedbackId) {
+        try(Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Feedback.class, feedbackId));
         }
     }
 }

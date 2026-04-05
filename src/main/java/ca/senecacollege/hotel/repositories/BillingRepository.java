@@ -1,80 +1,48 @@
 package ca.senecacollege.hotel.repositories;
 
 import ca.senecacollege.hotel.models.Billing;
-import ca.senecacollege.hotel.models.Room;
 import com.google.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BillingRepository implements IBillingRepository {
-    private EntityManagerFactory emf;
+    private final SessionFactory sessionFactory;
 
     @Inject
-    BillingRepository(EntityManagerFactory emf){
-        this.emf = emf;
+    BillingRepository(SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public List<Billing> getAllBillings() {
-        List<Billing> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Billing> cq = cb.createQuery(Billing.class);
-            Root<Billing> bill = cq.from(Billing.class);
-            cq.select(bill);
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Billing", Billing.class);
+            return q.list();
         }
-        return results;
     }
 
     @Override
     public void saveBill(Billing b) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            em.merge(b);
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
+        Transaction tx=null;
+        try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
+            session.merge(b);
+            tx.commit();
+        }catch(RuntimeException e){
+            if(tx!=null) tx.rollback();
+            throw e;
         }
     }
 
     @Override
-    public Billing getBill(int billNum) {
-        Billing result = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Billing> cq = cb.createQuery(Billing.class);
-            Root<Billing> bill = cq.from(Billing.class);
-            cq.select(bill).where(cb.equal(bill.get("BILL_NUM"), billNum));
-
-            result = em.createQuery(cq).getSingleResult();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+    public Optional<Billing> getBill(int billNum) {
+        try(Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Billing.class, billNum));
         }
-        return result;
     }
 }

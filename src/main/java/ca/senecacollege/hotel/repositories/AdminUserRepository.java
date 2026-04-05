@@ -1,81 +1,54 @@
 package ca.senecacollege.hotel.repositories;
 
+import ca.senecacollege.hotel.models.AddOn;
 import ca.senecacollege.hotel.models.AdminUser;
-import ca.senecacollege.hotel.models.Room;
-import ca.senecacollege.hotel.models.Waitlist;
 import com.google.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AdminUserRepository implements IAdminUserRepository {
-    private EntityManagerFactory emf;
-
+    private final SessionFactory sessionFactory;
     @Inject
-    public AdminUserRepository(EntityManagerFactory emf){
-        this.emf = emf;
+    public AdminUserRepository(SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public List<AdminUser> getAllAdminUsers() {
-        List<AdminUser> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<AdminUser> cq = cb.createQuery(AdminUser.class);
-            Root<AdminUser> adminUser = cq.from(AdminUser.class);
-            cq.select(adminUser);
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-            return results;
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM AdminUser", AdminUser.class);
+            return q.list();
         }
     }
 
     @Override
     public void saveAdminUser(AdminUser r) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            em.merge(r);
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
+        Transaction tx=null;
+        try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
+            session.merge(r);
+            tx.commit();
+        } catch(RuntimeException e) {
+            if (tx != null) tx.rollback();
+            throw e;
         }
     }
 
     @Override
-    public AdminUser getAdminUser(String username) {
-        AdminUser result = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<AdminUser> cq = cb.createQuery(AdminUser.class);
-            Root<AdminUser> adminUser = cq.from(AdminUser.class);
-            cq.select(adminUser).where(cb.equal(adminUser.get("username"), username));
-
-            result = em.createQuery(cq).getSingleResult();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+    public Optional<AdminUser> getAdminUser(String username) {
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM AdminUser a WHERE a.username = :username", AdminUser.class);
+            q.setParameter("username", username);
+            return q.uniqueResultOptional();
         }
-        return result;
     }
 }

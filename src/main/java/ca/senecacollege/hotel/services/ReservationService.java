@@ -30,10 +30,13 @@ public class ReservationService implements IReservationService {
 
     @Override
     public Reservation getReservation(int reservationNumber){
-        return _resRepo.getRes(reservationNumber);
+        return _resRepo.getRes(reservationNumber).orElse(null);
     }
 
-    // Queries the repo for rooms available during the reservation's desired dates
+    /**
+     * Queries the repo for rooms available during the reservation's desired dates
+     * @return A list of all rooms of the selected type that are available
+     */
     @Override
     public List<Room> findAvailableRoom(LocalDate checkIn, LocalDate checkOut, RoomType type) {
         List<Room> availableRooms = _roomRepo.getAvailableRooms(checkIn, checkOut);
@@ -51,7 +54,7 @@ public class ReservationService implements IReservationService {
 
     @Override
     public AddOn getAddOn(String name) {
-        return _addonRepo.getAddOn(name);
+        return _addonRepo.getAddOn(name).orElse(null);
     }
 
     @Override

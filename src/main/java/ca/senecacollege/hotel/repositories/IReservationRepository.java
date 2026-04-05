@@ -8,6 +8,5 @@ import java.util.Optional;
 public interface IReservationRepository {
     List<Reservation> getAllReservations();
     void saveRes(Reservation r);
-    Reservation getRes(int resNum);
-    Optional<Reservation> findById(int id);
+    Optional<Reservation> getRes(int resNum);
 }

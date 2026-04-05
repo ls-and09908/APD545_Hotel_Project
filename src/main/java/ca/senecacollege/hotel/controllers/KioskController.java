@@ -397,7 +397,7 @@ public class KioskController implements SceneManagerAware {
             int numDouble = doubleSpinner.getValue();
             int numPen = pentSpinner.getValue();
             int numDeluxe = deluxeSpinner.getValue();
-            // changed to add rooms from the database instead of creating new rooms
+
             List<Room> openRooms;
             if(numSingle != 0){
                 openRooms = _reservationService.findAvailableRoom(checkInDate, checkOutDate, RoomType.SINGLE);

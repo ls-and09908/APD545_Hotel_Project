@@ -20,16 +20,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public class FeedbackController implements SceneManagerAware {
     private IFeedbackService _fbService;
     private SceneManager sceneManager;
     private List<SVGPath> stars;
     private IntegerProperty starRating = new SimpleIntegerProperty();
-    private Optional<Reservation> reservation;
+    private Reservation reservation;
 
     @Inject
     public FeedbackController(IFeedbackService fbService){
@@ -91,12 +89,11 @@ public class FeedbackController implements SceneManagerAware {
             if(!newValue && !resNumError.isVisible()){
                 try {
                     int resNum = Integer.parseInt(resNumField.getText());
-                    //reservation = _fbService.findReservation(resNum);
-                    reservation = _fbService.getit(resNum);
-                    if (!reservation.isPresent()) {
+                    reservation = _fbService.findReservation(resNum);
+                    if (reservation == null) {
                         resNumError.setText("Reservation not found.");
                         resNumError.setVisible(true);
-                    } else if (reservation.get().getStatus() != ReservationStatus.CHECKEDOUT) {
+                    } else if (reservation.getStatus() != ReservationStatus.CHECKEDOUT) {
                         resNumError.setText("Reservation has not checked out.");
                         resNumError.setVisible(true);
                     }
@@ -139,20 +136,7 @@ public class FeedbackController implements SceneManagerAware {
 
     @FXML
     private void submitFeedback() throws IOException {
-        Feedback fb = _fbService.makeFeedback(reservation.get(), starRating.get(), commentsText.getText(), sentimentBox.getSelectionModel().getSelectedItem());
-        sceneManager.switchScene("/ca/senecacollege/hotel/application/FeedbackConfirm.fxml", (FeedbackConfirmController controller) -> {
-            controller.setFeedback(fb);
-        });
-    }
-
-    /**
-     * Tester button, please remember to remove this
-     * @throws IOException
-     */
-    @FXML
-    private void testButton() throws IOException {
-        reservation = _fbService.getit(3);
-        Feedback fb = new Feedback(reservation.get().getGuest(), reservation.get(), 3, LocalDate.now(), "Stinky, Yucky, Smelly, Icky place. 10/10 would hog again.", Sentiment.AFFORDABLE);
+        Feedback fb = _fbService.makeFeedback(reservation, starRating.get(), commentsText.getText(), sentimentBox.getSelectionModel().getSelectedItem());
         sceneManager.switchScene("/ca/senecacollege/hotel/application/FeedbackConfirm.fxml", (FeedbackConfirmController controller) -> {
             controller.setFeedback(fb);
         });

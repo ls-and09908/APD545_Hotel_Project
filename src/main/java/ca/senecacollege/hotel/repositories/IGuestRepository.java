@@ -1,15 +1,15 @@
 package ca.senecacollege.hotel.repositories;
 
 import ca.senecacollege.hotel.models.Guest;
-import ca.senecacollege.hotel.models.Reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IGuestRepository {
     List<Guest> getAllGuests();
     void saveGuest(Guest g);
-    Guest getGuest(int guestID);
+    Optional<Guest> getGuest(int guestID);
     List<Guest> getLoyalGuests();
-    Guest getLoyaltyMember(int loyaltyNum);
-    int getNewLoyaltyNumber(); // gets a new loyalty number as +1 from the previous loyalty member number
+    Optional<Guest> getLoyaltyMember(int loyaltyNum);
+    Optional<Integer> getNewLoyaltyNumber(); // gets a new loyalty number as +1 from the previous loyalty member number
 }

@@ -1,5 +1,6 @@
 package ca.senecacollege.hotel.repositories;
 
+import ca.senecacollege.hotel.models.AddOn;
 import ca.senecacollege.hotel.models.Reservation;
 import ca.senecacollege.hotel.models.Room;
 import ca.senecacollege.hotel.models.RoomType;
@@ -7,154 +8,74 @@ import com.google.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class RoomRepository implements IRoomRepository {
-    private EntityManagerFactory emf;
+    private final SessionFactory sessionFactory;
 
     @Inject
-    public RoomRepository(EntityManagerFactory emf){
-        this.emf = emf;
+    public RoomRepository(SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public List<Room> getAllRooms() {
-        List<Room> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Room> cq = cb.createQuery(Room.class);
-            Root<Room> room = cq.from(Room.class);
-            cq.select(room);
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Room", Room.class);
+            return q.list();
         }
-        return results;
     }
 
     @Override
     public void saveRoom(Room r) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            em.merge(r);
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
+        Transaction tx=null;
+        try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
+            session.merge(r);
+            tx.commit();
+        }catch(RuntimeException e){
+            if(tx!=null) tx.rollback();
+            throw e;
         }
     }
 
     @Override
-    public Room getRoom(int roomNum) {
-        Room result = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Room> cq = cb.createQuery(Room.class);
-            Root<Room> room = cq.from(Room.class);
-            cq.select(room).where(cb.equal(room.get("ROOM_NUM"), roomNum));
-
-            result = em.createQuery(cq).getSingleResult();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+    public Optional<Room> getRoom(int roomNum) {
+        try(Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(Room.class, roomNum));
         }
-        return result;
     }
 
     @Override
     public List<Room> getRoomsByType(RoomType type) {
-        List<Room> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Room> cq = cb.createQuery(Room.class);
-            Root<Room> room = cq.from(Room.class);
-            cq.select(room).where(cb.equal(room.get("ROOM_TYPE"), type));
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Room r WHERE r.roomType = :type", Room.class);
+            q.setParameter("roomType", type);
+            return q.list();
         }
-        return results;
-    }
-
-    @Override
-    public List<Room> getAvailableRooms(){
-        List<Room> results = null;
-
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Room> cq = cb.createQuery(Room.class);
-            Root<Room> room = cq.from(Room.class);
-
-            Subquery<Room> sq = cq.subquery(Room.class);
-            Root<Reservation> reservation = sq.from(Reservation.class);
-            Join<Reservation,Room> resRoom = reservation.join("rooms");
-
-            // get rooms that have no reservation AND rooms that don't have any future reservations
-            sq.select(resRoom).where(cb.and(
-                    cb.equal(resRoom, room),
-                    cb.greaterThanOrEqualTo(reservation.get("checkOut"), cb.currentDate())
-            ));
-            cq.select(room).where(cb.not(cb.exists(sq)));
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-        return results;
     }
 
     @Override
     public List<Room> getAvailableRooms(LocalDate checkIn, LocalDate checkOut) {
-        List<Room> results = null;
-
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Room> cq = cb.createQuery(Room.class);
-            Root<Room> room = cq.from(Room.class);
-
-            Subquery<Room> sq = cq.subquery(Room.class);
-            Root<Reservation> reservation = sq.from(Reservation.class);
-            Join<Reservation,Room> resRoom = reservation.join("rooms");
-
-            // get rooms whose current reservations don't overlap with requested checkin/checkout
-            sq.select(resRoom).where(cb.and(
-                    cb.equal(resRoom, room),
-                    cb.lessThanOrEqualTo(reservation.get("checkIn"), checkOut),
-                    cb.greaterThanOrEqualTo(reservation.get("checkOut"), checkIn)
-            ));
-            cq.select(room).where(cb.not(cb.exists(sq)));
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+        try(Session session = sessionFactory.openSession()){
+            var q = session.createQuery("""
+                FROM Room rm
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM Reservation res
+                    JOIN res.rooms rr
+                    WHERE rr = rm
+                    AND res.checkIn < :checkOut
+                    AND res.checkOut > :checkIn
+                )""", Room.class);
+            q.setParameter("checkOut", checkOut);
+            q.setParameter("checkIn", checkIn);
+            return q.list();
         }
-        return results;
     }
 }
