@@ -72,4 +72,20 @@ public class Room implements ChargeSource {
         return maxOccupancy;
     }
 
+    public void setStatus(RoomStatus status){
+        roomStatus = status;
+    }
+
+    public String getStatus(){
+        if(roomStatus != null) {
+            return roomStatus.getStatus();
+        }
+
+        return null;
+
+    }
+
+    public int getRoomNumber(){
+        return roomNumber;
+    }
 }

@@ -46,6 +46,10 @@ public class Payment {
         return amount;
     }
 
+    public LocalDate getDate(){
+        return date;
+    }
+
     public Payment(){}
 
     public Payment(Billing bill, Double amount, Guest payee, LocalDate date) {

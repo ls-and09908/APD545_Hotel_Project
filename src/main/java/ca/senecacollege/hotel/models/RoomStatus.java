@@ -13,6 +13,9 @@ public class RoomStatus {
 
     //Returns the status as a String
     public String getStatus(){
-        return status.get();
+        if(status != null){
+            return status.get();
+        }
+        return null;
     }
 }

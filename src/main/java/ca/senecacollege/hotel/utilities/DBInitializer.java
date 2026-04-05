@@ -3,6 +3,7 @@ package ca.senecacollege.hotel.utilities;
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.IAddonRepository;
 import ca.senecacollege.hotel.repositories.IAdminUserRepository;
+import ca.senecacollege.hotel.repositories.IFeedbackRepository;
 import ca.senecacollege.hotel.repositories.IRoomRepository;
 import ca.senecacollege.hotel.services.BillingService;
 import ca.senecacollege.hotel.services.RoomFactory;
@@ -24,9 +25,10 @@ public class DBInitializer {
     private IRoomRepository _rmRepo;
     private IAddonRepository _aoRepo;
     private IAdminUserRepository _adRepo;
+    private IFeedbackRepository feedbackRepo;
 
     @Inject
-    public DBInitializer(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo, IAdminUserRepository adRepo){
+    public DBInitializer(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo, IAdminUserRepository adRepo, IFeedbackRepository feedbackRepo){
         this.emf = emf;
         this._bs = bs;
         this._stdPrice = std;
@@ -34,6 +36,7 @@ public class DBInitializer {
         this._rmRepo = rmRepo;
         this._aoRepo = aoRepo;
         this._adRepo = adRepo;
+        this.feedbackRepo = feedbackRepo;
     }
 
     public void makeDB(){
@@ -141,6 +144,9 @@ public class DBInitializer {
             for(AdminUser a: adminUsers){
                 em.persist(a);
             }
+
+            Feedback fb = new Feedback(guests.get(1), res2, 4, LocalDate.now(), "Yummers", Sentiment.CLEAN);
+            em.persist(fb);
         //Scott section ends here
             em.getTransaction().commit();
         } catch (Exception e) {
