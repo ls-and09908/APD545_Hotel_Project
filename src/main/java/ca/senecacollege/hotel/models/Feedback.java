@@ -1,6 +1,8 @@
 package ca.senecacollege.hotel.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.mapping.Constraint;
 
 import java.time.LocalDate;
@@ -17,6 +19,7 @@ public class Feedback {
     private Guest guest;
 
     @OneToOne
+    @Cascade({CascadeType.PERSIST, CascadeType.MERGE})
     private Reservation reservation;
 
     @Column
@@ -50,6 +53,10 @@ public class Feedback {
 
     public Guest getGuest(){
         return guest;
+    }
+
+    public String getGuestAsString(){
+        return guest.toString();
     }
 
     public String getComments() {

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 public class AuditLog {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "LOG_NUMBER")
     private int logNumber;
 
@@ -17,6 +17,7 @@ public class AuditLog {
 
     private LocalDateTime timestamp;
 
+    @Enumerated(EnumType.STRING)
     private AuditAction action;
     private String entityType;
     private int entity;

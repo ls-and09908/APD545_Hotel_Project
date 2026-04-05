@@ -30,7 +30,7 @@ public class AuditLogRepository implements IAuditLogRepository {
         Transaction tx=null;
         try(Session session = sessionFactory.openSession()){
             tx = session.beginTransaction();
-            session.merge(a);
+            session.persist(a);
             tx.commit();
         }catch(RuntimeException e){
             if(tx!=null) tx.rollback();

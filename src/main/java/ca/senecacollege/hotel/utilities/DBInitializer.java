@@ -1,20 +1,13 @@
 package ca.senecacollege.hotel.utilities;
 
 import ca.senecacollege.hotel.models.*;
-import ca.senecacollege.hotel.repositories.IAddonRepository;
-import ca.senecacollege.hotel.repositories.IAdminUserRepository;
-import ca.senecacollege.hotel.repositories.IRoomRepository;
 import ca.senecacollege.hotel.services.BillingService;
 import ca.senecacollege.hotel.services.RoomFactory;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,10 +104,11 @@ public class DBInitializer {
                 session.persist(g);
             }
 
+            // persist rooms
             for (Room r : rooms) {
                 session.persist(r);
             }
-
+            // persist addons
             for (AddOn a : addons) {
                 session.persist(a);
             }
@@ -137,6 +131,10 @@ public class DBInitializer {
             for(AdminUser a: adminUsers){
                 session.persist(a);
             }
+
+            res2.setStatus(ReservationStatus.CHECKEDOUT);
+            Feedback fb = new Feedback(guests.get(1), res2, 4, LocalDate.now(), "Yummers", Sentiment.CLEAN);
+            session.merge(fb);
         //Scott section ends here
 
             tx.commit();

@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface IFeedbackService {
     Feedback makeFeedback(Reservation reservation, int rating, String comments, Sentiment sentiment);
     Reservation findReservation(int resNum);
-    Optional<Reservation> getit(int resNum);
 }

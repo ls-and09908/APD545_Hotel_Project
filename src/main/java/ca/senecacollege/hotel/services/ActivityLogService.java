@@ -52,7 +52,7 @@ public class ActivityLogService implements IActivityLogService {
 
     @Override
     public String buildLogMessage(AuditLog log) {
-        String message = String.format("%s | %05d - ", log.getTimestamp().format(dateFormat), log.getLogNumber());
+        String message = String.format("%s | %09d - ", log.getTimestamp().format(dateFormat), log.getLogNumber());
 
         if(log.getAction() == AuditAction.LOGIN){
             message = message.concat(String.format("(%s)%s: %s - %s",

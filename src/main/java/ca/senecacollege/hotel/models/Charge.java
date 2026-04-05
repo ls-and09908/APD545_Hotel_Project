@@ -66,7 +66,10 @@ public class Charge {
     }
 
     public Double calcAmount(){
-        return pricing.getPrice(source.getBasePrice(), quantity);
+        if(source != null) {
+            return pricing.getPrice(source.getBasePrice(), quantity);
+        }
+        return null;
     }
 
     public Charge(){}

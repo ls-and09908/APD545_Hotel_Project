@@ -2,6 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -34,67 +36,111 @@
    <center>
       <TableView fx:id="reportTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn prefWidth="595.0" text="DynamicColumn1" />
-          <TableColumn prefWidth="603.0" text="DynamicColumn2" />
+          <TableColumn prefWidth="254.0" text="DynamicColumn1" />
+          <TableColumn prefWidth="944.0" text="DynamicColumn2" />
         </columns>
       </TableView>
    </center>
    <left>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="138.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Day">
+            <Button fx:id="dayBtn" mnemonicParsing="false" text="Day" onAction="#dayPress">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="39.0" layoutY="397.0" mnemonicParsing="false" text="Month">
+            <Button fx:id="monthBtn" layoutX="39.0" layoutY="397.0" mnemonicParsing="false" text="Month" onAction="#monthPress">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="39.0" layoutY="410.0" mnemonicParsing="false" text="Year">
+            <Button fx:id="yearBtn" layoutX="39.0" layoutY="410.0" mnemonicParsing="false" text="Year" onAction="#yearPress">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Button>
-         </children>
-      </VBox>
-   </left>
-   <right>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button mnemonicParsing="false" onAction="#revenuePress" text="Revenue">
-               <VBox.margin>
-                  <Insets bottom="25.0" top="25.0" />
-               </VBox.margin>
-            </Button>
-            <Button layoutX="25.0" layoutY="397.0" mnemonicParsing="false" onAction="#occupancyPress" text="Occupancy">
-               <VBox.margin>
-                  <Insets bottom="25.0" top="25.0" />
-               </VBox.margin>
-            </Button>
-            <Button layoutX="25.0" layoutY="410.0" mnemonicParsing="false" onAction="#activityPress" text="Activity">
-               <VBox.margin>
-                  <Insets bottom="25.0" top="25.0" />
-               </VBox.margin>
-            </Button>
-            <Button layoutX="29.0" layoutY="423.0" mnemonicParsing="false" onAction="#feedbackPress" text="Feedback">
+            <Button fx:id="exitBtn" mnemonicParsing="false" onAction="#exitPress" text="Exit">
                <VBox.margin>
                   <Insets top="25.0" />
                </VBox.margin>
             </Button>
          </children>
       </VBox>
+   </left>
+   <right>
+      <VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="138.0" style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 5;" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="CENTER" prefHeight="338.0" prefWidth="96.0" style="-fx-border-color: black;">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#revenuePress" text="Revenue">
+                     <VBox.margin>
+                        <Insets bottom="25.0" top="25.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#occupancyPress" text="Occupancy">
+                     <VBox.margin>
+                        <Insets bottom="25.0" top="25.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#activityPress" text="Activity">
+                     <VBox.margin>
+                        <Insets bottom="25.0" top="25.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#feedbackPress" text="Feedback">
+                     <VBox.margin>
+                        <Insets top="25.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" layoutX="12.0" layoutY="400.0" prefHeight="363.0" prefWidth="96.0" style="-fx-border-color: black;">
+               <children>
+                  <Label text="From" />
+                  <DatePicker fx:id="fromDatePicker">
+                     <VBox.margin>
+                        <Insets bottom="25.0" />
+                     </VBox.margin>
+                  </DatePicker>
+                  <Label layoutX="42.0" layoutY="156.0" text="To">
+                     <VBox.margin>
+                        <Insets top="25.0" />
+                     </VBox.margin>
+                  </Label>
+                  <DatePicker fx:id="toDatePicker" layoutX="11.0" layoutY="178.0">
+                     <VBox.margin>
+                        <Insets bottom="25.0" />
+                     </VBox.margin>
+                  </DatePicker>
+                  <Label layoutX="50.0" layoutY="191.0" text="Type">
+                     <VBox.margin>
+                        <Insets top="25.0" />
+                     </VBox.margin>
+                  </Label>
+                  <ComboBox fx:id="roomTypeComboBox" prefWidth="150.0">
+                     <VBox.margin>
+                        <Insets bottom="25.0" />
+                     </VBox.margin>
+                  </ComboBox>
+                  <Button fx:id="resetBtn" mnemonicParsing="false" text="Reset">
+                     <VBox.margin>
+                        <Insets top="25.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
    </right>
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Export to CVS">
+            <Button mnemonicParsing="false" text="Export to CSV" onAction="#exportToCSV">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Export to TXT">
+            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Export to TXT" onAction="#exportToTxt">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>

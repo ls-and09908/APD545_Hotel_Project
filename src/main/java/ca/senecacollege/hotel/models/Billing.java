@@ -57,6 +57,10 @@ public class Billing {
         return total;
     }
 
+    public Reservation getReservation(){
+        return reservation;
+    }
+
     public void setBalance(Double balance) {
         this.balance = balance;
     }
