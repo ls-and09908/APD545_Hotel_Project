@@ -2,13 +2,16 @@ package ca.senecacollege.hotel.controllers;
 
 import ca.senecacollege.hotel.models.Feedback;
 import ca.senecacollege.hotel.models.Reservation;
+import ca.senecacollege.hotel.models.ReservationStatus;
 import ca.senecacollege.hotel.models.Sentiment;
 import ca.senecacollege.hotel.services.IFeedbackService;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +47,11 @@ public class FeedbackController implements SceneManagerAware {
     }
 
     public void initialize(){
-        submitBtn.disableProperty().bind(starRating.isEqualTo(0).or(resNumField.textProperty().isEmpty()).or(resNumError.visibleProperty()).or(sentimentBox.getSelectionModel().selectedItemProperty().isNull()));
+        submitBtn.disableProperty().bind(starRating.isEqualTo(0)
+                .or(resNumField.textProperty().isEmpty())
+                .or(resNumError.visibleProperty())
+                .or(sentimentBox.getSelectionModel().selectedItemProperty().isNull())
+                .or(commentsText.textProperty().length().greaterThan(2000)));
 
         ObservableList<Sentiment> sentiments = FXCollections.observableArrayList(Sentiment.values());
         sentimentBox.setItems(sentiments);
@@ -83,17 +91,29 @@ public class FeedbackController implements SceneManagerAware {
             if(!newValue && !resNumError.isVisible()){
                 try {
                     int resNum = Integer.parseInt(resNumField.getText());
-                    System.out.println(resNum);
                     //reservation = _fbService.findReservation(resNum);
                     reservation = _fbService.getit(resNum);
                     if (!reservation.isPresent()) {
                         resNumError.setText("Reservation not found.");
+                        resNumError.setVisible(true);
+                    } else if (reservation.get().getStatus() != ReservationStatus.CHECKEDOUT) {
+                        resNumError.setText("Reservation has not checked out.");
                         resNumError.setVisible(true);
                     }
                 } catch (NumberFormatException e){
                     resNumError.setText("Reservation number is required.");
                     resNumError.setVisible(true);
                 }
+            }
+        });
+
+        commentsText.textProperty().addListener((observable, oldValue, newValue) -> {
+            int length = newValue.length();
+            commentCharCount.setText("Characters: " + length + "/2000");
+            if(length > 2000){
+                commentCharCount.setStyle("-fx-text-fill: red;");
+            } else {
+                commentCharCount.setStyle("-fx-text-fill: black;");
             }
         });
     }
@@ -118,8 +138,24 @@ public class FeedbackController implements SceneManagerAware {
     }
 
     @FXML
-    private void submitFeedback(){
-        _fbService.makeFeedback(reservation.get(), starRating.get(), commentsText.getText(), sentimentBox.getSelectionModel().getSelectedItem());
+    private void submitFeedback() throws IOException {
+        Feedback fb = _fbService.makeFeedback(reservation.get(), starRating.get(), commentsText.getText(), sentimentBox.getSelectionModel().getSelectedItem());
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/FeedbackConfirm.fxml", (FeedbackConfirmController controller) -> {
+            controller.setFeedback(fb);
+        });
+    }
+
+    /**
+     * Tester button, please remember to remove this
+     * @throws IOException
+     */
+    @FXML
+    private void testButton() throws IOException {
+        reservation = _fbService.getit(3);
+        Feedback fb = new Feedback(reservation.get().getGuest(), reservation.get(), 3, LocalDate.now(), "Stinky, Yucky, Smelly, Icky place. 10/10 would hog again.", Sentiment.AFFORDABLE);
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/FeedbackConfirm.fxml", (FeedbackConfirmController controller) -> {
+            controller.setFeedback(fb);
+        });
     }
 
     @FXML
@@ -151,4 +187,7 @@ public class FeedbackController implements SceneManagerAware {
 
     @FXML
     private Label resNumError;
+
+    @FXML
+    private Label commentCharCount;
 }

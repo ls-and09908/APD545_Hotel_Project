@@ -46,29 +46,10 @@ public class FeedbackRepository implements IFeedbackRepository {
 
     @Override
     public void saveFeedback(Feedback fb) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            em.merge(fb);
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-    }
-
-    @Override
-    public void save(Feedback fb){
         Transaction tx=null;
         try(Session session = sessionFactory.openSession()){
             tx = session.beginTransaction();
-            session.saveOrUpdate(fb);
+            session.merge(fb);
             tx.commit();
         }catch(RuntimeException e){
             if(tx!=null) tx.rollback();

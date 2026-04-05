@@ -7,4 +7,5 @@ public interface ILoyaltyService {
     boolean findLoyalGuest(Guest checkingGuest);
     Guest getLoyalGuest(int loyaltyNum);
     int getNewLoyaltyNum();
+    int getPointsFromPayment(double paymentAmt);
 }

@@ -8,5 +8,4 @@ public interface IFeedbackRepository {
     List<Feedback> getAllFeedbacks();
     void saveFeedback(Feedback fb);
     Feedback getFeedback(int feedbackId);
-    void save(Feedback fb);
 }

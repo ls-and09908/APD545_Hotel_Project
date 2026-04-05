@@ -1,107 +1,91 @@
 package ca.senecacollege.hotel.repositories;
 
 import ca.senecacollege.hotel.models.AddOn;
-import ca.senecacollege.hotel.models.Reservation;
 import com.google.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AddonRepository implements IAddonRepository {
-    private EntityManagerFactory emf;
+    private final SessionFactory sessionFactory;
 
     @Inject
-    AddonRepository(EntityManagerFactory emf){
-        this.emf = emf;
+    AddonRepository(SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public List<AddOn> getAllAddOns() {
-        List<AddOn> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<AddOn> cq = cb.createQuery(AddOn.class);
-            Root<AddOn> addOn = cq.from(AddOn.class);
-            cq.select(addOn);
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-            return results;
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM AddOn", AddOn.class);
+            return q.list();
         }
     }
 
     @Override
     public void saveAddOn(AddOn a) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            em.merge(a);
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
+        Transaction tx=null;
+        try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
+            session.merge(a);
+            tx.commit();
+        }catch(RuntimeException e){
+            if(tx!=null) tx.rollback();
+            throw e;
         }
     }
 
     @Override
-    public AddOn getAddOn(int addOnID) {
-        List<AddOn> result = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<AddOn> cq = cb.createQuery(AddOn.class);
-            Root<AddOn> addOn = cq.from(AddOn.class);
-            cq.select(addOn).where(cb.equal(addOn.get("ADDON_ID"), addOnID));
-
-            result = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-        if(result.isEmpty()){
-            return null;
-        } else {
-            return result.get(0);
+    public Optional<AddOn> getAddOn(int addOnID) {
+//        List<AddOn> result = null;
+//        EntityManager em = emf.createEntityManager();
+//        try {
+//            CriteriaBuilder cb = em.getCriteriaBuilder();
+//            CriteriaQuery<AddOn> cq = cb.createQuery(AddOn.class);
+//            Root<AddOn> addOn = cq.from(AddOn.class);
+//            cq.select(addOn).where(cb.equal(addOn.get("id"), addOnID));
+//
+//            result = em.createQuery(cq).getResultList();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            em.close();
+//        }
+//        if(result.isEmpty()){
+//            return null;
+//        } else {
+//            return result.get(0);
+//        }
+        try(Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(AddOn.class, addOnID));
         }
     }
 
     @Override
-    public AddOn getAddOn(String name) {
-        List<AddOn> result = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<AddOn> cq = cb.createQuery(AddOn.class);
-            Root<AddOn> addOn = cq.from(AddOn.class);
-            cq.select(addOn).where(cb.like(addOn.get("name"), name.toUpperCase()));
-
-            result = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-        if(result.isEmpty()){
-            return null;
-        } else {
-            return result.get(0);
+    public Optional<AddOn> getAddOn(String name) {
+//        List<AddOn> result = null;
+//        try (EntityManager em = emf.createEntityManager()) {
+//            CriteriaBuilder cb = em.getCriteriaBuilder();
+//            CriteriaQuery<AddOn> cq = cb.createQuery(AddOn.class);
+//            Root<AddOn> addOn = cq.from(AddOn.class);
+//            cq.select(addOn).where(cb.like(addOn.get("name"), name.toUpperCase()));
+//
+//            result = em.createQuery(cq).getResultList();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        if(result.isEmpty()){
+//            return null;
+//        } else {
+//            return result.get(0);
+//        }
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM AddOn a WHERE a.name = :name", AddOn.class);
+            q.setParameter("name", name);
+            return q.uniqueResultOptional();
         }
     }
 }

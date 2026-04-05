@@ -4,15 +4,22 @@ import ca.senecacollege.hotel.models.Guest;
 import ca.senecacollege.hotel.repositories.GuestRepository;
 import ca.senecacollege.hotel.repositories.IGuestRepository;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import java.util.List;
 
 public class LoyaltyService implements ILoyaltyService {
     private IGuestRepository _guestRepo;
+    private int _ptsEarnRate;
+    private int _redemptionCap;
+    private int _ptsPerDollar;
 
     @Inject
-    LoyaltyService(IGuestRepository guestRepo){
-        this._guestRepo = guestRepo;
+    public LoyaltyService(IGuestRepository _guestRepo, @Named("earnRate") int _ptsEarnRate,@Named("redemptionCap") int _redemptionCap,@Named("conversionRate") int _ptsPerDollar) {
+        this._guestRepo = _guestRepo;
+        this._ptsEarnRate = _ptsEarnRate;
+        this._redemptionCap = _redemptionCap;
+        this._ptsPerDollar = _ptsPerDollar;
     }
 
     @Override
@@ -30,5 +37,16 @@ public class LoyaltyService implements ILoyaltyService {
     @Override
     public int getNewLoyaltyNum() {
         return _guestRepo.getNewLoyaltyNumber();
+    }
+
+    /**
+     * Calculates the number of points earned from a dollar amount paid.
+     * @param paymentAmt total amount paid in dollars and cents
+     * @return the number of points earned
+     */
+    @Override
+    public int getPointsFromPayment(double paymentAmt) {
+        // TODO: finish this calculation
+        return 0;
     }
 }

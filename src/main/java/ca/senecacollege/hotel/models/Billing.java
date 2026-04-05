@@ -68,4 +68,8 @@ public class Billing {
     public void addPayment(Payment p){
         this.payments.add(p);
     }
+
+    public Double getBalance() {
+        return balance;
+    }
 }

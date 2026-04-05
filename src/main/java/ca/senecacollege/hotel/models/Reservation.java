@@ -58,7 +58,6 @@ public class Reservation {
     }
 
     public Reservation(Guest guest, int adults, int children, LocalDate checkIn, LocalDate checkOut){
-        // TEMPORARY CONSTRUCTOR FOR DB TESTING
         this.billing = new Billing(this);
         this.status = ReservationStatus.BOOKED;
         this.guest = guest;
@@ -107,6 +106,8 @@ public class Reservation {
     public int getReservationNumber(){
         return reservationNumber;
     }
+
+    public ReservationStatus getStatus() { return status; }
 
     public void setStatus(ReservationStatus status) {
         this.status = status;

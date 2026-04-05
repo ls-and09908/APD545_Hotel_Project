@@ -10,6 +10,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.LocalDate;
@@ -17,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBInitializer {
-    private EntityManagerFactory emf;
+    private final SessionFactory sessionFactory;
+    //private EntityManagerFactory emf;
     private BillingService _bs;
     private PricingModel _stdPrice;
     private PricingModel _wkndPrice;
@@ -26,8 +30,9 @@ public class DBInitializer {
     private IAdminUserRepository _adRepo;
 
     @Inject
-    public DBInitializer(EntityManagerFactory emf, BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo, IAdminUserRepository adRepo){
-        this.emf = emf;
+    public DBInitializer(SessionFactory sessionFactory,  BillingService bs, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, IRoomRepository rmRepo, IAddonRepository aoRepo, IAdminUserRepository adRepo){
+        this.sessionFactory = sessionFactory;
+        //this.emf = emf;EntityManagerFactory emf
         this._bs = bs;
         this._stdPrice = std;
         this._wkndPrice = wknd;
@@ -37,9 +42,13 @@ public class DBInitializer {
     }
 
     public void makeDB(){
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
+//        EntityManager em = emf.createEntityManager();
+//        try {
+//
+//            em.getTransaction().begin();
+        Transaction tx=null;
+        try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
 
             LocalDate date = LocalDate.now();
             List<Guest> guests = List.of(
@@ -61,9 +70,6 @@ public class DBInitializer {
             int numRooms = 40;
             int floor = 0;
             for (int i = 0; i < numRooms; i++) {
-                if (i % 10 == 0) {
-                    floor += 100;
-                }
                 switch (i % 10) {
                     case 9:
                         rooms.add(RoomFactory.createRoom(floor + (i % 10 + 1) * 2, RoomType.DELUXE));
@@ -109,48 +115,66 @@ public class DBInitializer {
             bill3.addPayment(new Payment(bill3, 500.00, guests.get(0), date.minusDays(16)));
             _bs.checkUpdateBillBalance(bill3);
 
+            Reservation res4 = new Reservation(guests.get(4), 1, 1, date.minusDays(8), date.minusDays(1));
+            res4.addRoom(rooms.get(8));
+            Billing bill4 = _bs.generateBill(res4);
+            bill4.addPayment(new Payment(bill4, 1400.00, guests.get(4), date.minusDays(2)));
+            res4.setStatus(ReservationStatus.CHECKEDOUT);
+            _bs.checkUpdateBillBalance(bill4);
+
             // persist guests
             for (Guest g : guests) {
-                em.persist(g);
+                //em.persist(g);
+                session.persist(g);
             }
 
             // persist rooms
             for (Room r : rooms) {
-                em.persist(r);
+                //em.persist(r);
+                session.persist(r);
             }
             // persist addons
             for (AddOn a : addons) {
-                em.persist(a);
+                //em.persist(a);
+                session.persist(a);
             }
 
-            em.merge(res);
-            em.merge(res2);
-            em.merge(res3);
-    //Scott's AdminUser table below. Please let me know if I did it incorrect:
+//            em.merge(res);
+//            em.merge(res2);
+//            em.merge(res3);
+            session.merge(res);
+            session.merge(res2);
+            session.merge(res3);
+            session.merge(res4);
+
+        //Scott's AdminUser table below. Please let me know if I did it incorrect:
             String salt = BCrypt.gensalt(12);
             String testAdminPw = BCrypt.hashpw("admin", salt);
             String testManagerPw = BCrypt.hashpw("manager", salt);
-            Role manager = new Role("manager", "30");
-            Role admin = new Role("admin", "15");
 
             List<AdminUser> adminUsers = List.of(
-                new AdminUser("admin", testAdminPw, admin),
-                new AdminUser("manager", testManagerPw, manager)
+                new AdminUser("admin", testAdminPw, Role.ADMINISTRATOR),
+                new AdminUser("manager", testManagerPw, Role.MANAGER)
             );
 
             for(AdminUser a: adminUsers){
-                em.persist(a);
+                session.persist(a);
             }
         //Scott section ends here
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-        } finally {
-            em.close();
-        }
+//            em.getTransaction().commit();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            if (em.getTransaction().isActive()) {
+//                em.getTransaction().rollback();
+//            }
+//        } finally {
+//            em.close();
+//        }
 
+            tx.commit();
+        }catch(RuntimeException e){
+            if(tx!=null) tx.rollback();
+            throw e;
+        }
     }
 }

@@ -22,7 +22,10 @@ public class Feedback {
     @Column
     private int rating = 0;
     private LocalDate date;
+
+    @Column(columnDefinition = "TEXT", length = 2000)
     private String comments;
+
     @Enumerated(EnumType.STRING)
     private Sentiment sentiment;
 
@@ -59,4 +62,6 @@ public class Feedback {
     public Sentiment getSentiment(){
         return sentiment;
     }
+
+    public Reservation getReservation() { return reservation; }
 }

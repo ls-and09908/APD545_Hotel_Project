@@ -21,18 +21,20 @@ public class BillingService implements IBillingService {
         this._wkndPrice = wknd;
     }
 
+    /**
+     * Generates a new bill for a newly created reservation.
+     * <p>Assumes the reservation already has a valid check-in and check-out date, and at least one room added to the reservation.</p>
+     * <p>Creates charges for rooms and addons on the reservation.
+     * Assigns the generated bill to the reservation.</p>
+     * @param r Reservation to generate the bill for
+     * @return the generated bill
+     */
     @Override
     public Billing generateBill(Reservation r){
-        /* Generates a new billing for a reservation:
-           - creates charges with appropriate pricing models for rooms and addons on the reservation
-           - sets the reservation's billing
-           - returns the created billing
-        */
         Billing bill = new Billing(r);
 
         int days = Math.toIntExact(ChronoUnit.DAYS.between(r.getCheckIn(), r.getCheckOut()));
         int weekendDays = getWeekendDays(r);
-
 
         for (Room rm : r.getRooms()){
             // TODO: Add logic for seasonal pricing
@@ -61,7 +63,11 @@ public class BillingService implements IBillingService {
         return bill;
     }
 
-    // returns the number of weekend nights in a reservation
+    /**
+     * Calculates the number of weekend nights in a particular reservation
+     * @param r Reservation to check
+     * @return the number of weekend nights in a reservation
+     */
     @Override
     public int getWeekendDays(Reservation r){
         int count = 0;
@@ -80,9 +86,31 @@ public class BillingService implements IBillingService {
         _billRepo.saveBill(b);
     }
 
+    /**
+     * Recalculates the balance for the specified bill as (total charges)-(total payments)
+     * @param b Bill to update
+     */
     @Override
     public void checkUpdateBillBalance(Billing b) {
         Double balance = b.getTotalCharges() - b.getTotalPayments();
         b.setBalance(balance);
+    }
+
+    /**
+     * Adds a payment to a bill and updates the bill balance if it is successful, ensuring that the bill balance will not go into negative values.
+     * @param payment Payment to be added
+     * @param bill Bill to apply the payment to
+     * @return false if the payment would cause the bill balance to be negative
+     */
+    @Override
+    public boolean addPaymentToBill(Payment payment, Billing bill) {
+        double newBalance = bill.getBalance() - payment.getAmount();
+        if(newBalance < 0.0){
+            return false;
+        }
+
+        bill.addPayment(payment);
+        bill.setBalance(newBalance);
+        return true;
     }
 }

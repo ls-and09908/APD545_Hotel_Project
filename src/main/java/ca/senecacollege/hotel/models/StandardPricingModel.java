@@ -9,7 +9,7 @@ public class StandardPricingModel implements PricingModel{
     public StandardPricingModel(){}
 
     @Override
-    public Double getPrice(Double price, int qty) {
+    public double getPrice(double price, int qty) {
         return price * qty;
     }
 

@@ -14,9 +14,7 @@ public class AdminUser {
     @Column(name = "PASSWORDHASH")
     private String passwordHash;
 
-    @ManyToOne
-    @JoinColumn(name = "role_type")
-    @Transient
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     public Role getRole() {
@@ -30,6 +28,10 @@ public class AdminUser {
     public String getUsername() {
         return username;
     }
+
+    public int getUserID() { return userID; }
+
+    public String getRoleLabel(){ return role.label(); }
 
     public AdminUser(){}
 

@@ -1,6 +1,7 @@
 package ca.senecacollege.hotel.services;
 
 import ca.senecacollege.hotel.models.Billing;
+import ca.senecacollege.hotel.models.Payment;
 import ca.senecacollege.hotel.models.Reservation;
 
 public interface IBillingService {
@@ -8,4 +9,5 @@ public interface IBillingService {
     int getWeekendDays(Reservation r);
     void saveBill(Billing b);
     void checkUpdateBillBalance(Billing b);
+    boolean addPaymentToBill(Payment p, Billing b);
 }

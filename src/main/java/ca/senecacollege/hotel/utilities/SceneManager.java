@@ -17,10 +17,10 @@ public class SceneManager {
         this.injector = injector;
     }
 
-    public void switchScene(String fxmlPath, Consumer<Object> controllerConsumer) throws IOException {
+    public <T> void switchScene(String fxmlPath, Consumer<T> controllerConsumer) throws IOException {
         FXMLLoadResult result = FXMLLoadHelper.loadWithSceneManagerController(fxmlPath, injector, this);
         if(controllerConsumer!=null)
-            controllerConsumer.accept(result.controller);
+            controllerConsumer.accept((T) result.controller);
         stage.setScene(new Scene(result.root));
         stage.show();
     }

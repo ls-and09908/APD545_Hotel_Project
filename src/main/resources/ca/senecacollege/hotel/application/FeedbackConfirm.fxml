@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.senecacollege.hotel.controllers.FeedbackConfirmController">
+    <center>
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <VBox.margin>
+                <Insets top="50.0" />
+            </VBox.margin>
+            <Label text="Your Feedback" underline="true">
+                <font>
+                    <Font name="System Bold" size="32.0" />
+                </font>
+            <VBox.margin>
+               <Insets bottom="30.0" />
+            </VBox.margin>
+            </Label>
+            <GridPane hgap="5.0" VBox.vgrow="SOMETIMES">
+                <columnConstraints>
+                    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" percentWidth="25.0" />
+               <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="350.0" />
+                    <ColumnConstraints hgrow="NEVER" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+               <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" valignment="TOP" vgrow="NEVER" />
+                    <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+               <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+                    <RowConstraints />
+               <RowConstraints />
+                </rowConstraints>
+                <children>
+                    <Label contentDisplay="RIGHT" text="Reservation Number:">
+                        <font>
+                            <Font name="System Bold" size="22.0" />
+                        </font>
+                    </Label>
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                        <children>
+                            <SVGPath fx:id="onestar" content="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757  c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042  c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528  c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956  C22.602,0.567,25.338,0.567,26.285,2.486z" fill="#ffffff00" stroke="BLACK" />
+                            <SVGPath fx:id="twostar" content="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757  c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042  c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528  c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956  C22.602,0.567,25.338,0.567,26.285,2.486z" fill="#ffffff00" fillRule="EVEN_ODD" stroke="BLACK" />
+                            <SVGPath fx:id="threestar" content="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757  c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042  c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528  c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956  C22.602,0.567,25.338,0.567,26.285,2.486z" fill="#ffffff00" fillRule="EVEN_ODD" stroke="BLACK" />
+                            <SVGPath fx:id="fourstar" content="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757  c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042  c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528  c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956  C22.602,0.567,25.338,0.567,26.285,2.486z" fill="#ffffff00" fillRule="EVEN_ODD" stroke="BLACK" />
+                            <SVGPath fx:id="fivestar" content="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757  c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042  c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528  c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956  C22.602,0.567,25.338,0.567,26.285,2.486z" fill="#ffffff00" fillRule="EVEN_ODD" stroke="BLACK" />
+                        </children>
+                    </HBox>
+                    <Label contentDisplay="RIGHT" text="Sentiment:" GridPane.rowIndex="4">
+                        <font>
+                            <Font name="System Bold" size="22.0" />
+                        </font>
+                    </Label>
+                    <Label text="Rating:" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <font>
+                            <Font name="System Bold" size="22.0" />
+                        </font>
+                  <GridPane.margin>
+                     <Insets />
+                  </GridPane.margin>
+                    </Label>
+                    <Label contentDisplay="BOTTOM" text="Comments:" GridPane.rowIndex="5">
+                        <font>
+                            <Font name="System Bold" size="22.0" />
+                        </font>
+                    </Label>
+                    <Label text="Date:" GridPane.rowIndex="3">
+                        <font>
+                          <Font name="System Bold" size="22.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="fbReservation" text="Loading..." GridPane.columnIndex="1">
+                        <font>
+                            <Font size="22.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="fbDate" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <font>
+                            <Font size="22.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="fbSentiment" text="Loading..." GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <font>
+                            <Font size="22.0" />
+                        </font>
+                    </Label>
+               <ScrollPane fitToWidth="true" hbarPolicy="NEVER" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.rowSpan="2147483647" GridPane.valignment="TOP">
+                  <content>
+                          <Label fx:id="fbComments" text="[Sample Comments]  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ac rhoncus nunc, ut laoreet urna. Duis sodales nunc mattis ultricies consectetur. Ut blandit, mi sed commodo blandit, massa arcu iaculis nisi, eget sodales enim lectus et sem. Phasellus non nibh arcu. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris faucibus pretium molestie. Praesent neque lorem, egestas vitae leo ut, tincidunt lobortis dolor. Proin ut tristique justo. Cras vel odio massa. Aenean tempor nisl eget leo mattis venenatis. Nulla interdum maximus nisi id imperdiet. In a erat ornare, lacinia erat in, tempor purus. Morbi rhoncus dolor ante, et finibus diam gravida eu.Pellentesque convallis laoreet magna, et pellentesque libero malesuada et. In lectus justo, pellentesque eu velit sit amet, pulvinar sagittis erat. Aenean sollicitudin eget lorem eget malesuada. Duis sollicitudin nisl sit amet diam accumsan egestas. Sed consectetur ligula ac viverra porta. Duis eu lacus id leo sagittis viverra. Donec pretium commodo magna id pulvinar. Maecenas vel rutrum erat. Etiam aliquet consectetur nulla, non scelerisque lacus mollis vitae. Praesent ut magna ac ligula tincidunt varius quis nec libero. Sed lacinia massa ac consequat placerat. In eget malesuada metus, a commodo elit. Phasellus lacus nibh, pretium at ullamcorper in, aliquam ac mauris. Aliquam aliquet sodales nisl, id porttitor est scelerisque nec.Curabitur elementum vel ante in volutpat. Donec vehicula velit efficitur lorem maximus consequat. Vestibulum commodo aliquam felis vel interdum. Suspendisse vel eros vitae lorem efficitur semper. Integer auctor lectus mattis, varius quam et, commodo dui. Mauris consectetur, sem semper volutpat elementum, ipsum ligula fermentum purus, suscipit tincidunt erat lorem eget turpis. Vestibulum condimentum erat ut finibus dapibus. Proin euismod, sapien in blandit feugiat, arcu ligula egestas sapien, eget aliquet nisl ipsum id lectus. Donec ac dolor congue eros scelerisque gravida in vel est. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut elementum nibh ut velit auctor condimentum. Nulla gravida arcu sit amet dapibus rutrum.In massa orci, feugiat a nibh eget, suscipit pulvinar quam. Mauris ultricies ullamcorper nisi ac porttitor. Suspendisse at dolor at elit ultricies interdum sit amet vitae ligula. Praesent leo lectus, suscipit sit amet tincidunt eget, pellentesque vel quam. Phasellus sed metus diam. Duis pharetra sagittis tellus, ut accumsan sem tincidunt vehicula. Morbi suscipit in libero sed posuere. Nulla varius arcu non blandit dictum. Fusce eu pretium felis.Aliquam elementum urna nec felis tristique tristique. Etiam eleifend vehicula fringilla. In et elit tincidunt, mollis nisl et, maximus justo. Mauris vel scelerisque nisl. Donec convallis lectus quis euismod vehicula. Curabitur malesuada, odio et maximus rhoncus, massa erat fermentum sem, eget elementum lectus tortor in diam. Nunc interdum accumsan eros, eget efficitur nisl scelerisque vitae. Morbi placerat quam volutpat, bibendum ligula sed, cursus turpis. Sed et mattis mauris. Integer eleifend eros vel tellus fermentum pharetra. Curabitur rutrum libero in orci scelerisque, eget ornare tellus rutrum. Duis congue ante ut dapibus pharetra. Donec hendrerit eu augue ac mollis. Vestibulum a nunc vel purus rutrum bibendum. " wrapText="true">
+                              <font>
+                                  <Font size="18.0" />
+                              </font>
+                          </Label>
+                  </content>
+               </ScrollPane>
+                </children>
+            </GridPane>
+        </VBox>
+    </center>
+   <top>
+      <Label minHeight="100.0" text="Thank you for leaving feedback about your stay!" BorderPane.alignment="CENTER">
+          <font>
+              <Font size="42.0" />
+          </font>
+      </Label>
+   </top>
+    <bottom>
+        <Button onAction="#toHome" text="Exit" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="24.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets bottom="20.0" top="20.0" />
+         </BorderPane.margin></Button>
+    </bottom>
+    <stylesheets>
+        <URL value="@css/application.css" />
+    </stylesheets>
+</BorderPane>

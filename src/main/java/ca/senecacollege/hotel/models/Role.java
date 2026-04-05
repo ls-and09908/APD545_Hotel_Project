@@ -1,18 +1,17 @@
 package ca.senecacollege.hotel.models;
 
-import jakarta.persistence.*;
 
-@Entity
-public class Role {
-    @Id
-    @GeneratedValue
-    private int roleID;
+public enum Role {
+    ADMINISTRATOR("ADMN"),
+    MANAGER("MNGR");
 
-    private String type;
-    private String discountMax;
+    private final String label;
 
-    public Role(String type, String discountMax){
-        this.type = type;
-        this.discountMax = discountMax;
+    Role(String label){
+        this.label = label;
+    }
+
+    public String label(){
+        return this.label;
     }
 }

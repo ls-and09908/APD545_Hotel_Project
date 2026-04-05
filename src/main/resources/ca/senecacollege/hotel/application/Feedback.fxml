@@ -79,10 +79,16 @@
                   <Label fx:id="resNumError" text="Error: Sample Error message" textFill="RED" textOverrun="CLIP" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
                </children>
             </GridPane>
-              <TextArea fx:id="commentsText" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="600.0" promptText="Front desk was lovely!" wrapText="true">
-               <font>
-                  <Font size="18.0" />
-               </font></TextArea>
+            <VBox alignment="CENTER_RIGHT" fillWidth="false" maxWidth="-Infinity" prefWidth="600.0">
+               <children>
+                    <TextArea fx:id="commentsText" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" promptText="Front desk was lovely!" wrapText="true">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </TextArea>
+                   <Label fx:id="commentCharCount" text="0 characters" textAlignment="CENTER" textOverrun="CLIP" visible="true" VBox.vgrow="NEVER" />
+               </children>
+            </VBox>
             <Button fx:id="submitBtn" mnemonicParsing="false" onAction="#submitFeedback" text="Submit Feedback" VBox.vgrow="ALWAYS">
                <font>
                   <Font size="22.0" />
@@ -91,7 +97,6 @@
                   <Insets top="20.0" />
                </VBox.margin>
             </Button>
-
          </children>
       </VBox>
    </center>

@@ -41,7 +41,7 @@ public class HibernateUtil {
 
             settings.putIfAbsent("hibernate.connection.driver_class","com.mysql.cj.jdbc.Driver");
             settings.putIfAbsent("hibernate.connection.url","jdbc:mysql://localhost:3306/hotel_test");
-            settings.putIfAbsent("hibernate.dialect","org.hibernate.dialect.MySQL8Dialect");
+            settings.putIfAbsent("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
             settings.putIfAbsent("hibernate.hbm2ddl.auto", "create");
             settings.putIfAbsent("hibernate.show_sql", "true");
             settings.putIfAbsent("hibernate.format_sql", "true");
@@ -50,8 +50,8 @@ public class HibernateUtil {
             settings.putIfAbsent("hibernate.temp.use_jdbc_metadata_defaults", "false");
             settings.putIfAbsent("org.jboss.logging.provider", "slf4j");
             settings.putIfAbsent("hibernate.jndi.class", "org.hibernate.naming.internal.NoJndiService");
-            settings.put("jakarta.persistence.jdbc.user","user");
-            settings.put("jakarta.persistence.jdbc.password","123Password");
+            settings.putIfAbsent("jakarta.persistence.jdbc.user","user");
+            settings.putIfAbsent("jakarta.persistence.jdbc.password","123Password");
 
             //build registry
             StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();

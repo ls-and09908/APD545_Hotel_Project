@@ -8,6 +8,7 @@ import ca.senecacollege.hotel.services.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -16,13 +17,13 @@ import org.hibernate.SessionFactory;
 public class AppModule extends AbstractModule {
     @Override
     protected void configure(){
-        bind(ILoyaltyService.class).to(LoyaltyService.class).asEagerSingleton();
-        bind(IAdminUserRepository.class).to(AdminUserRepository.class).asEagerSingleton();;
-        bind(IReservationService.class).to(ReservationService.class).asEagerSingleton();
+        bind(IAdminUserRepository.class).to(AdminUserRepository.class).in(Singleton.class);
+        bind(IReservationService.class).to(ReservationService.class).in(Singleton.class);
 
-        bind(LoyaltyService.class).in(Singleton.class);
         bind(AuthService.class).in(Singleton.class);
         bind(ReportingService.class).in(Singleton.class);
+
+        bind(ILoyaltyService.class).to(LoyaltyService.class).in(Singleton.class);
 
         bind(IReservationRepository.class).to(ReservationRepository.class).in(Singleton.class);
         bind(IPaymentRepository.class).to(PaymentRepository.class).in(Singleton.class);
@@ -37,11 +38,12 @@ public class AppModule extends AbstractModule {
         bind(IReportingService.class).to(ReportingService.class).in(Singleton.class);
         bind(IBillingService.class).to(BillingService.class).in(Singleton.class);
         bind(IFeedbackService.class).to(FeedbackService.class).in(Singleton.class);
+        bind(IActivityLogService.class).to(ActivityLogService.class).in(Singleton.class);
 
+        bind(AppConfig.class).asEagerSingleton();
         bind(PricingModel.class).annotatedWith(Names.named("standard")).to(StandardPricingModel.class).in(Singleton.class);
         bind(PricingModel.class).annotatedWith(Names.named("weekend")).to(WeekendPricingModel.class).in(Singleton.class);
         bind(DBInitializer.class).asEagerSingleton();
-
     }
 
     @Provides
@@ -56,4 +58,33 @@ public class AppModule extends AbstractModule {
         return HibernateUtil.buildSessionFactory();
     }
 
+    @Provides
+    @Named("weekendMultiplier")
+    double provideWeekendMulti(){
+        return AppConfig.getWeekendMultiplier();
+    }
+
+    @Provides
+    @Named("peakMultiplier")
+    double providePeakMulti(){
+        return AppConfig.getPeakMultiplier();
+    }
+
+    @Provides
+    @Named("earnRate")
+    int provideLoyaltyEarnRate(){
+        return AppConfig.getLoyaltyEarnRate();
+    }
+
+    @Provides
+    @Named("redemptionCap")
+    int provideLoyaltyCap(){
+        return AppConfig.getLoyaltyRedemptionCap();
+    }
+
+    @Provides
+    @Named("conversionRate")
+    int provideLoyaltyConvertRate(){
+        return AppConfig.getLoyaltyConversionRate();
+    }
 }

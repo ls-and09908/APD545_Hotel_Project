@@ -1,6 +1,6 @@
 package ca.senecacollege.hotel.models;
 
 public interface PricingModel {
-    Double getPrice(Double price, int qty);
+    double getPrice(double price, int qty);
     String getName();
 }
