@@ -1,6 +1,9 @@
 package ca.senecacollege.hotel.controllers;
 
+import ca.senecacollege.hotel.models.Reservation;
 import ca.senecacollege.hotel.services.AuthService;
+import ca.senecacollege.hotel.services.IAuthService;
+import ca.senecacollege.hotel.services.IReservationService;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
@@ -11,8 +14,12 @@ import javafx.scene.control.TextField;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class AdminController implements SceneManagerAware {
+    private final IAuthService _authService;
+    private final IReservationService _resService;
+    SceneManager sceneManager;
 
 
     @FXML
@@ -22,12 +29,11 @@ public class AdminController implements SceneManagerAware {
     @FXML
     PasswordField passwordInput;
 
-    private AuthService _authService;
-    SceneManager sceneManager;
 
     @Inject
-    public AdminController(AuthService authService){
+    public AdminController(IAuthService authService, IReservationService resService){
         _authService = authService;
+        _resService = resService;
     }
 
     @Override
@@ -63,6 +69,9 @@ public class AdminController implements SceneManagerAware {
 
     @FXML
     private void toAddEditBooking() throws IOException{
-        sceneManager.switchScene("/ca/senecacollege/hotel/application/AddUpdateBooking.fxml", null);
+        Optional<Reservation> res = Optional.empty();
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/AddUpdateBooking.fxml", (AdminBookingController controller) -> {
+            controller.setRes(res);
+        });
     }
 }

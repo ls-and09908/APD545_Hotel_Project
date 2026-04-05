@@ -7,9 +7,6 @@ public class WeekendPricingModel implements PricingModel {
     private String name = "Weekend Pricing";
     private final double multi;
 
-//    @Inject
-//    public WeekendPricingModel(){}
-
     @Inject
     public WeekendPricingModel(@Named("weekendMultiplier") double multiplier){
         this.multi = multiplier;

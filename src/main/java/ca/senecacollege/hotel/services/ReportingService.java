@@ -73,8 +73,8 @@ public class ReportingService implements IReportingService {
         return FXCollections.observableArrayList(paymentRepo.getAllPayments());
     }
 
-    public Billing generateBillingWrapper(Reservation r){
-        return billingService.generateBill(r);
-    }
+//    public Billing generateBillingWrapper(Reservation r){
+//        return billingService.generateBill(r);
+//    }
 
 }

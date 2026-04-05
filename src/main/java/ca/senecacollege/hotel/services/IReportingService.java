@@ -20,5 +20,5 @@ public interface IReportingService {
     public ObservableList<Reservation> getAllReservationsBetweenDates(LocalDate from, LocalDate to);
     public ObservableList<Payment> getAllPayments();
     public ObservableList<Billing> getAllBillings();
-    public Billing generateBillingWrapper(Reservation r);
+//    public Billing generateBillingWrapper(Reservation r);
 }

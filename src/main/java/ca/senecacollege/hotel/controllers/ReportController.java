@@ -122,7 +122,7 @@ public class ReportController implements SceneManagerAware {
 
         for(Billing b: allBillings){
             LocalDate checkIn = b.getReservation().getCheckIn();
-            b = _reportingService.generateBillingWrapper(b.getReservation());
+//            b = _reportingService.generateBillingWrapper(b.getReservation());
             if(checkIn.isEqual(LocalDate.now()) && revenueReportPeriod.equals("Day")){
                 reservationCount+=1;
                 allTotal += b.getTotalPayments();

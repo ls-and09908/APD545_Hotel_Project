@@ -22,7 +22,7 @@ public class BillingService implements IBillingService {
     }
 
     /**
-     * Generates a new bill for a newly created reservation.
+     * Generates a new bill for a newly created reservation. Should only be called once in the lifetime of a reservation.
      * <p>Assumes the reservation already has a valid check-in and check-out date, and at least one room added to the reservation.</p>
      * <p>Creates charges for rooms and addons on the reservation.
      * Assigns the generated bill to the reservation.</p>
@@ -88,6 +88,7 @@ public class BillingService implements IBillingService {
 
     /**
      * Recalculates the balance for the specified bill as (total charges)-(total payments)
+     * <p>Meant to be called after additional charges or payments have been added to a bill.</p>
      * @param b Bill to update
      */
     @Override

@@ -46,7 +46,7 @@ public class Charge {
      * @return total charge applied, (amount)*(remaining percentage after discount)
      */
     public Double getTotal(){
-        return this.calcAmount() * ((this.discount > 0.0) ? (1.0 - this.discount/100) : 1.0);
+        return amount * ((this.discount > 0.0) ? (1.0 - this.discount/100) : 1.0);
     }
 
     public void setDiscount(Double discount) {
@@ -65,11 +65,8 @@ public class Charge {
         this.bill = billing;
     }
 
-    public Double calcAmount(){
-        if(source != null) {
-            return pricing.getPrice(source.getBasePrice(), quantity);
-        }
-        return null;
+    private Double calcAmount(){
+        return pricing.getPrice(source.getBasePrice(), quantity);
     }
 
     public Charge(){}

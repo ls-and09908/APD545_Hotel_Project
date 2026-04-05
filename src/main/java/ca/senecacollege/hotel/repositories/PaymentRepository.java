@@ -1,5 +1,6 @@
 package ca.senecacollege.hotel.repositories;
 
+import ca.senecacollege.hotel.models.AddOn;
 import ca.senecacollege.hotel.models.Billing;
 import ca.senecacollege.hotel.models.Payment;
 import com.google.inject.Inject;
@@ -8,54 +9,38 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import java.util.List;
 
 public class PaymentRepository implements IPaymentRepository {
-    private EntityManagerFactory emf;
+    private final SessionFactory sessionFactory;
 
     @Inject
-    PaymentRepository(EntityManagerFactory emf){
-        this.emf = emf;
+    PaymentRepository(SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public List<Payment> getAllPayments() {
-        List<Payment> results = null;
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Payment> cq = cb.createQuery(Payment.class);
-            Root<Payment> pay = cq.from(Payment.class);
-            cq.select(pay);
-
-            results = em.createQuery(cq).getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            em.close();
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Payment", Payment.class);
+            return q.list();
         }
-        return results;
     }
 
     @Override
     public void savePayment(Payment p) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            em.merge(p);
-
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
+        Transaction tx=null;
+        try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
+            session.merge(p);
+            tx.commit();
+        }catch(RuntimeException e){
+            if(tx!=null) tx.rollback();
+            throw e;
         }
     }
 }

@@ -5,3 +5,19 @@
 .choice-box {
     -fx-font-size: 18px;
 }
+
+.date-picker {
+    -fx-font-size: 16px;
+}
+
+.date-picker-popup {
+    -fx-font-size: 14px;
+}
+
+.combo-box {
+    -fx-font-size: 14px;
+}
+
+.combo-box .context-menu {
+    -fx-font-size: 14px;
+}
