@@ -18,7 +18,7 @@ public class Payment {
     private Double amount;
 
     @ManyToOne
-    @JoinColumn(name = "GUEST_ID")
+    @JoinColumn(name = "GUEST_ID", nullable = true)
     private Guest payee;
 
     @Enumerated(EnumType.STRING)
@@ -58,9 +58,5 @@ public class Payment {
         this.payee = payee;
         this.date = date;
         this.method = method;
-    }
-
-    public int calculatePoints(){
-        return 0;
     }
 }

@@ -7,7 +7,8 @@ public enum PaymentMethod {
     CREDIT("Credit"),
     CASH("Cash"),
     LOYALTY("Loyalty Pts"),
-    REFUND("Refund");
+    REFUND("Refund"),
+    DEPOSIT("Deposit");
 
     private final String label;
 

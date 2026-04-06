@@ -12,10 +12,6 @@ public class Charge {
     private transient ChargeSource source;
     private transient PricingModel pricing;
 
-    /**
-     * percent value to discount on the charge (0.0-30.0)
-     */
-    private Double discount = 0.0; //
     private int quantity;
     private Double amount;
 
@@ -42,15 +38,8 @@ public class Charge {
         this.bill = bill;
     }
 
-    /**
-     * @return total charge applied, (amount)*(remaining percentage after discount)
-     */
     public Double getTotal(){
-        return amount * ((this.discount > 0.0) ? (1.0 - this.discount/100) : 1.0);
-    }
-
-    public void setDiscount(Double discount) {
-        this.discount = discount;
+        return amount;
     }
 
     public void setQuantity(int quantity) {
@@ -59,10 +48,6 @@ public class Charge {
 
     public void setAmount(Double amount) {
         this.amount = amount;
-    }
-
-    public Charge(Billing billing){
-        this.bill = billing;
     }
 
     private Double calcAmount(){
@@ -89,5 +74,14 @@ public class Charge {
 
     public ChargeSource getSource() {
         return source;
+    }
+
+    public void updateQuantity(int quantity){
+        setQuantity(quantity);
+        calcAmount();
+    }
+
+    public PricingModel getPricing() {
+        return pricing;
     }
 }

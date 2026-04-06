@@ -66,7 +66,16 @@ public class GuestRepository implements IGuestRepository {
     @Override
     public Optional<Integer> getNewLoyaltyNumber() {
         try(Session session = sessionFactory.openSession()) {
-            var q = session.createQuery("SELECT MAX(g.loyaltyNum) FROM Guest g", int.class);
+            var q = session.createQuery("SELECT MAX(loyaltyNum) FROM Guest", Integer.class);
+            return q.uniqueResultOptional();
+        }
+    }
+
+    @Override
+    public Optional<Guest> findGuestEmail(String email) {
+        try(Session session = sessionFactory.openSession()) {
+            var q = session.createQuery("FROM Guest g WHERE g.email = :email", Guest.class);
+            q.setParameter("email", email);
             return q.uniqueResultOptional();
         }
     }

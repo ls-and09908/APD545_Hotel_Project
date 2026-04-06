@@ -24,7 +24,7 @@ public class ReservationService implements IReservationService {
 
     @Override
     public void saveReservation(Reservation reservation) {
-        _guestRepo.saveGuest(reservation.getGuest());
+        //_guestRepo.saveGuest(reservation.getGuest());
         _resRepo.saveRes(reservation);
     }
 
@@ -34,7 +34,8 @@ public class ReservationService implements IReservationService {
     }
 
     /**
-     * Queries the repo for rooms available during the reservation's desired dates
+     * Queries the repo for rooms available during the reservation's desired dates.
+     * <p>Sending in a type of null will return all available rooms</p>
      * @return A list of all rooms of the selected type that are available
      */
     @Override
@@ -44,6 +45,7 @@ public class ReservationService implements IReservationService {
         if (availableRooms.isEmpty()){
             return null;
         }
+        if (type == null) return availableRooms;
         for (Room room : availableRooms){
             if(room.getType() == type){
                 roomList.add(room);
@@ -75,4 +77,14 @@ public class ReservationService implements IReservationService {
         }
             return rooms;
         }
+
+    /**
+     * Checks if the email parameter has already been used for an existing guest.
+     * @param email
+     * @return true if the email is valid (doesn't already exist) and false otherwise
+     */
+    @Override
+    public boolean checkGuestEmail(String email) {
+        return _guestRepo.findGuestEmail(email).isEmpty();
+    }
 }

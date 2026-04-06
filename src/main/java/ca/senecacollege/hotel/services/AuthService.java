@@ -20,12 +20,23 @@ public class AuthService implements IAuthService{
     }
 
     @Override
+    public AdminUser authenticateLogin(String user, String password) {
+        Optional<AdminUser> comparedUser = adminRepo.getAdminUser(user);
+        boolean authenticated = comparedUser.isPresent() && BCrypt.checkpw(password, comparedUser.get().getPasswordHash());
+
+        // if the user was not found, no logging occurs
+        comparedUser.ifPresent(adminUser -> _logService.loginAttempt(adminUser, authenticated));
+        if(authenticated) return comparedUser.get();
+        else return null;
+    }
+
+    @Override
     public boolean authetnicateLogin(String user, String password){
         Optional<AdminUser> comparedUser = adminRepo.getAdminUser(user);
         boolean authenticated = comparedUser.isPresent() && BCrypt.checkpw(password, comparedUser.get().getPasswordHash());
 
         // if the user was not found, no logging occurs
         comparedUser.ifPresent(adminUser -> _logService.loginAttempt(adminUser, authenticated));
-        return authenticated;
+        return authenticated ;
     }
 }

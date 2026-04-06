@@ -10,7 +10,7 @@
    <top>
       <HBox alignment="CENTER" prefWidth="1400.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Booking Information">
+            <Label fx:id="adminBookingHeader" text="Booking Information">
                <font>
                   <Font name="System Bold" size="36.0" />
                </font>
@@ -43,7 +43,7 @@
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button fx:id="saveBtn" mnemonicParsing="false" text="Confirm Booking">
+            <Button fx:id="saveBtn" mnemonicParsing="false" onAction="#onSave" text="Confirm Booking">
                <font>
                   <Font size="18.0" />
                </font></Button>
@@ -103,15 +103,14 @@
                                     <Font size="14.0" />
                                  </font>
                               </TextField>
-                              <Text fx:id="nameError" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Error" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                              <Button fx:id="updateName" mnemonicParsing="false" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                              <Button fx:id="updateName" mnemonicParsing="false" onAction="#onUpdateName" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Button>
                               <Label contentDisplay="RIGHT" text="Loyalty:" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                  <graphic>
-                                    <Label fx:id="loyaltyTxt" contentDisplay="RIGHT" text="[Loyalty Num]">
+                                    <Label fx:id="loyaltyTxt" contentDisplay="RIGHT" text="[Loyalty Num]" visible="false">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
@@ -126,8 +125,7 @@
                                     <Font size="14.0" />
                                  </font>
                               </TextField>
-                              <Text fx:id="loyaltyError" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Error" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6" />
-                              <Button fx:id="updateLoyalty" mnemonicParsing="false" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                              <Button fx:id="updateLoyalty" mnemonicParsing="false" text="Retrieve" GridPane.columnIndex="2" GridPane.rowIndex="5">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -149,12 +147,11 @@
                                     <Font size="14.0" />
                                  </font>
                               </TextField>
-                              <Button fx:id="updatePhone" mnemonicParsing="false" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="8">
+                              <Button fx:id="updatePhone" mnemonicParsing="false" onAction="#onUpdatePhone" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="8">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Button>
-                              <Text fx:id="phoneError" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Error" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="9" />
                               <Label contentDisplay="RIGHT" text="Email:" GridPane.columnIndex="1" GridPane.rowIndex="10">
                                  <graphic>
                                     <Label fx:id="emailTxt" text="[Email]">
@@ -172,12 +169,11 @@
                                     <Font size="14.0" />
                                  </font>
                               </TextField>
-                              <Button fx:id="updateEmail" mnemonicParsing="false" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="11">
+                              <Button fx:id="updateEmail" mnemonicParsing="false" onAction="#onUpdateEmail" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="11">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Button>
-                              <Text fx:id="emailError" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Error" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="12" GridPane.valignment="TOP" />
                               <Label text="Guest Details" underline="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                                  <font>
                                     <Font size="24.0" />
@@ -196,12 +192,16 @@
                                  </font>
                               </Label>
                               <ComboBox fx:id="countryBox" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="14" />
-                              <Button fx:id="updateCountry" layoutX="343.0" layoutY="378.0" mnemonicParsing="false" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="14">
+                              <Button fx:id="updateCountry" layoutX="343.0" layoutY="378.0" mnemonicParsing="false" onAction="#onUpdateCountry" text="Update" GridPane.columnIndex="2" GridPane.rowIndex="14">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Button>
                               <CheckBox fx:id="signUp" mnemonicParsing="false" text="Sign up?" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="TOP" />
+                              <Label fx:id="nameErr" text="Err" textAlignment="RIGHT" textFill="RED" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+                              <Label fx:id="emailErr" layoutX="328.0" layoutY="117.0" text="Err" textAlignment="RIGHT" textFill="RED" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="12" GridPane.valignment="TOP" />
+                              <Label fx:id="phoneErr" layoutX="328.0" layoutY="387.0" text="Err" textAlignment="RIGHT" textFill="RED" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="TOP" />
+                              <Label fx:id="loyaltyErr" layoutX="328.0" layoutY="297.0" text="Err" textAlignment="RIGHT" textFill="RED" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="TOP" />
                            </children>
                         </GridPane>
                         <Separator prefWidth="200.0">
@@ -218,12 +218,12 @@
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" vgrow="ALWAYS" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
                               <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
@@ -236,57 +236,51 @@
                                  <font>
                                     <Font size="14.0" />
                                  </font>
-                                 <graphic>
-                                    <Label fx:id="checkinTxt">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                 </graphic>
                               </Label>
-                              <DatePicker maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <Button fx:id="updateCheckin" mnemonicParsing="false" text="Update" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+                              <DatePicker fx:id="checkinInput" editable="false" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
+                                    <Button fx:id="updateDate" disable="true" mnemonicParsing="false" onAction="#onUpdateDate" text="Update" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.rowSpan="2" GridPane.valignment="CENTER">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Button>
-                              <Text fx:id="checkinError" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Error" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="TOP" />
-                              <Button fx:id="updateCheckout" mnemonicParsing="false" text="Update" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Button>
-                              <DatePicker maxWidth="1.7976931348623157E308" promptText="checkoutInput" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <Text fx:id="checkoutError" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Error" visible="false" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+                              <DatePicker fx:id="checkoutInput" editable="false" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
                               <Label contentDisplay="RIGHT" text="Check-Out:" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
+                              </Label>
+                              <Spinner fx:id="adultSpinner" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                              <Label contentDisplay="RIGHT" text="Adults:" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
                                  <graphic>
-                                    <Label fx:id="checkoutTxt" text="Label">
+                                    <Label fx:id="nAdults">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
                                  </graphic>
                               </Label>
-                              <Spinner fx:id="adultSpinner" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                              <Label text="Adults:" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                              <Label contentDisplay="RIGHT" text="Children:" GridPane.columnIndex="2" GridPane.rowIndex="5">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
-                              </Label>
-                              <Label text="Children: " GridPane.columnIndex="2" GridPane.rowIndex="5">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
+                                 <graphic>
+                                    <Label fx:id="nChildren">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </graphic>
                               </Label>
                               <Spinner fx:id="childSpinner" layoutX="65.0" layoutY="198.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                              <Button fx:id="updateGuests" mnemonicParsing="false" text="Update" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="7">
+                              <Button fx:id="updateGuests" mnemonicParsing="false" onAction="#onUpdateGuests" text="Update" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="7">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Button>
+                              <Label fx:id="dateErr" text="Err" textAlignment="RIGHT" textFill="RED" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="TOP" />
                            </children>
                         </GridPane>
                      </children>
@@ -319,22 +313,22 @@
                               </Label>
                               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <children>
-                                    <Button fx:id="addRoom" mnemonicParsing="false" text="Add Room" textAlignment="CENTER" wrapText="true">
+                                    <Button fx:id="addRoom" mnemonicParsing="false" onAction="#onAddRoom" text="Add Room" textAlignment="CENTER" wrapText="true">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="rmvRoom" maxHeight="-Infinity" mnemonicParsing="false" text="Remove Room" textAlignment="CENTER" wrapText="true">
+                                    <Button fx:id="rmvRoom" maxHeight="-Infinity" mnemonicParsing="false" onAction="#onRemoveRoom" text="Remove Room" textAlignment="CENTER" wrapText="true">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="repRoom" mnemonicParsing="false" text="Replace Room" textAlignment="CENTER">
+                                    <Button fx:id="repRoom" mnemonicParsing="false" onAction="#onReplaceRoom" text="Replace Room" textAlignment="CENTER">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Button>
-                                    <ComboBox fx:id="roomFilter" promptText="[Room Filter]" />
+                                    <ComboBox fx:id="roomFilter" promptText="ALL ROOMS" />
                                  </children>
                               </VBox>
                               <Label text="Booked Rooms" GridPane.halignment="CENTER" GridPane.rowIndex="1">
@@ -397,11 +391,12 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
                               <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="30.0" />
                            </rowConstraints>
                            <children>
-                              <Button fx:id="applyDiscount" mnemonicParsing="false" text="Apply Discount" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+                              <Button fx:id="applyDiscount" mnemonicParsing="false" onAction="#onApplyDiscount" text="Apply Discount" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.rowSpan="2" GridPane.valignment="CENTER">
                                  <font>
                                     <Font size="14.0" />
                                  </font></Button>
@@ -415,7 +410,7 @@
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                               <Label contentDisplay="RIGHT" text="Total:" GridPane.rowIndex="6">
+                               <Label contentDisplay="RIGHT" text="Total:" GridPane.rowIndex="7">
                                    <font>
                                        <Font size="14.0" />
                                    </font>
@@ -435,12 +430,12 @@
                                        <Font size="14.0" />
                                    </font>
                                </Label>
-                               <Label contentDisplay="RIGHT" text="Remaining Balance:" GridPane.rowIndex="8">
+                               <Label contentDisplay="RIGHT" text="Remaining Balance:" GridPane.rowIndex="9">
                                    <font>
                                        <Font size="14.0" />
                                    </font>
                                </Label>
-                               <Label contentDisplay="RIGHT" text="Payments Made:" GridPane.rowIndex="7">
+                               <Label contentDisplay="RIGHT" text="Payments Made:" GridPane.rowIndex="8">
                                    <font>
                                        <Font size="14.0" />
                                    </font>
@@ -465,22 +460,22 @@
                                          <Font size="14.0" />
                                      </font>
                                  </Label>
-                                 <Label fx:id="billTotal" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                                 <Label fx:id="billTotal" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="7">
                                      <font>
                                          <Font size="14.0" />
                                      </font>
                                  </Label>
-                                 <Label fx:id="billPayments" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                                 <Label fx:id="billPayments" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="8">
                                      <font>
                                          <Font size="14.0" />
                                      </font>
                                  </Label>
-                                 <Label fx:id="billBalance" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                                 <Label fx:id="billBalance" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="9">
                                      <font>
                                          <Font size="14.0" />
                                      </font>
                                  </Label>
-                              <Button fx:id="applyPayment" mnemonicParsing="false" text="Apply Payment" GridPane.columnIndex="3" GridPane.rowIndex="9" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+                              <Button fx:id="applyPayment" mnemonicParsing="false" onAction="#onApplyPayment" text="Apply Payment" GridPane.columnIndex="3" GridPane.rowIndex="10" GridPane.rowSpan="2" GridPane.valignment="CENTER">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -498,69 +493,31 @@
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <Label alignment="TOP_LEFT" contentDisplay="BOTTOM" text="Select a charge to apply discount:" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="chargeBox" maxWidth="-Infinity" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                              <Label contentDisplay="RIGHT" text="Amount:" GridPane.columnIndex="3" GridPane.rowIndex="8">
+                              <Label contentDisplay="RIGHT" text="Amount:" GridPane.columnIndex="3" GridPane.rowIndex="9">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                                  <graphic>
-                                    <TextField fx:id="paymentInput" />
+                                    <TextField fx:id="paymentInput">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font></TextField>
                                  </graphic>
                               </Label>
-                              <Label text="Select payment type:" GridPane.columnIndex="3" GridPane.rowIndex="6">
+                              <Label text="Select payment type:" GridPane.columnIndex="3" GridPane.rowIndex="7">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="billRoomChange" text="Label" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="billAddonChange" layoutX="219.0" layoutY="80.0" text="Label" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="billSubtotalChange" layoutX="219.0" layoutY="110.0" text="Label" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="3">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="billTaxChange" layoutX="219.0" layoutY="140.0" text="Label" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="4">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="billTotalChange" layoutX="219.0" layoutY="200.0" text="Label" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="billPaymentsChange" layoutX="252.0" layoutY="200.0" text="Label" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="7">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="billBalanceChange" layoutX="252.0" layoutY="230.0" text="Label" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="8">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="paymentErr" text="Err" textFill="RED" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="9" />
-                              <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="3" GridPane.rowIndex="7">
+                              <Label fx:id="paymentErr" text="Err" textFill="RED" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="10" />
+                              <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="3" GridPane.rowIndex="8">
                                  <children>
-                                    <Label fx:id="pointsLbl" contentDisplay="RIGHT" text="Available Points:">
+                                    <Label fx:id="pointsLbl" contentDisplay="RIGHT" text="Available Points:" visible="false">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
-                                    <Label fx:id="pointsTxt" text="Pts">
+                                    <Label fx:id="pointsTxt" text="Pts" visible="false">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
@@ -569,31 +526,36 @@
                                  </children>
                               </HBox>
                               <Label fx:id="discountErr" layoutX="691.0" layoutY="312.0" text="Err" textFill="RED" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.valignment="TOP" />
-                              <Label fx:id="pointsEarned" contentDisplay="RIGHT" layoutX="10.0" layoutY="286.0" text="Loyalty Points Earned:" GridPane.rowIndex="10">
+                              <Label fx:id="pointsEarned" contentDisplay="RIGHT" layoutX="10.0" layoutY="286.0" text="Loyalty Points Earned:" visible="false" GridPane.rowIndex="11">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="billPoints" layoutX="219.0" layoutY="286.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="10">
+                              <Label fx:id="billPoints" layoutX="219.0" layoutY="286.0" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="11">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="billPointsChange" layoutX="219.0" layoutY="350.0" text="Label" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="10">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="5">
+                              <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="6">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </Separator>
-                              <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+                              <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="10" GridPane.valignment="CENTER">
                                  <GridPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </GridPane.margin>
                               </Separator>
+                              <Label contentDisplay="RIGHT" layoutX="10.0" layoutY="140.0" text="Discount:" GridPane.rowIndex="5">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="billDiscount" layoutX="219.0" layoutY="140.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
                            </children>
                            <VBox.margin>
                               <Insets left="10.0" right="10.0" />

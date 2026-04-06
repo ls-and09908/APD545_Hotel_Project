@@ -82,4 +82,22 @@ public class AppModule extends AbstractModule {
     int provideLoyaltyConvertRate(){
         return AppConfig.getLoyaltyConversionRate();
     }
+
+    @Provides
+    @Named("adminDiscount")
+    double provideAdminDiscount(){
+        return AppConfig.getAdminDiscount();
+    }
+
+    @Provides
+    @Named("managerDiscount")
+    double provideManagerDiscount(){
+        return AppConfig.getManagerDiscount();
+    }
+
+    @Provides
+    @Named("depositPercent")
+    double provideDepositPercent(){
+        return AppConfig.getDepositPercent();
+    }
 }

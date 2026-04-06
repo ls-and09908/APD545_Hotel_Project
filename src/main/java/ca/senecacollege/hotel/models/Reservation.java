@@ -109,6 +109,14 @@ public class Reservation {
 
     public ReservationStatus getStatus() { return status; }
 
+    public int getAdults() { return adults; }
+
+    public int getChildren() { return children; }
+
+    public void removeAddOn(AddOn a){ this.addOns.remove(a); }
+
+    public void removeRoom(Room r){ this.rooms.remove(r); }
+
     public void setStatus(ReservationStatus status) {
         this.status = status;
     }

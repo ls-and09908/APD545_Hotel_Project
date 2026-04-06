@@ -12,4 +12,5 @@ public interface IGuestRepository {
     List<Guest> getLoyalGuests();
     Optional<Guest> getLoyaltyMember(int loyaltyNum);
     Optional<Integer> getNewLoyaltyNumber(); // gets a new loyalty number as +1 from the previous loyalty member number
+    Optional<Guest> findGuestEmail(String email);
 }

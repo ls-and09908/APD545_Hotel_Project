@@ -1,13 +1,14 @@
 package ca.senecacollege.hotel.services;
 
-import ca.senecacollege.hotel.models.Billing;
-import ca.senecacollege.hotel.models.Payment;
-import ca.senecacollege.hotel.models.Reservation;
+import ca.senecacollege.hotel.models.*;
 
 public interface IBillingService {
     Billing generateBill(Reservation r);
+    Billing updateBillCharges(Reservation r);
     int getWeekendDays(Reservation r);
     void saveBill(Billing b);
     void checkUpdateBillBalance(Billing b);
-    boolean addPaymentToBill(Payment p, Billing b);
+    boolean addPaymentToBill(Double amount, PaymentMethod type, Billing bill);
+    boolean applyDiscount(Billing b, double percent, Role user);
+    double getDeposit(Billing b);
 }

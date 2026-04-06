@@ -25,6 +25,4 @@ module ca.senecacollege.application {
     exports ca.senecacollege.hotel.repositories to com.google.guice;
     exports ca.senecacollege.hotel.utilities to com.google.guice;
     opens ca.senecacollege.hotel.utilities to com.google.guice;
-
-    exports ca.senecacollege.hotel.tests;
 }

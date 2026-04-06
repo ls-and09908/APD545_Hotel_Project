@@ -7,7 +7,7 @@
 }
 
 .date-picker {
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
 }
 
 .date-picker-popup {
@@ -19,5 +19,9 @@
 }
 
 .combo-box .context-menu {
+    -fx-font-size: 14px;
+}
+
+.spinner .text-field {
     -fx-font-size: 14px;
 }

@@ -88,4 +88,9 @@ public class Room implements ChargeSource {
     public int getRoomNumber(){
         return roomNumber;
     }
+
+    @Override
+    public String toString() {
+        return "Room " + roomNumber +": (" + roomType.name() + ")";
+    }
 }

@@ -1,7 +1,6 @@
 package ca.senecacollege.hotel.services;
 
 import ca.senecacollege.hotel.models.Guest;
-import ca.senecacollege.hotel.repositories.GuestRepository;
 import ca.senecacollege.hotel.repositories.IGuestRepository;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -40,7 +39,7 @@ public class LoyaltyService implements ILoyaltyService {
      */
     @Override
     public int getNewLoyaltyNum() {
-        return _guestRepo.getNewLoyaltyNumber().orElse(1);
+        return _guestRepo.getNewLoyaltyNumber().orElse(1) + 1;
     }
 
     /**
@@ -50,7 +49,26 @@ public class LoyaltyService implements ILoyaltyService {
      */
     @Override
     public int getPointsFromPayment(double paymentAmt) {
-        // TODO: finish this calculation
-        return 0;
+        if(paymentAmt < 0) return 0;
+        return (int) (paymentAmt * _ptsEarnRate);
     }
+
+    @Override
+    public void earnPoints(int pts, Guest g){
+        if(g.isLoyal()) g.setLoyaltyPoints(g.getLoyaltyPoints() + pts);
+    }
+
+    @Override
+    public int spendPoints(double amt, Guest g){
+        int pts = (int) amt*_ptsPerDollar;
+        if(g.isLoyal()) g.setLoyaltyPoints(g.getLoyaltyPoints() - pts);
+        return pts;
+    }
+
+    @Override
+    public double pointsToDollars(int pts){
+        if (pts > _redemptionCap) return _redemptionCap/_ptsPerDollar;
+        return pts/_ptsPerDollar;
+    }
+
 }

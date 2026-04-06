@@ -48,4 +48,6 @@ public class AppConfig {
     public static int getLoyaltyConversionRate(){
         return Integer.parseInt(config.getProperty("points_to_dollar"));
     }
+
+    public static double getDepositPercent(){ return Double.parseDouble(config.getProperty("deposit_min_percent")); }
 }

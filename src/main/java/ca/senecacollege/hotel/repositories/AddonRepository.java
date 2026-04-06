@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public class AddonRepository implements IAddonRepository {
@@ -49,7 +50,7 @@ public class AddonRepository implements IAddonRepository {
     public Optional<AddOn> getAddOn(String name) {
         try(Session session = sessionFactory.openSession()) {
             var q = session.createQuery("FROM AddOn a WHERE a.name = :name", AddOn.class);
-            q.setParameter("name", name);
+            q.setParameter("name", name.toUpperCase());
             return q.uniqueResultOptional();
         }
     }

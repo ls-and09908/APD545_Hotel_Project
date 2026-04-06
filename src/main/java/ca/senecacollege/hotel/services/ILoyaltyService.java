@@ -8,4 +8,9 @@ public interface ILoyaltyService {
     Guest getLoyalGuest(int loyaltyNum);
     int getNewLoyaltyNum();
     int getPointsFromPayment(double paymentAmt);
+    void earnPoints(int pts, Guest g);
+
+    int spendPoints(double amt, Guest g);
+
+    double pointsToDollars(int pts);
 }
