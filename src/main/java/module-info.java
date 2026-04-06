@@ -12,6 +12,7 @@ module ca.senecacollege.application {
     requires jbcrypt;
     requires org.slf4j;
     requires java.naming;
+    requires java.desktop;
 
     opens ca.senecacollege.hotel.application to javafx.fxml;
     exports ca.senecacollege.hotel.application;

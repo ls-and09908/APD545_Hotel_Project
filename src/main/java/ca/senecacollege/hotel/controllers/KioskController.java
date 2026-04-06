@@ -1,28 +1,28 @@
 package ca.senecacollege.hotel.controllers;
 
-import ca.senecacollege.hotel.application.App;
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.services.BillingService;
 import ca.senecacollege.hotel.services.LoyaltyService;
 import ca.senecacollege.hotel.services.ReservationService;
-import ca.senecacollege.hotel.services.RoomFactory;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +44,14 @@ public class KioskController implements SceneManagerAware {
     private BillingService _billingService;
     private LoyaltyService _loyaltyService;
     private ReservationService _reservationService;
+
+    private List<Image> imageList = new ArrayList<>();
+    private int imageIndex = 0;
+    private ArrayList<String> imageText;
+    @FXML
+    private ImageView diagramImage;
+    @FXML
+    private Label diagramLbl;
 
     //<editor-fold desc="FXMLElements">
     //<editor-fold desc="WelcomeFXML">
@@ -192,8 +200,32 @@ public class KioskController implements SceneManagerAware {
     }
 
     @FXML
-    private void initialize(){
+    private void initialize() throws IOException {
         disableNextButtons();
+        if(diagramImage != null){
+            imageText = new ArrayList<>();
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk1.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk2.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk3.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk4.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk5.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk6.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk7.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk8.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk9.png")));
+            imageList.add(new Image(getClass().getResourceAsStream("/ca/senecacollege/hotel/application/Kiosk10.png")));
+            imageText.add("Begin by selecting the number of guests.");
+            imageText.add("Select your check in and check out dates.");
+            imageText.add("Ensure you are checking out after checking in and that your check in is before today.");
+            imageText.add("Select which room styles you would like.");
+            imageText.add("Alternative our system can suggest rooms for you.");
+            imageText.add("Fill out your personal information.");
+            imageText.add("Double check that everything is correct.");
+            imageText.add("Select any additional addons.");
+            imageText.add("Review your booking.");
+            imageText.add("Confirm one final time.");
+            diagramImage.setImage(imageList.get(0));
+        }
         if(billBaseCost != null){
             setBillingData();
             setBillingDisplay();
@@ -478,6 +510,23 @@ public class KioskController implements SceneManagerAware {
         loyaltyErr.setVisible(true);
 
         return null;
+    }
+
+    @FXML
+    private void nextSlidePress(){
+        imageIndex = (imageIndex + 1) % 10;
+        diagramImage.setImage(imageList.get(imageIndex));
+        diagramLbl.setText(imageText.get(imageIndex));
+    }
+
+    @FXML
+    private void prevSlidePress(){
+        imageIndex -= 1;
+        if(imageIndex < 0){
+            imageIndex = 8;
+        }
+        diagramImage.setImage(imageList.get(imageIndex));
+        diagramLbl.setText(imageText.get(imageIndex));
     }
 
     @FXML

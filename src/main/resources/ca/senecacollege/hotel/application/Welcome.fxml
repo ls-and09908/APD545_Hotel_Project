@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -21,28 +20,22 @@
          </padding>
       </Label>
    </top>
-   <center>
-      <ImageView fitHeight="440.0" fitWidth="870.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-         <image>
-<!--            <Image url="@../../../../../../Pictures/Screenshots/Screenshot%20from%202026-03-09%2010-33-28.png" />-->
-         </image></ImageView>
-   </center>
    <right>
       <VBox alignment="CENTER" prefHeight="790.0" prefWidth="270.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="nextSlideBtn" mnemonicParsing="false" text="Next" textAlignment="CENTER">
+            <Button fx:id="nextSlideBtn" mnemonicParsing="false" onAction="#nextSlidePress" text="Next" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="50.0" />
                </VBox.margin>
             </Button>
-            <Button fx:id="prevSlideBtn" mnemonicParsing="false" text="Prev" />
+            <Button fx:id="prevSlideBtn" mnemonicParsing="false" onAction="#prevSlidePress" text="Prev" />
          </children>
       </VBox>
    </right>
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="feedbackBtn" layoutX="710.0" layoutY="18.0" mnemonicParsing="false" prefHeight="84.0" prefWidth="368.0" text="Feedback" textAlignment="CENTER" onAction="#onFeedbackPress">
+            <Button fx:id="feedbackBtn" layoutX="710.0" layoutY="18.0" mnemonicParsing="false" onAction="#onFeedbackPress" prefHeight="84.0" prefWidth="368.0" text="Feedback" textAlignment="CENTER">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin></Button>
@@ -50,7 +43,7 @@
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin></Button>
-            <Button fx:id="adminLoginBtn" layoutX="526.0" layoutY="18.0" mnemonicParsing="false" prefHeight="84.0" prefWidth="368.0" text="Admin login" textAlignment="CENTER" onAction="#onAdminLoginPress">
+            <Button fx:id="adminLoginBtn" layoutX="526.0" layoutY="18.0" mnemonicParsing="false" onAction="#onAdminLoginPress" prefHeight="84.0" prefWidth="368.0" text="Admin login" textAlignment="CENTER">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin></Button>
@@ -60,7 +53,7 @@
    <left>
       <VBox alignment="CENTER" prefHeight="690.0" prefWidth="226.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="rulesBtn" mnemonicParsing="false" prefHeight="327.0" prefWidth="182.0" text="Rules and Regulations" textAlignment="CENTER" wrapText="true" onAction="#rulesAndRegDialog">
+            <Button fx:id="rulesBtn" mnemonicParsing="false" onAction="#rulesAndRegDialog" prefHeight="327.0" prefWidth="182.0" text="Rules and Regulations" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="26.0" />
                </font>
@@ -68,4 +61,15 @@
          </children>
       </VBox>
    </left>
+   <center>
+      <VBox alignment="CENTER" prefHeight="583.0" prefWidth="904.0" style="-fx-background-color: grey; -fx-border-color: black; -fx-border-image-width: 5;" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="diagramImage" fitHeight="300.0" fitWidth="450.0" pickOnBounds="true" preserveRatio="true" />
+             <Label fx:id="diagramLbl" alignment="CENTER" text="Begin by selecting the number of guests.">
+               <font>
+                  <Font size="36.0" />
+               </font></Label>
+         </children>
+      </VBox>
+   </center>
 </BorderPane>

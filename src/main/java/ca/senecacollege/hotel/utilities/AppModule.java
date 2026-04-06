@@ -26,6 +26,7 @@ public class AppModule extends AbstractModule {
         bind(ILoyaltyService.class).to(LoyaltyService.class).in(Singleton.class);
 
         bind(IReservationRepository.class).to(ReservationRepository.class).in(Singleton.class);
+        bind(IAuthService.class).to(AuthService.class).in(Singleton.class);
         bind(IPaymentRepository.class).to(PaymentRepository.class).in(Singleton.class);
         bind(IAddonRepository.class).to(AddonRepository.class).in(Singleton.class);
         bind(IAuditLogRepository.class).to(AuditLogRepository.class).in(Singleton.class);

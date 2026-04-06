@@ -62,7 +62,7 @@ public class DBTester {
         Billing bill = res.getBilling();
 
         bill.addCharge(new Charge(a2, bill, 1, _stdPrice));
-        bill.addPayment(new Payment(bill, 60.0, guest, date));
+//        bill.addPayment(new Payment(bill, 60.0, guest, date));
         _bs.checkUpdateBillBalance(bill);
 
         Reservation res2 = new Reservation(guest2, 1, 4, date, date.plusDays(2));
@@ -70,15 +70,15 @@ public class DBTester {
 
         bill2.addCharge(new Charge(a4, bill2, 1, _stdPrice));
         bill2.addCharge(new Charge(a3, bill2, 2, _stdPrice));
-        bill2.addPayment(new Payment(bill2, 100.0, guest2, date));
+//        bill2.addPayment(new Payment(bill2, 100.0, guest2, date));
         _bs.checkUpdateBillBalance(bill2);
 
         // Billing service small tests
         Reservation res3 = new Reservation(guest, 3, 2, date.plusDays(6), date.plusDays(12));
         res3.addRoom(r2);
         Billing bill3 = _bs.generateBill(res3);
-        Payment tp3 = new Payment(bill3, 16.23, guest, date);
-        bill3.addPayment(tp3);
+//        Payment tp3 = new Payment(bill3, 16.23, guest, date);
+//        bill3.addPayment(tp3);
         res3.setBilling(bill3);
         _bs.checkUpdateBillBalance(bill3);
 
