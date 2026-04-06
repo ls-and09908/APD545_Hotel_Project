@@ -39,7 +39,7 @@
                   <Insets top="5.0" />
                </VBox.margin>
             </Text>
-            <TextField>
+            <TextField fx:id="nameSearch">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>
@@ -49,7 +49,7 @@
                   <Insets top="35.0" />
                </VBox.margin>
             </Text>
-            <TextField layoutX="10.0" layoutY="50.0">
+            <TextField fx:id="phoneSearch" layoutX="10.0" layoutY="50.0">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>
@@ -59,7 +59,7 @@
                   <Insets top="35.0" />
                </VBox.margin>
             </Text>
-            <DatePicker>
+            <DatePicker fx:id="fromSearch">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>
@@ -69,7 +69,7 @@
                   <Insets top="35.0" />
                </VBox.margin>
             </Text>
-            <DatePicker layoutX="10.0" layoutY="138.0">
+            <DatePicker fx:id="toSearch" layoutX="10.0" layoutY="138.0">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>
@@ -79,7 +79,7 @@
                   <Insets top="35.0" />
                </VBox.margin>
             </Text>
-            <TextField layoutX="10.0" layoutY="94.0">
+            <TextField fx:id="statusSearch" layoutX="10.0" layoutY="94.0">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>
@@ -89,12 +89,12 @@
                   <Insets top="35.0" />
                </VBox.margin>
             </Text>
-            <TextField layoutX="10.0" layoutY="226.0">
+            <TextField fx:id="emailSearch" layoutX="10.0" layoutY="226.0">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>
             </TextField>
-            <Button mnemonicParsing="false" text="Search">
+            <Button mnemonicParsing="false" text="Search" onAction="#handleSearch">
                <VBox.margin>
                   <Insets top="50.0" />
                </VBox.margin>
@@ -127,7 +127,7 @@
                   <Insets bottom="25.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="74.0" layoutY="435.0" mnemonicParsing="false" text="Cancel Booking">
+            <Button layoutX="74.0" layoutY="435.0" mnemonicParsing="false" onAction="#handleCancelBooking" text="Cancel Booking">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>

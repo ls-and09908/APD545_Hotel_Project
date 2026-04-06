@@ -3,6 +3,7 @@ package ca.senecacollege.hotel.controllers;
 import ca.senecacollege.hotel.models.AdminUser;
 import ca.senecacollege.hotel.models.Guest;
 import ca.senecacollege.hotel.models.Reservation;
+import ca.senecacollege.hotel.models.ReservationStatus;
 import ca.senecacollege.hotel.services.AuthService;
 import ca.senecacollege.hotel.services.IAuthService;
 import ca.senecacollege.hotel.services.IReservationService;
@@ -12,11 +13,14 @@ import com.google.inject.Inject;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class AdminController implements SceneManagerAware {
@@ -24,7 +28,6 @@ public class AdminController implements SceneManagerAware {
     private final IReservationService _resService;
     private AdminUser adminuser;
     SceneManager sceneManager;
-
 
     @FXML
     Label errLbl;
@@ -46,6 +49,18 @@ public class AdminController implements SceneManagerAware {
     TableColumn<Reservation, String> outCol;
     @FXML
     TableColumn<Reservation, String> statusCol;
+    @FXML
+    TextField nameSearch;
+    @FXML
+    TextField phoneSearch;
+    @FXML
+    TextField statusSearch;
+    @FXML
+    TextField emailSearch;
+    @FXML
+    DatePicker fromSearch;
+    @FXML
+    DatePicker toSearch;
 
     @Inject
     public AdminController(IAuthService authService, IReservationService resService){
@@ -60,15 +75,31 @@ public class AdminController implements SceneManagerAware {
 
     public void initialize(){
         if(nameCol != null){
-            ObservableList<Reservation> allRes = FXCollections.observableArrayList(_resService.getAllReservations());
-            adminTable.setItems(allRes);
-            nameCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getName()));
-            phoneCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getPhone()));
-            emailCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getEmail()));
-            statusCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getStatus())));
-            inCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckIn())));
-            outCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckOut())));
+            setTableData(null);
+            phoneSearch.textProperty().addListener((observable, oldValue, newValue) ->{
+                if(!newValue.matches("\\d*")){
+                    phoneSearch.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            });
         }
+    }
+
+    private void setTableData(ObservableList<Reservation> resList){
+        ObservableList<Reservation> allRes;
+        if(resList == null) {
+            allRes = FXCollections.observableArrayList(_resService.getAllReservations());
+        }
+        else{
+            allRes = resList;
+        }
+        adminTable.setItems(allRes);
+        nameCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getName()));
+        phoneCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getPhone()));
+        emailCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getEmail()));
+        statusCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getStatus())));
+        inCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckIn())));
+        outCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckOut())));
+
     }
 
     @FXML
@@ -83,6 +114,42 @@ public class AdminController implements SceneManagerAware {
         else {
             errLbl.setText("User not found");
         }
+    }
+
+    @FXML
+    private void handleSearch(){
+
+        ObservableList<Reservation> observableMasterData = FXCollections.observableArrayList(_resService.getAllReservations());
+        FilteredList<Reservation> filteredRes = getReservations(observableMasterData);
+//        adminTable.setItems(filteredList);
+        setTableData(filteredRes);
+    }
+
+    private FilteredList<Reservation> getReservations(ObservableList<Reservation> observableMasterData) {
+        String searchedName = nameSearch.getText();
+        String searchedPhone = phoneSearch.getText();
+        String searchedEmail = emailSearch.getText();
+        String searchedStatus = statusSearch.getText();
+        LocalDate searchedIn = fromSearch.getValue();
+        LocalDate searchedOut = toSearch.getValue();
+        FilteredList<Reservation> filteredRes = new FilteredList<>(observableMasterData, r->{
+            return r.getGuest().getName().equalsIgnoreCase(searchedName)
+                    || r.getGuest().getEmail().equalsIgnoreCase(searchedEmail)
+                    || r.getGuest().getPhone().equalsIgnoreCase(searchedPhone)
+                    || String.valueOf(r.getStatus()).equals(searchedStatus)
+                    || r.getCheckOut().equals(searchedOut)
+                    || r.getCheckIn().equals(searchedIn);
+        });
+
+        SortedList<Reservation> filteredList = new SortedList<>(filteredRes);
+        return filteredRes;
+    }
+
+
+    @FXML
+    private void handleCancelBooking(){
+        Reservation res = (Reservation) adminTable.getSelectionModel().getSelectedItem();
+        res.setStatus(ReservationStatus.CANCELLED);
     }
 
     @FXML
@@ -101,8 +168,6 @@ public class AdminController implements SceneManagerAware {
 
     @FXML
     private void toAddEditBooking() throws IOException{
-        System.out.println(adminuser.getUsername() + "click on add booking");
-
         Reservation res = (Reservation) adminTable.getSelectionModel().getSelectedItem();
         sceneManager.switchScene("/ca/senecacollege/hotel/application/AddUpdateBooking.fxml", (AdminBookingController controller) -> {
             controller.setRes(res);
