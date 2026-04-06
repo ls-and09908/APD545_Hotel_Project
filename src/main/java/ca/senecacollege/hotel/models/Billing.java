@@ -23,7 +23,7 @@ public class Billing {
 
     private Double balance;
 
-    private Double discount = 0.0;
+    private transient Double discount = 0.0;
 
     public Billing(){}
 

@@ -349,6 +349,8 @@ public class AdminBookingController implements SceneManagerAware {
         checkoutBtn.setVisible(true);
         checkoutBtn.disableProperty().bind(billBalance.textProperty().isNotEqualTo("0.00"));
 
+        System.out.println("Guest: " + res.get().getGuest());
+
         checkinInput.setValue(res.get().getCheckIn());
         checkoutInput.setValue(res.get().getCheckOut());
         nAdults.setText(String.valueOf(res.get().getAdults()));

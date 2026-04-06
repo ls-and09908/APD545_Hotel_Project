@@ -98,7 +98,7 @@ public class ReportController implements SceneManagerAware {
         LocalDate laterRange = toDatePicker.getValue() == null ? earlierRange.plusYears(1) : toDatePicker.getValue();
         ObservableList<Room> allRooms = FXCollections.observableArrayList(_reportingService.getRoomWithOccupancyStatus(earlierRange, laterRange));
 
-        List<Reservation> reservationDates = FXCollections.observableArrayList(_reportingService.getAllReservationsBetweenDates(earlierRange,laterRange));
+//        List<Reservation> reservationDates = FXCollections.observableArrayList(_reportingService.getAllReservationsBetweenDates(earlierRange,laterRange));
 
         TableColumn<Room, LocalDate> date = new TableColumn<>("Date");
         date.setMinWidth(500);

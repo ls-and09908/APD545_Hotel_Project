@@ -11,5 +11,6 @@ public interface IReservationService {
     Reservation getReservation(int reservationNumber);
     AddOn getAddOn(String name);
     List<RoomSet> getRoomSuggestion(int nAdults, int nChildren);
+    public List<Reservation> getAllReservations();
     boolean checkGuestEmail(String email);
 }

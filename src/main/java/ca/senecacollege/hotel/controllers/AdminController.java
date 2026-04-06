@@ -9,10 +9,11 @@ import ca.senecacollege.hotel.services.IReservationService;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
@@ -31,7 +32,20 @@ public class AdminController implements SceneManagerAware {
     TextField usernameInput;
     @FXML
     PasswordField passwordInput;
-
+    @FXML
+    TableView adminTable;
+    @FXML
+    TableColumn<Reservation, String> nameCol;
+    @FXML
+    TableColumn<Reservation, String> phoneCol;
+    @FXML
+    TableColumn<Reservation, String> emailCol;
+    @FXML
+    TableColumn<Reservation, String> inCol;
+    @FXML
+    TableColumn<Reservation, String> outCol;
+    @FXML
+    TableColumn<Reservation, String> statusCol;
 
     @Inject
     public AdminController(IAuthService authService, IReservationService resService){
@@ -42,6 +56,19 @@ public class AdminController implements SceneManagerAware {
     @Override
     public void setSceneManager(SceneManager sceneManager){
         this.sceneManager = sceneManager;
+    }
+
+    public void initialize(){
+        if(nameCol != null){
+            ObservableList<Reservation> allRes = FXCollections.observableArrayList(_resService.getAllReservations());
+            adminTable.setItems(allRes);
+            nameCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getName()));
+            phoneCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getPhone()));
+            emailCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getEmail()));
+            statusCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getStatus())));
+            inCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckIn())));
+            outCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckOut())));
+        }
     }
 
     @FXML
@@ -76,7 +103,7 @@ public class AdminController implements SceneManagerAware {
     private void toAddEditBooking() throws IOException{
         System.out.println(adminuser.getUsername() + "click on add booking");
 
-        Reservation res = null;
+        Reservation res = (Reservation) adminTable.getSelectionModel().getSelectedItem();
         sceneManager.switchScene("/ca/senecacollege/hotel/application/AddUpdateBooking.fxml", (AdminBookingController controller) -> {
             controller.setRes(res);
             if (res != null) controller.setGuest(res.getGuest());

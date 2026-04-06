@@ -3,6 +3,7 @@ package ca.senecacollege.hotel.services;
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.*;
 import com.google.inject.Inject;
+import javafx.collections.ObservableList;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -52,6 +53,11 @@ public class ReservationService implements IReservationService {
             }
         }
         return roomList.isEmpty() ? null : roomList;
+    }
+
+    @Override
+    public List<Reservation> getAllReservations(){
+        return _resRepo.getAllReservations();
     }
 
     @Override
