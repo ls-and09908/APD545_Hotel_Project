@@ -103,14 +103,15 @@ public class ReportController implements SceneManagerAware {
         for(Room r: allRooms){
             if(r.getStatus().equals("Occupied")) occupiedRooms+=1;
         }
-        subtitleLbl.setText(subtitleLbl.getText() + " - Occupancy: " + new DecimalFormat("#").format((occupiedRooms/40.00) * 100) + "%");
+        subtitleLbl.setText("Occupancy: " + new DecimalFormat("#").format((occupiedRooms/40.00) * 100) + "%");
 
-        TableColumn<Room, LocalDate> date = new TableColumn<>("Date");
-        date.setMinWidth(500);
+        TableColumn<Room, String> roomNum = new TableColumn<>("Room Number");
+        roomNum.setMinWidth(500);
         TableColumn<Room, String> status = new TableColumn<>("Status");
         status.setMinWidth(500);
         reportTable.setItems(allRooms);
-        reportTable.getColumns().addAll(date, status);
+        reportTable.getColumns().addAll(roomNum, status);
+        roomNum.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getRoomNumber())));
         status.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getStatus()));
         //TODO display Date
     }
@@ -151,6 +152,8 @@ public class ReportController implements SceneManagerAware {
                 reservationCount+=1;
                 allTotal += b.getTotalPayments();
                 allSubtotal += b.getTotalCharges();
+                allDiscounts += b.getDiscount();
+                allTax += b.getTax();
             }
             else if((checkIn.isAfter(LocalDate.now().minusMonths(1)) &&
                     checkIn.isBefore(LocalDate.now().plusDays(1)))
@@ -223,9 +226,9 @@ public class ReportController implements SceneManagerAware {
         revenueReportPeriod = "Year";
     }
     @FXML
-    private void exportToTxt(){
+    private void exportToPDF(){
         try {
-            File file = new File("testFile.txt");
+            File file = new File("testFile.pdf");
             Writer writer = new BufferedWriter(new FileWriter(file));
 
             //This writes header

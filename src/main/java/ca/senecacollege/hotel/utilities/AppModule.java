@@ -34,6 +34,7 @@ public class AppModule extends AbstractModule {
         bind(IBillingRepository.class).to(BillingRepository.class).in(Singleton.class);
         bind(IGuestRepository.class).to(GuestRepository.class).in(Singleton.class);
         bind(IWaitlistRepository.class).to(WaitlistRepository.class).in(Singleton.class);
+        bind(IWaitlistService.class).to(WaitlistService.class).in(Singleton.class);
         bind(IFeedbackRepository.class).to(FeedbackRepository.class).in(Singleton.class);
 
         bind(IReportingService.class).to(ReportingService.class).in(Singleton.class);

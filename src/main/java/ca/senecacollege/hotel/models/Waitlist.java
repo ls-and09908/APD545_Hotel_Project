@@ -38,6 +38,19 @@ public class Waitlist {
         return guest;
     }
 
+    public int getChildren(){
+        return children;
+    }
+    public int getAdults(){
+        return adults;
+    }
+    public LocalDate getCheckIn(){
+        return checkIn;
+    }
+    public LocalDate getCheckOut(){
+        return checkOut;
+    }
+
     public void setGuest(Guest guest) {
         this.guest = guest;
     }

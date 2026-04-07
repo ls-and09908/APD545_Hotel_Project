@@ -43,4 +43,17 @@ public class WaitlistRepository implements IWaitlistRepository {
             return Optional.ofNullable(session.get(Waitlist.class, waitlistNum));
         }
     }
+    @Override
+    public void removeWaitlist(Waitlist w){
+        Transaction tx=null;
+        try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
+            session.remove(w);
+            tx.commit();
+        }catch (RuntimeException e){
+            if(tx!=null) tx.rollback();
+            throw e;
+        }
+    }
+
 }

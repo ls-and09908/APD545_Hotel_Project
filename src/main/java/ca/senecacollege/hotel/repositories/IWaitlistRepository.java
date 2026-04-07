@@ -9,4 +9,5 @@ public interface IWaitlistRepository {
     List<Waitlist> getAllWaitlists();
     void saveWaitlist(Waitlist w);
     Optional<Waitlist> getWaitlist(int waitlistNum);
+    public void removeWaitlist(Waitlist w);
 }

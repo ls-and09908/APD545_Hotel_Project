@@ -122,7 +122,7 @@
    <right>
       <VBox alignment="CENTER" prefHeight="800.0" prefWidth="225.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#toAddEditBooking" text="Edit Booking">
+            <Button mnemonicParsing="false" onAction="#toEditBooking" text="Edit Booking">
                <VBox.margin>
                   <Insets bottom="25.0" />
                </VBox.margin>
@@ -132,12 +132,12 @@
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAddEditBooking" text="Add Booking">
+            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAddBooking" text="Add Booking">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="74.0" layoutY="461.0" mnemonicParsing="false" text="Watilist">
+            <Button layoutX="74.0" layoutY="461.0" mnemonicParsing="false" text="Waitlist" onAction="#onWaitlistPress">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>

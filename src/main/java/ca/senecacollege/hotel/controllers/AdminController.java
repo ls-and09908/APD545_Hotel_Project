@@ -7,6 +7,7 @@ import ca.senecacollege.hotel.models.ReservationStatus;
 import ca.senecacollege.hotel.services.AuthService;
 import ca.senecacollege.hotel.services.IAuthService;
 import ca.senecacollege.hotel.services.IReservationService;
+import ca.senecacollege.hotel.services.IWaitlistService;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
 import com.google.inject.Inject;
@@ -16,7 +17,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
@@ -26,6 +29,7 @@ import java.util.Optional;
 public class AdminController implements SceneManagerAware {
     private final IAuthService _authService;
     private final IReservationService _resService;
+    private final IWaitlistService _waitService;
     private AdminUser adminuser;
     SceneManager sceneManager;
 
@@ -63,9 +67,10 @@ public class AdminController implements SceneManagerAware {
     DatePicker toSearch;
 
     @Inject
-    public AdminController(IAuthService authService, IReservationService resService){
+    public AdminController(IAuthService authService, IReservationService resService, IWaitlistService waitService){
         _authService = authService;
         _resService = resService;
+        _waitService = waitService;
     }
 
     @Override
@@ -163,7 +168,7 @@ public class AdminController implements SceneManagerAware {
     }
 
     @FXML
-    private void toAddEditBooking() throws IOException{
+    private void toEditBooking() throws IOException{
         Reservation res = (Reservation) adminTable.getSelectionModel().getSelectedItem();
         sceneManager.switchScene("/ca/senecacollege/hotel/application/AddUpdateBooking.fxml", (AdminBookingController controller) -> {
             controller.setRes(res);
@@ -171,6 +176,27 @@ public class AdminController implements SceneManagerAware {
             else controller.setGuest(null);
             controller.setUser(this.adminuser);
         });
+    }
+
+    @FXML
+    private void toAddBooking() throws IOException {
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/AddUpdateBooking.fxml", (AdminBookingController controller) -> {
+            controller.setGuest(null);
+            controller.setUser(this.adminuser);
+        });
+    }
+
+    @FXML
+    private void onWaitlistPress() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca/senecacollege/hotel/application/WaitlistDialog.fxml"));
+        DialogPane dialogPane = loader.load();
+        Dialog<String> dialog = new Dialog<>();
+        WaitlistController wc = loader.getController();
+        wc.setWaitService(_waitService);
+        dialog.setTitle("Waitlist");
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.setDialogPane(dialogPane);
+        dialog.show();
     }
 
     public void setAdminuser(AdminUser adminuser) {
