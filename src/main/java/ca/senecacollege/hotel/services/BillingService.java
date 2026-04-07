@@ -129,7 +129,7 @@ public class BillingService implements IBillingService {
         Payment payment = new Payment(bill, amount, bill.getReservation().getGuest(), LocalDate.now(), type);
 
         double newBalance = bill.getBalance() - payment.getAmount();
-        if(newBalance < 0.0){
+        if(Math.round(newBalance * 100.0 / 100.0) < 0.0){
             return false;
         }
 

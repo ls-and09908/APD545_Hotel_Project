@@ -80,7 +80,7 @@ public class AdminBookingController implements SceneManagerAware {
 
         showMemberMenus.bind(loyaltyTxt.visibleProperty());
         loyaltyInput.disableProperty().bind(loyaltyTxt.visibleProperty());
-        updateLoyalty.disableProperty().bind(loyaltyInput.textProperty().isEmpty().or(loyaltyErr.visibleProperty()));
+        updateLoyalty.disableProperty().bind(loyaltyInput.textProperty().isEmpty().or(loyaltyErr.visibleProperty().or(loyaltyTxt.textProperty().isNotEmpty())));
         updateEmail.disableProperty().bind(emailInput.textProperty().isEmpty().or(emailErr.visibleProperty()));
         updateName.disableProperty().bind(nameInput.textProperty().isEmpty().or(nameErr.visibleProperty()));
         updatePhone.disableProperty().bind(phoneInput.textProperty().isEmpty().or(phoneErr.visibleProperty()));
@@ -131,9 +131,13 @@ public class AdminBookingController implements SceneManagerAware {
                 Integer num = Integer.parseInt(text);
                 Guest g = retrieveMembership(num);
                 if (g == null){
-                    loyaltyErr.setText("Loyalty not found");
+                    loyaltyErr.setText("Loyalty number not found");
                     loyaltyErr.setVisible(true);
-                } else guest.set(g);
+                } else {
+                    guest.set(g);
+                    loyaltyTxt.setText(text);
+                    loyaltyInput.clear();
+                }
             } catch (NumberFormatException e) {
                 loyaltyErr.setText("Not a number");
                 loyaltyErr.setVisible(true);
@@ -142,32 +146,32 @@ public class AdminBookingController implements SceneManagerAware {
         });
 
         emailInput.textProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue.isBlank()){
+            if (newValue.isBlank() && emailTxt.getText().isBlank()){
                 emailErr.setText(requiredError);
                 emailErr.setVisible(true);
             } else { emailErr.setVisible(false); }
         }));
 
         nameInput.textProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue.isBlank()){
+            if (newValue.isBlank() && nameTxt.getText().isBlank()){
                 nameErr.setText(requiredError);
                 nameErr.setVisible(true);
             } else { nameErr.setVisible(false); }
         }));
 
         phoneInput.textProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue.isBlank()){
+            if (newValue.isBlank() && phoneTxt.getText().isBlank()){
                 phoneErr.setText(requiredError);
                 phoneErr.setVisible(true);
             } else if (!newValue.matches("^[0-9]{1,12}$")) {
                 phoneErr.setText("Must be numerical");
                 phoneErr.setVisible(true);
-                // TODO: log this
+                // TODO: log validation failure
             } else { phoneErr.setVisible(false); }
         }));
 
         countryBox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            if(newValue != null)updateCountry.setDisable(false);
+            if(newValue != null) updateCountry.setDisable(false);
         }));
 
         checkinInput.valueProperty().addListener(((observable, oldValue, newValue) -> {
@@ -207,14 +211,14 @@ public class AdminBookingController implements SceneManagerAware {
         }));
 
         discountInput.textProperty().addListener(((observable, oldValue, newValue) -> {
-            if (!newValue.matches("^\\d{1,2}(\\.\\d{1,2})?")) {
-                discountErr.setText("Discount must be numerical");
+            if (!newValue.isBlank() && !newValue.matches("^\\d{1,2}(\\.\\d{0,2})?")) {
+                discountErr.setText("Discount must be percentage with at most 2 decimal places");
                 discountErr.setVisible(true);
             } else discountErr.setVisible(false);
         }));
 
         paymentInput.textProperty().addListener(((observable, oldValue, newValue) -> {
-            if (!newValue.matches("^\\d+(\\.\\d{1,2})?")) {
+            if (!newValue.isBlank() && !newValue.matches("^\\d+(\\.\\d{0,2})?")) {
                 paymentErr.setText("Payment must be numerical");
                 paymentErr.setVisible(true);
             } else paymentErr.setVisible(false);
@@ -227,6 +231,7 @@ public class AdminBookingController implements SceneManagerAware {
 
         paymentTypeBox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             if (newValue != null){
+                paymentErr.setVisible(false);
                 switch (newValue){
                     case DEPOSIT -> {
                         paymentInput.setDisable(true);
@@ -299,6 +304,9 @@ public class AdminBookingController implements SceneManagerAware {
      * Populates the guest form with the information of the guest passed to the controller
      */
     private void setupGuest(){
+        nameInput.clear();
+        phoneInput.clear();
+        emailInput.clear();
         nameErr.setVisible(false);
         phoneErr.setVisible(false);
         emailErr.setVisible(false);
@@ -306,6 +314,7 @@ public class AdminBookingController implements SceneManagerAware {
         nameTxt.setText(guest.get().getName());
         phoneTxt.setText(guest.get().getPhone());
         emailTxt.setText(guest.get().getEmail());
+        countryTxt.setText(guest.get().getCountry());
         countryBox.getSelectionModel().select(guest.get().getCountry());
     }
 
@@ -315,7 +324,6 @@ public class AdminBookingController implements SceneManagerAware {
     private void setupLoyalGuest(){
         loyaltyTxt.setText(String.valueOf(guest.get().getLoyaltyNum()));
         loyaltyErr.setVisible(false);
-
         signUp.setDisable(true);
         signUp.setVisible(false);
     }
@@ -347,7 +355,7 @@ public class AdminBookingController implements SceneManagerAware {
         saveBtn.setText("Save Changes");
         cancellationBtn.setVisible(true);
         checkoutBtn.setVisible(true);
-        checkoutBtn.disableProperty().bind(billBalance.textProperty().isNotEqualTo("0.00"));
+        checkoutBtn.disableProperty().bind(billBalance.textProperty().isNotEqualTo("$0.00"));
 
         System.out.println("Guest: " + res.get().getGuest());
 
@@ -415,7 +423,6 @@ public class AdminBookingController implements SceneManagerAware {
     private void setupRoomLists(){
         resRooms.setItems(reservationRooms);
         availRooms.setItems(availableRooms);
-
         toggleRoomButtons();
     }
 
@@ -549,42 +556,52 @@ public class AdminBookingController implements SceneManagerAware {
 
     @FXML
     private void onApplyPayment(){
-        PaymentMethod paymentType = paymentTypeBox.getSelectionModel().getSelectedItem();
         try {
-            Double amt = Double.parseDouble(paymentInput.getText());
-            if(paymentType == PaymentMethod.REFUND) amt = -amt;
-            if(_billService.addPaymentToBill(amt, paymentType, res.get().getBilling())){
-                if(paymentType == PaymentMethod.DEPOSIT){
+            PaymentMethod type = paymentTypeBox.getSelectionModel().getSelectedItem();
+            Billing bill = res.get().getBilling();
+            double amt = Double.parseDouble(paymentInput.getText());
+            if (type == PaymentMethod.REFUND) amt = -amt;
+            if(_billService.addPaymentToBill(amt, type, bill)){ // payment successful
+                if(type == PaymentMethod.DEPOSIT){
                     res.get().setStatus(ReservationStatus.BOOKED);
                     paymentTypeBox.getItems().remove(PaymentMethod.DEPOSIT);
                 }
                 paymentErr.setVisible(false);
-                paymentsMade.setValue(res.get().getBilling().getTotalPayments());
-                int numPoints;
-                int ptsEarned;
-                if(paymentType != PaymentMethod.LOYALTY) {
-                    numPoints = _loyaltyService.getPointsFromPayment(amt);
-
-                    ptsEarned = Integer.parseInt(billPoints.getText());
-                    billPoints.setText(String.valueOf(ptsEarned+numPoints));
-                    _loyaltyService.earnPoints(numPoints, guest.get());
-                    pointsTxt.setText(String.format("%d Pts", guest.get().getLoyaltyPoints()));
-                } else {
-                    numPoints = _loyaltyService.spendPoints(amt, guest.get());
-                    ptsEarned = Integer.parseInt(billPoints.getText());
-                    billPoints.setText(String.valueOf(ptsEarned-numPoints));
-                    pointsTxt.setText(String.format("%d Pts", guest.get().getLoyaltyPoints()));
-                }
+                paymentsMade.setValue(bill.getTotalPayments());
+                handlePaymentPts(type, bill, amt);
             } else {
                 paymentErr.setText("Payment cannot be applied.");
                 paymentErr.setVisible(true);
             }
-
         } catch (NumberFormatException e){
             // TODO: log validation failure
-            paymentErr.setText("Invalid value");
+            paymentErr.setText("Invalid value, parse failed.");
             paymentErr.setVisible(true);
         }
+    }
+
+    private void handlePaymentPts(PaymentMethod type, Billing bill, double amt){
+        // TODO: Log points transactions
+        int numPoints;
+        String billPointsText = billPoints.getText();
+        int ptsEarned = Integer.parseInt(billPointsText);
+        switch(type){
+            case LOYALTY:
+                numPoints = _loyaltyService.spendPoints(amt, guest.get());
+                billPointsText = String.valueOf(ptsEarned-numPoints);
+            case REFUND:
+                numPoints = _loyaltyService.getPointsFromPayment(amt);
+                billPointsText = String.valueOf(ptsEarned-numPoints);
+                _loyaltyService.removePoints(-amt, guest.get());
+                break;
+            default:
+                numPoints = _loyaltyService.getPointsFromPayment(amt);
+                billPointsText = String.valueOf(ptsEarned+numPoints);
+                _loyaltyService.earnPoints(numPoints, guest.get());
+        }
+        billPoints.setText(billPointsText);
+        paymentInput.clear();
+        pointsTxt.setText(String.format("%d Pts", guest.get().getLoyaltyPoints()));
     }
 
     @FXML
@@ -595,6 +612,15 @@ public class AdminBookingController implements SceneManagerAware {
             return;
         } else {
             res.get().setGuest(guest.get());
+            _resService.saveReservation(res.get());
+            toDash();
+        }
+    }
+
+    @FXML
+    private void onCheckout() throws IOException {
+        if (_resService.canCheckOut(res.get())){
+            res.get().setStatus(ReservationStatus.CHECKEDOUT);
             _resService.saveReservation(res.get());
             toDash();
         }

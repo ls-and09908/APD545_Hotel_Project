@@ -22,7 +22,6 @@ public class Billing {
     private List<Charge> charges = new ArrayList<>();
 
     private Double balance;
-
     private Double discount = 0.0;
 
     public Billing(){}

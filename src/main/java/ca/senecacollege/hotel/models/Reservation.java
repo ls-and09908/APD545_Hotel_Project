@@ -28,11 +28,11 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status = ReservationStatus.BOOKING;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "RESERVATION_ADDON", joinColumns = @JoinColumn(name = "RES_NUM"), inverseJoinColumns = @JoinColumn(name="ADDON_ID"))
     private Set<AddOn> addOns = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "RESERVATION_ROOM", joinColumns = @JoinColumn(name = "RES_NUM"), inverseJoinColumns = @JoinColumn(name="ROOM_NUM"))
     private List<Room> rooms = new ArrayList<>();
 

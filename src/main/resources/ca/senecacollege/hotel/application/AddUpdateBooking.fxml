@@ -47,7 +47,7 @@
                <font>
                   <Font size="18.0" />
                </font></Button>
-            <Button fx:id="checkoutBtn" mnemonicParsing="false" text="Check-Out" visible="false">
+            <Button fx:id="checkoutBtn" mnemonicParsing="false" onAction="#onCheckout" text="Check-Out" visible="false">
                <font>
                   <Font size="18.0" />
                </font>

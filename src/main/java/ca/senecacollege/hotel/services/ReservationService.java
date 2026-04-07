@@ -93,4 +93,9 @@ public class ReservationService implements IReservationService {
     public boolean checkGuestEmail(String email) {
         return _guestRepo.findGuestEmail(email).isEmpty();
     }
+
+    @Override
+    public boolean canCheckOut(Reservation reservation){
+        return reservation.getBilling().getBalance() == 0.0;
+    }
 }

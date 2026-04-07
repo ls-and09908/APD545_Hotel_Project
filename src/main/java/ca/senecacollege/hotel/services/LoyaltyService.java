@@ -66,6 +66,11 @@ public class LoyaltyService implements ILoyaltyService {
     }
 
     @Override
+    public void removePoints(double amt, Guest g) {
+
+    }
+
+    @Override
     public double pointsToDollars(int pts){
         if (pts > _redemptionCap) return _redemptionCap/_ptsPerDollar;
         return pts/_ptsPerDollar;
