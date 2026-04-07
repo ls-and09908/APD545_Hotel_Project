@@ -30,12 +30,12 @@ public class DBInitializer {
 
             LocalDate date = LocalDate.now();
             List<Guest> guests = List.of(
-                    new Guest("Gab", "1800-8556021", "help@google.com", "Canada"),
+                    new Guest("Gab", "18008556021", "help@google.com", "Canada"),
                     new Guest("Lou", "4168971201", "loulou@yahoo.com", "Canada"),
                     new Guest("Bog Troll", "909823195", "bogtroll@hotmail.ca", "China", 2),
                     new Guest("Helga", "708175023", "helga@sheshelga.com", "Vietnam"),
                     new Guest("Lando", "412341558", "landoes@gmail.com", "Canada", 1),
-                    new Guest("Not a Bee", "18008338122", "buzzbuzz@bees.biz", "United States of America")
+                    new Guest("Not a Bee", "18008338122", "buzzbuzz@bees.biz", "United States of America", 3)
             );
 
             List<AddOn> addons = List.of(
@@ -78,11 +78,12 @@ public class DBInitializer {
             _bs.checkUpdateBillBalance(bill);
 
             Reservation res2 = new Reservation(guests.get(1), 1, 4, date.minusDays(2), date.plusDays(5));
+            res2.setStatus(ReservationStatus.CHECKEDIN);
             res2.addAddOn(addons.get(3));
             res2.addAddOn(addons.get(2));
             res2.addAddOn(addons.get(0));
             res2.addRoom(rooms.get(18));
-            Billing bill2 = _bs.generateBill(res);
+            Billing bill2 = _bs.generateBill(res2);
             bill2.addPayment(new Payment(bill2, 100.60, guests.get(1), date, PaymentMethod.CREDIT));
             _bs.checkUpdateBillBalance(bill2);
 
@@ -132,9 +133,8 @@ public class DBInitializer {
                 session.persist(a);
             }
 
-            res2.setStatus(ReservationStatus.CHECKEDOUT);
-            Feedback fb = new Feedback(guests.get(1), res2, 4, LocalDate.now(), "Yummers", Sentiment.CLEAN);
-            session.merge(fb);
+//            Feedback fb = new Feedback(guests.get(1), res2, 4, LocalDate.now(), "Yummers", Sentiment.CLEAN);
+//            session.merge(fb);
         //Scott section ends here
 
             tx.commit();

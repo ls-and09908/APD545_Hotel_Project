@@ -33,12 +33,12 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="cancellationBtn" mnemonicParsing="false" text="Cancel Booking" visible="false">
+            <Button fx:id="cancellationBtn" mnemonicParsing="false" onAction="#onCancel" text="Cancel Booking" visible="false">
                <font>
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button fx:id="returnBtn" mnemonicParsing="false" onAction="#toDash" text="Return">
+            <Button fx:id="returnBtn" mnemonicParsing="false" onAction="#onReturn" text="Return">
                <font>
                   <Font size="18.0" />
                </font>
@@ -531,7 +531,7 @@
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="billPoints" layoutX="219.0" layoutY="286.0" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="11">
+                              <Label fx:id="billPoints" layoutX="219.0" layoutY="286.0" text="0" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="11">
                                  <font>
                                     <Font size="14.0" />
                                  </font>

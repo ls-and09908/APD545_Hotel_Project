@@ -65,6 +65,10 @@ public class AdminController implements SceneManagerAware {
     DatePicker fromSearch;
     @FXML
     DatePicker toSearch;
+    @FXML
+    private Button cancelBtn;
+    @FXML
+    private Button checkinBtn;
 
     @Inject
     public AdminController(IAuthService authService, IReservationService resService, IWaitlistService waitService){
@@ -87,6 +91,8 @@ public class AdminController implements SceneManagerAware {
                 }
             });
         }
+        if(cancelBtn != null) cancelBtn.disableProperty().bind(adminTable.getSelectionModel().selectedItemProperty().isNull());
+        if(checkinBtn != null) checkinBtn.disableProperty().bind(adminTable.getSelectionModel().selectedItemProperty().isNull());
     }
 
     private void setTableData(ObservableList<Reservation> resList){
@@ -104,7 +110,6 @@ public class AdminController implements SceneManagerAware {
         statusCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getStatus())));
         inCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckIn())));
         outCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckOut())));
-
     }
 
     @FXML
@@ -146,11 +151,11 @@ public class AdminController implements SceneManagerAware {
         return filteredRes;
     }
 
-
     @FXML
     private void handleCancelBooking(){
         Reservation res = (Reservation) adminTable.getSelectionModel().getSelectedItem();
-        res.setStatus(ReservationStatus.CANCELLED);
+        _resService.cancelReservation(res);
+        adminTable.refresh();
     }
 
     @FXML
@@ -201,5 +206,12 @@ public class AdminController implements SceneManagerAware {
 
     public void setAdminuser(AdminUser adminuser) {
         this.adminuser = adminuser;
+    }
+
+    @FXML
+    private void onCheckin(){
+        Reservation res = (Reservation) adminTable.getSelectionModel().getSelectedItem();
+        _resService.attemptCheckin(res);
+        adminTable.refresh();
     }
 }

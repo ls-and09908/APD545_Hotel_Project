@@ -13,6 +13,7 @@ import java.util.List;
 
 public class BillingService implements IBillingService {
     private final IBillingRepository _billRepo;
+    private final ILoyaltyService _loyaltyService;
     private final PricingModel _stdPrice;
     private final PricingModel _wkndPrice;
     private final double adminDiscount;
@@ -20,8 +21,9 @@ public class BillingService implements IBillingService {
     private final double depositPercent;
 
     @Inject
-    public BillingService(IBillingRepository billRepo, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, @Named("adminDiscount")double adminDiscount, @Named("managerDiscount")double managerDiscount, @Named("depositPercent")double depositPercent){
+    public BillingService(IBillingRepository billRepo, ILoyaltyService loyaltyService, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, @Named("adminDiscount")double adminDiscount, @Named("managerDiscount")double managerDiscount, @Named("depositPercent")double depositPercent){
         this._billRepo = billRepo;
+        this._loyaltyService = loyaltyService;
         this._stdPrice = std;
         this._wkndPrice = wknd;
         this.adminDiscount = adminDiscount;
@@ -125,17 +127,24 @@ public class BillingService implements IBillingService {
      */
     @Override
     public boolean addPaymentToBill(Double amount, PaymentMethod type, Billing bill) {
-        bill.calculateBalance();
-        Payment payment = new Payment(bill, amount, bill.getReservation().getGuest(), LocalDate.now(), type);
+        if(amount != 0.0) {
+            if (type == PaymentMethod.REFUND && amount <= 0.0) return false;
+            Guest guest = bill.getReservation().getGuest();
+            bill.calculateBalance();
+            Payment payment = new Payment(bill, amount, guest, LocalDate.now(), type);
 
-        double newBalance = bill.getBalance() - payment.getAmount();
-        if(Math.round(newBalance * 100.0 / 100.0) < 0.0){
-            return false;
+            double newBalance = bill.getBalance() - payment.getAmount();
+            if (Math.round(newBalance * 100.0) / 100.0 < 0.0) {
+                return false;
+            }
+            if (type == PaymentMethod.DEPOSIT) bill.getReservation().setStatus(ReservationStatus.BOOKED);
+
+            bill.addPayment(payment);
+            bill.setBalance(newBalance);
+            System.out.println("Paying: " + amount + " | Balance: " + newBalance);
+            return true;
         }
-
-        bill.addPayment(payment);
-        bill.setBalance(newBalance);
-        return true;
+        return false;
     }
 
     @Override
@@ -153,6 +162,36 @@ public class BillingService implements IBillingService {
 
     @Override
     public double getDeposit(Billing b) {
-        return (b.getTotalCharges() + b.getTax())*depositPercent/100;
+        //return (b.getTotalCharges() + b.getTax())*depositPercent/100;
+        return b.getTotalCharges()*depositPercent/100;
+    }
+
+    @Override
+    public double getRefundableAmount(Billing b, boolean includeDeposit) {
+        double total = 0.0;
+        List<Payment> billPayments = b.getPayments();
+        for (Payment p: billPayments){
+            switch(p.getMethod()){
+                case DEPOSIT:
+                    if(includeDeposit) total += p.getAmount();
+                case LOYALTY:
+                    break;
+                default:
+                    total += p.getAmount();
+            }
+        }
+        return total;
+    }
+
+    @Override
+    public double refundCancellation(Billing b, boolean refundDeposit) {
+        double refund = getRefundableAmount(b, refundDeposit);
+        if (addPaymentToBill(refund, PaymentMethod.REFUND, b)) return refund;
+        return 0.0;
+    }
+
+    @Override
+    public double earlyCheckoutRefund(){
+        return 0;
     }
 }

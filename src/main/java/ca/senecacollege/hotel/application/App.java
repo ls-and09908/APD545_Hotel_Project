@@ -34,10 +34,7 @@ public class App extends Application {
 
     @Override
     public void stop() throws Exception {
-//        EntityManagerFactory emf = injector.getInstance(EntityManagerFactory.class);
-//        if(emf.isOpen()){
-//            emf.close();
-//        }
+
     }
 
     /**

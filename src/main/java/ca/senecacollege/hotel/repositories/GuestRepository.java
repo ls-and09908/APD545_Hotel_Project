@@ -31,7 +31,7 @@ public class GuestRepository implements IGuestRepository {
         Transaction tx=null;
         try(Session session = sessionFactory.openSession()){
             tx = session.beginTransaction();
-            session.merge(g);
+            session.persist(g);
             tx.commit();
         }catch(RuntimeException e){
             if(tx!=null) tx.rollback();

@@ -3,7 +3,7 @@ package ca.senecacollege.hotel.services;
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.*;
 import com.google.inject.Inject;
-import javafx.collections.ObservableList;
+import com.google.inject.name.Named;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,18 +14,24 @@ public class ReservationService implements IReservationService {
     private IRoomRepository _roomRepo;
     private IGuestRepository _guestRepo;
     private IAddonRepository _addonRepo;
+    private final IBillingService _billService;
+    private final ILoyaltyService _loyaltyService;
+    private final int _cancellationDays;
 
     @Inject
-    public ReservationService(IReservationRepository resRepo, IRoomRepository roomRepo, IGuestRepository guestRepo, IAddonRepository addonRepo){
+    public ReservationService(IReservationRepository resRepo, IRoomRepository roomRepo, IGuestRepository guestRepo, IAddonRepository addonRepo, IBillingService billService, ILoyaltyService loyaltyService, @Named("cancellationDaysPolicy")int cancellationDays){
         this._resRepo = resRepo;
         this._roomRepo = roomRepo;
         this._guestRepo = guestRepo;
         this._addonRepo = addonRepo;
+        _billService = billService;
+        _loyaltyService = loyaltyService;
+        _cancellationDays = cancellationDays;
     }
 
     @Override
     public void saveReservation(Reservation reservation) {
-        //_guestRepo.saveGuest(reservation.getGuest());
+        _guestRepo.saveGuest(reservation.getGuest());
         _resRepo.saveRes(reservation);
     }
 
@@ -84,18 +90,78 @@ public class ReservationService implements IReservationService {
             return rooms;
         }
 
-    /**
-     * Checks if the email parameter has already been used for an existing guest.
-     * @param email
-     * @return true if the email is valid (doesn't already exist) and false otherwise
-     */
     @Override
     public boolean checkGuestEmail(String email) {
         return _guestRepo.findGuestEmail(email).isEmpty();
     }
 
     @Override
-    public boolean canCheckOut(Reservation reservation){
-        return reservation.getBilling().getBalance() == 0.0;
+    public boolean canCheckOut(Reservation res){
+        return res.getBilling().getBalance() == 0.0;
     }
+
+    @Override
+    public boolean isCheckOutTime(Reservation res){
+        return res.getCheckOut().isEqual(LocalDate.now());
+    }
+
+    @Override
+    public boolean attemptCheckOut(Reservation res){
+        if(canCheckOut(res)){
+            res.setStatus(ReservationStatus.CHECKEDOUT);
+        } else return false;
+        return true;
+    }
+
+    /**
+     * Attempts to cancel a reservation, freeing up rooms and refunding the customer.
+     * <p>Reservations that are already cancelled, checked out, or checked in cannot be cancelled and will return false.</p>
+     * @param res
+     * @return true if the cancellation was successful
+     */
+    @Override
+    public boolean cancelReservation(Reservation res){
+        switch(res.getStatus()){
+            case CANCELLED, CHECKEDOUT, CHECKEDIN:
+                // TODO: Log invalid cancellation attempt
+                return false;
+            case BOOKED:
+                boolean returnDeposit = LocalDate.now().plusDays(_cancellationDays).isBefore(res.getCheckIn());
+                double refund = _billService.refundCancellation(res.getBilling(), returnDeposit);
+                if (refund > 0.0){
+                    // refunds loyalty points, loyalty service has safety check for non-loyal guests
+                    _loyaltyService.removePoints(refund, res.getGuest());
+                }
+            default:
+                res.getRooms().clear();
+        }
+        res.setStatus(ReservationStatus.CANCELLED);
+        _resRepo.saveRes(res);
+        return true;
+        // TODO: trigger notifying waitlists?
+    }
+
+    /**
+     * query the DB for any res_num(s) except the current reservation in the room_res table during the specified dates
+     * if the returned value is nothing, the room is available
+     */
+    @Override
+    public boolean extendReservation(Reservation res){
+        LocalDate checkIn = res.getCheckIn();
+        LocalDate checkOut = res.getCheckOut();
+        List<Room> roomsList = res.getRooms();
+        List<Integer> results;
+        for(Room room : roomsList){
+            results = _resRepo.checkReserved(room, res.getReservationNumber(), checkIn, checkOut);
+            System.out.println("DB Found these: " + results);
+            if (!results.isEmpty()) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void attemptCheckin(Reservation res){
+        res.setStatus(ReservationStatus.CHECKEDIN);
+    }
+
 }

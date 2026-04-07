@@ -12,7 +12,25 @@ public interface IReservationService {
     AddOn getAddOn(String name);
     List<RoomSet> getRoomSuggestion(int nAdults, int nChildren);
     public List<Reservation> getAllReservations();
-    boolean checkGuestEmail(String email);
 
-    boolean canCheckOut(Reservation reservation);
+    /**
+     * Checks if the email parameter has already been used for an existing guest.
+     * @param email
+     * @return true if the email is valid (doesn't already exist) and false otherwise
+     */
+    boolean checkGuestEmail(String email);
+    boolean canCheckOut(Reservation r);
+
+    boolean isCheckOutTime(Reservation res);
+
+    boolean attemptCheckOut(Reservation res);
+
+    boolean cancelReservation(Reservation r);
+
+    /**
+     * Checks if it is possible to extend the reservation without changing rooms
+     */
+    boolean extendReservation(Reservation res);
+
+    void attemptCheckin(Reservation res);
 }

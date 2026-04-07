@@ -562,7 +562,6 @@ public class KioskController implements SceneManagerAware {
     private void toFinalConfirmationPress() throws IOException {
         tempReservation.setStatus(ReservationStatus.BOOKED);
         _reservationService.saveReservation(tempReservation);
-        //_billingService.saveBill(tempReservation.getBilling());
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskFinalConfirm.fxml", null);
     }
 
@@ -603,6 +602,7 @@ public class KioskController implements SceneManagerAware {
     private void onSignupClick(){
         if (!loyaltyTxt.isDisabled()) { // if they haven't clicked signup already, disables the textbox and gets a loyalty number for them
             int loyaltyNum = _loyaltyService.getNewLoyaltyNum();
+            loyaltyLbl.setText(String.valueOf(loyaltyNum));
             loyaltyTxt.setText(String.valueOf(loyaltyNum));
             loyaltyTxt.setDisable(true);
             signupBtn.setText("Cancel Sign up");
@@ -610,6 +610,7 @@ public class KioskController implements SceneManagerAware {
             signupBtn.setText("Click to Sign up");
             loyaltyTxt.setDisable(false);
             loyaltyTxt.setText("");
+            loyaltyLbl.setText("");
         }
     }
 
