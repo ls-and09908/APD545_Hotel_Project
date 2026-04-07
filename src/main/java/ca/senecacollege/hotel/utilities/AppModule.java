@@ -101,4 +101,8 @@ public class AppModule extends AbstractModule {
     double provideDepositPercent(){
         return AppConfig.getDepositPercent();
     }
+
+    @Provides
+    @Named("cancellationDaysPolicy")
+    int provideCancellationDays(){ return AppConfig.getDepositCancellationDays(); }
 }

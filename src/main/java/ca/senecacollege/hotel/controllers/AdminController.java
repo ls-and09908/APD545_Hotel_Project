@@ -1,16 +1,15 @@
 package ca.senecacollege.hotel.controllers;
 
-import ca.senecacollege.hotel.models.AdminUser;
 import ca.senecacollege.hotel.models.Guest;
 import ca.senecacollege.hotel.models.Reservation;
 import ca.senecacollege.hotel.models.ReservationStatus;
-import ca.senecacollege.hotel.services.AuthService;
-import ca.senecacollege.hotel.services.IAuthService;
-import ca.senecacollege.hotel.services.IReservationService;
-import ca.senecacollege.hotel.services.IWaitlistService;
+import ca.senecacollege.hotel.services.*;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
+import ca.senecacollege.hotel.utilities.UserContext;
 import com.google.inject.Inject;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,13 +23,14 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 
 public class AdminController implements SceneManagerAware {
     private final IAuthService _authService;
     private final IReservationService _resService;
     private final IWaitlistService _waitService;
-    private AdminUser adminuser;
     SceneManager sceneManager;
 
     @FXML
@@ -60,11 +60,19 @@ public class AdminController implements SceneManagerAware {
     @FXML
     TextField statusSearch;
     @FXML
+    private ListView<ReservationStatus> statusList;
+    @FXML
     TextField emailSearch;
     @FXML
     DatePicker fromSearch;
     @FXML
     DatePicker toSearch;
+    @FXML
+    private Button cancelBtn;
+    @FXML
+    private Button checkinBtn;
+    @FXML
+    private Button editBtn;
 
     @Inject
     public AdminController(IAuthService authService, IReservationService resService, IWaitlistService waitService){
@@ -86,6 +94,21 @@ public class AdminController implements SceneManagerAware {
                     phoneSearch.setText(newValue.replaceAll("[^\\d]", ""));
                 }
             });
+            statusList.setItems(FXCollections.observableArrayList(ReservationStatus.values()));
+            statusList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            fromSearch.setValue(LocalDate.now().withDayOfMonth(1));
+            toSearch.setValue(YearMonth.now().atEndOfMonth());
+        }
+        if(cancelBtn != null) cancelBtn.disableProperty().bind(adminTable.getSelectionModel().selectedItemProperty().isNull());
+        if(editBtn != null) editBtn.disableProperty().bind(adminTable.getSelectionModel().selectedItemProperty().isNull());
+        if(checkinBtn!= null){
+            adminTable.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+                checkinBtn.setDisable(true);
+                if(newValue != null){
+                    Reservation res = (Reservation) newValue;
+                    if(res.getStatus() == ReservationStatus.BOOKED) checkinBtn.setDisable(false);
+                }
+            }));
         }
     }
 
@@ -104,17 +127,14 @@ public class AdminController implements SceneManagerAware {
         statusCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getStatus())));
         inCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckIn())));
         outCol.setCellValueFactory(r -> new SimpleObjectProperty<>(String.valueOf(r.getValue().getCheckOut())));
-
     }
 
     @FXML
     public void loginPress() throws IOException {
         String user = usernameInput.getText();
         String pass = passwordInput.getText();
-        this.adminuser = _authService.authenticateLogin(user, pass);
-        if(this.adminuser != null) {
-            System.out.println(adminuser.getUsername() + " loginPress");
-            sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", (AdminController controller) -> controller.setAdminuser(this.adminuser));
+        if(_authService.authetnicateLogin(user, pass)) {
+            sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", null);
         }
         else {
             errLbl.setText("User not found");
@@ -132,25 +152,25 @@ public class AdminController implements SceneManagerAware {
         String searchedName = nameSearch.getText();
         String searchedPhone = phoneSearch.getText();
         String searchedEmail = emailSearch.getText();
-        String searchedStatus = statusSearch.getText();
+        ObservableList<ReservationStatus> searchedStatus = statusList.getSelectionModel().getSelectedItems();
         LocalDate searchedIn = fromSearch.getValue();
         LocalDate searchedOut = toSearch.getValue();
         FilteredList<Reservation> filteredRes = new FilteredList<>(observableMasterData, r->{
-            return r.getGuest().getName().equalsIgnoreCase(searchedName)
-                    || r.getGuest().getEmail().equalsIgnoreCase(searchedEmail)
-                    || r.getGuest().getPhone().equalsIgnoreCase(searchedPhone)
-                    || String.valueOf(r.getStatus()).equals(searchedStatus)
-                    || r.getCheckOut().equals(searchedOut)
-                    || r.getCheckIn().equals(searchedIn);
+            return r.getGuest().getName().toLowerCase().contains(searchedName.toLowerCase())
+                    && r.getGuest().getEmail().toLowerCase().contains(searchedEmail.toLowerCase())
+                    && r.getGuest().getPhone().toLowerCase().contains(searchedPhone.toLowerCase())
+                    && searchedStatus.isEmpty() || searchedStatus.contains(r.getStatus())
+                    && !r.getCheckOut().isAfter(searchedOut)
+                    && !r.getCheckIn().isBefore(searchedIn);
         });
         return filteredRes;
     }
 
-
     @FXML
     private void handleCancelBooking(){
         Reservation res = (Reservation) adminTable.getSelectionModel().getSelectedItem();
-        res.setStatus(ReservationStatus.CANCELLED);
+        _resService.cancelReservation(res);
+        adminTable.refresh();
     }
 
     @FXML
@@ -164,7 +184,7 @@ public class AdminController implements SceneManagerAware {
     }
     @FXML
     private void toDash() throws IOException{
-        sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", (AdminController controller) -> controller.setAdminuser(this.adminuser));
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", null);
     }
 
     @FXML
@@ -174,7 +194,6 @@ public class AdminController implements SceneManagerAware {
             controller.setRes(res);
             if (res != null) controller.setGuest(res.getGuest());
             else controller.setGuest(null);
-            controller.setUser(this.adminuser);
         });
     }
 
@@ -182,7 +201,6 @@ public class AdminController implements SceneManagerAware {
     private void toAddBooking() throws IOException {
         sceneManager.switchScene("/ca/senecacollege/hotel/application/AddUpdateBooking.fxml", (AdminBookingController controller) -> {
             controller.setGuest(null);
-            controller.setUser(this.adminuser);
         });
     }
 
@@ -199,7 +217,10 @@ public class AdminController implements SceneManagerAware {
         dialog.show();
     }
 
-    public void setAdminuser(AdminUser adminuser) {
-        this.adminuser = adminuser;
+    @FXML
+    private void onCheckin(){
+        Reservation res = (Reservation) adminTable.getSelectionModel().getSelectedItem();
+        _resService.attemptCheckin(res);
+        adminTable.refresh();
     }
 }

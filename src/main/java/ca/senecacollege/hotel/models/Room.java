@@ -82,7 +82,6 @@ public class Room implements ChargeSource {
         }
 
         return null;
-
     }
 
     public int getRoomNumber(){
@@ -90,7 +89,25 @@ public class Room implements ChargeSource {
     }
 
     @Override
+    public String chargeName() {
+        return this.toString();
+    }
+
+    @Override
     public String toString() {
         return "Room " + roomNumber +": (" + roomType.name() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AddOn)) return false;
+        Room r = (Room) o;
+        return roomNumber != 0 && roomNumber == r.roomNumber;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(roomNumber);
     }
 }

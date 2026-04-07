@@ -21,33 +21,23 @@ public class AppConfig {
         }
     }
 
-    public static double getWeekendMultiplier(){
-        return Double.parseDouble(config.getProperty("weekend_pricing_rate"));
-    }
-
+    public static double getWeekendMultiplier(){ return Double.parseDouble(config.getProperty("weekend_pricing_rate")); }
     public static double getPeakMultiplier(){
         return Double.parseDouble(config.getProperty("peak_pricing_rate"));
     }
-
     public static double getAdminDiscount(){
         return Double.parseDouble(config.getProperty("admin_discount_max"));
     }
-
     public static double getManagerDiscount(){
         return Double.parseDouble(config.getProperty("manager_discount_max"));
     }
-
-    public static int getLoyaltyEarnRate(){
-        return Integer.parseInt(config.getProperty("points_earned_per_dollar"));
-    }
-
+    public static int getLoyaltyEarnRate(){ return Integer.parseInt(config.getProperty("points_earned_per_dollar")); }
     public static int getLoyaltyRedemptionCap(){
         return Integer.parseInt(config.getProperty("redemption_cap"));
     }
-
     public static int getLoyaltyConversionRate(){
         return Integer.parseInt(config.getProperty("points_to_dollar"));
     }
-
     public static double getDepositPercent(){ return Double.parseDouble(config.getProperty("deposit_min_percent")); }
+    public static int getDepositCancellationDays(){ return Integer.parseInt(config.getProperty("deposit_cancellation_days")); }
 }

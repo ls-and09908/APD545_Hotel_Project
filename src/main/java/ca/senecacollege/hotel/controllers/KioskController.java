@@ -24,7 +24,9 @@ import javafx.stage.Modality;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class KioskController implements SceneManagerAware {
     private SceneManager sceneManager;
@@ -39,8 +41,6 @@ public class KioskController implements SceneManagerAware {
     private static String phone;
     private static String email;
     private static String country;
-    private static ArrayList<String> addonNames = new ArrayList<>();
-    private static double displayAddons = 0.00;
     private BillingService _billingService;
     private LoyaltyService _loyaltyService;
     private ReservationService _reservationService;
@@ -127,6 +127,8 @@ public class KioskController implements SceneManagerAware {
     @FXML
     private Text loyaltyErr;
     @FXML
+    private Text emailErr;
+    @FXML
     Button signupBtn;
     //</editor-fold>
 
@@ -145,23 +147,23 @@ public class KioskController implements SceneManagerAware {
 
     //<editor-fold desc="Screen6FXML">
     @FXML
-    private Text billBaseCost;
+    private Text billRoomCost;
     @FXML
     private Text billAddonCost;
     @FXML
-    private Text billSeasonalCost;
+    private Text billSubtotalCost;
     @FXML
-    private Text billDiscountCost;
+    private Text billTaxCost;
     @FXML
     private Text billTotalCost;
     @FXML
-    private Text billCustomerName;
-    @FXML
-    private Text billCardNumber;
-    @FXML
-    private Text billRemainingBalance;
+    private Text billBalance;
     @FXML
     private Text billDepositCost;
+    @FXML
+    private ListView<Charge> roomCharges;
+    @FXML
+    private ListView<Charge>addonCharges;
     //</editor-fold>
 
     //<editor-fold desc="Screen7FXML">
@@ -226,7 +228,7 @@ public class KioskController implements SceneManagerAware {
             imageText.add("Confirm one final time.");
             diagramImage.setImage(imageList.get(0));
         }
-        if(billBaseCost != null){
+        if(billRoomCost != null){
             setBillingData();
             setBillingDisplay();
         }
@@ -240,6 +242,34 @@ public class KioskController implements SceneManagerAware {
             addonTxt3.setVisible(false);
             addonTxt4.setVisible(false);
         }
+        if(wifiBox != null){
+            wifiBox.setUserData(_reservationService.getAddOn("wifi"));
+            breakfastBox.setUserData(_reservationService.getAddOn("breakfast"));
+            spaBox.setUserData(_reservationService.getAddOn("spa"));
+            parkingBox.setUserData(_reservationService.getAddOn("parking"));
+
+            wifiBox.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+                if(newValue) tempReservation.addAddOn((AddOn)wifiBox.getUserData());
+                else tempReservation.removeAddOn((AddOn)wifiBox.getUserData());
+            }));
+            breakfastBox.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+                if(newValue) tempReservation.addAddOn((AddOn)breakfastBox.getUserData());
+                else tempReservation.removeAddOn((AddOn)breakfastBox.getUserData());
+            }));
+            spaBox.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+                if(newValue) tempReservation.addAddOn((AddOn)spaBox.getUserData());
+                else tempReservation.removeAddOn((AddOn)spaBox.getUserData());
+            }));
+            parkingBox.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+                if(newValue) tempReservation.addAddOn((AddOn)parkingBox.getUserData());
+                else tempReservation.removeAddOn((AddOn)parkingBox.getUserData());
+            }));
+        }
+        if(emailTxt!= null){
+            emailTxt.textProperty().addListener(((observable) -> {
+                emailErr.setVisible(false);
+            }));
+        }
     }
 
     private void setBillingData(){
@@ -248,29 +278,31 @@ public class KioskController implements SceneManagerAware {
         tempReservation.setChildren(numChildren);
         tempReservation.setCheckIn(checkInDate);
         tempReservation.setCheckOut(checkOutDate);
-        for(String name: addonNames){
-            tempReservation.addAddOn(_reservationService.getAddOn(name));
-        }
         Billing bill = _billingService.generateBill(tempReservation);
-        _billingService.checkUpdateBillBalance(bill);
-        displayAddons = bill.getAddOnCharges();
+        List<Charge> allCharges = bill.getCharges();
+
+        ObservableList<Charge> rmCharges = FXCollections.observableArrayList(allCharges.stream()
+                .filter((c)-> c.getSource().getClass() == Room.class).toList());
+        ObservableList<Charge> aoCharges = FXCollections.observableArrayList(allCharges.stream()
+                .filter((c)-> c.getSource().getClass() == AddOn.class).toList());
+        roomCharges.setItems(rmCharges);
+        addonCharges.setItems(aoCharges);
     }
 
     private void setBillingDisplay(){
-        finalCost = tempReservation.getBilling().getTotalCharges();
-        double deposit = 500.00 - tempReservation.getBilling().getTotalPayments(); // no payments will have been made at this point ?
-        if(deposit < 0.00){
-            deposit = 0.00;
-        }
-        billBaseCost.setText(" $" + finalCost);
-        billDepositCost.setText(" $" + deposit);
-        billRemainingBalance.setText(" $" + (tempReservation.getBilling().getTotalCharges() - tempReservation.getBilling().getTotalPayments()));
-        billDiscountCost.setText(" N/A");
-        billSeasonalCost.setText(" N/A");
-        billCardNumber.setText(" N/A");
-        billTotalCost.setText(" $" + tempReservation.getBilling().getTotalCharges());
-        billCustomerName.setText(" " + name);
-        billAddonCost.setText(" $" + displayAddons);
+        Billing bill = tempReservation.getBilling();
+        double deposit = _billingService.getDeposit(bill);
+        double roomCost = bill.getRoomCharges();
+        double addonCost = bill.getAddOnCharges();
+        double tax = bill.getTax();
+        finalCost = roomCost+addonCost+tax;
+        billRoomCost.setText(String.format("$%.2f", roomCost));
+        billAddonCost.setText(String.format("$%.2f", addonCost));
+        billSubtotalCost.setText(String.format("$%.2f", roomCost+addonCost));
+        billTaxCost.setText(String.format("$%.2f", tax));
+        billTotalCost.setText(String.format("$%.2f", finalCost));
+        billDepositCost.setText(String.format("$%.2f", deposit));
+        billBalance.setText(String.format("$%.2f", finalCost - deposit));
     }
 
     private void setGuestCountSpinners(){
@@ -340,9 +372,15 @@ public class KioskController implements SceneManagerAware {
     }
     @FXML
     private void onUpdateEmail(){
-        if(! emailTxt.getText().isEmpty()){
-            emailLbl.setText(emailTxt.getText());
-            emailLbl.setVisible(true);
+        String text = emailTxt.getText();
+        if(!text.isBlank()){
+            if(_reservationService.checkGuestEmail(text)) {
+                emailLbl.setText(emailTxt.getText());
+                emailLbl.setVisible(true);
+            } else {
+                emailErr.setText("Email already in use");
+                emailErr.setVisible(true);
+            }
         }
     }
     @FXML
@@ -361,12 +399,56 @@ public class KioskController implements SceneManagerAware {
     }
     @FXML
     private void onUpdateLoyalty(){
-        if(! loyaltyTxt.getText().isEmpty()){
-            loyaltyLbl.setText(loyaltyTxt.getText());
-            loyaltyLbl.setVisible(true);
+        String text = loyaltyTxt.getText();
+        if(text.isBlank()) loyaltyErr.setVisible(false);
+        try {
+            int num = Integer.parseInt(text);
+            Guest g = _loyaltyService.getLoyalGuest(num);
+            if (g == null){
+                loyaltyErr.setText("Loyalty number not found");
+                loyaltyErr.setVisible(true);
+            } else {
+                loyaltyLbl.setText(text);
+                loyaltyLbl.setVisible(true);
+            }
+        } catch (NumberFormatException e) {
+            loyaltyErr.setText("Not a number");
+            loyaltyErr.setVisible(true);
+            // TODO: log this
         }
     }
 
+    @FXML
+    private void onRetrieve(){
+        String text = emailTxt.getText();
+        if(!text.isBlank()){
+            Guest g = _reservationService.getGuestByEmail(text);
+            if(g != null) {
+                setGuestFormData(g);
+                emailLbl.setText(emailTxt.getText());
+                emailLbl.setVisible(true);
+            } else {
+                emailErr.setText("Couldn't find the guest with that email.");
+                emailErr.setVisible(true);
+            }
+        }
+    }
+
+    private void setGuestFormData(Guest g){
+        tempGuest = g;
+        nameLbl.setText(g.getName());
+        nameLbl.setVisible(true);
+        if(g.isLoyal()){
+            loyaltyLbl.setText(String.valueOf(g.getLoyaltyNum()));
+            loyaltyLbl.setVisible(true);
+        }
+        phoneLbl.setText(g.getPhone());
+        phoneLbl.setVisible(true);
+        emailLbl.setText(g.getEmail());
+        emailLbl.setVisible(true);
+        countryLbl.setText(g.getCountry());
+        countryLbl.setVisible(true);
+    }
     //</editor-fold>
 
     //<editor-fold desc="pageNavigationControls">
@@ -425,6 +507,7 @@ public class KioskController implements SceneManagerAware {
     private void toGuestDetailsPress() throws IOException {
         // TODO: handle adding to waitlist if the requested rooms are not available (might need a new screen/error messages)
         if(singleSpinner != null){
+            tempReservation.getRooms().clear();
             int numSingle = singleSpinner.getValue();
             int numDouble = doubleSpinner.getValue();
             int numPen = pentSpinner.getValue();
@@ -465,12 +548,13 @@ public class KioskController implements SceneManagerAware {
             }
             suggestionSuccessLbl.setVisible(false);
         }
+        tempGuest = null;
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskGuestDetails.fxml", null);
     }
 
     @FXML
     private void toAddonsPress() throws IOException {
-        if(nameLbl != null){
+        if(nameLbl != null && tempGuest == null){
             tempGuest = confirmLoyalty();
             if(tempGuest == null){
                 return;
@@ -502,13 +586,6 @@ public class KioskController implements SceneManagerAware {
             temporaryGuest.makeLoyaltyMember(loyaltyNumber);
             return temporaryGuest;
         }
-        temporaryGuest = _loyaltyService.getLoyalGuest(loyaltyNumber);
-        if(temporaryGuest != null){ // found the guest's loyaltyNumber
-            return temporaryGuest;
-        }
-        loyaltyErr.setText("Loyalty not found");
-        loyaltyErr.setVisible(true);
-
         return null;
     }
 
@@ -531,20 +608,6 @@ public class KioskController implements SceneManagerAware {
 
     @FXML
     private void toBillingPress() throws IOException {
-        if(wifiBox != null){
-            if(wifiBox.isSelected()){
-               addonNames.add("Wifi");
-            }
-            if(breakfastBox.isSelected()){
-                addonNames.add("Breakfast");
-            }
-            if(spaBox.isSelected()){
-                addonNames.add("Spa");
-            }
-            if(parkingBox.isSelected()){
-                addonNames.add("Parking");
-            }
-        }
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskBillEstimate.fxml", null);
     }
 
@@ -560,9 +623,7 @@ public class KioskController implements SceneManagerAware {
 
     @FXML
     private void toFinalConfirmationPress() throws IOException {
-        tempReservation.setStatus(ReservationStatus.BOOKED);
-        _reservationService.saveReservation(tempReservation);
-        //_billingService.saveBill(tempReservation.getBilling());
+        _reservationService.saveNewReservation(tempReservation);
         sceneManager.switchScene("/ca/senecacollege/hotel/application/KioskFinalConfirm.fxml", null);
     }
 
@@ -603,6 +664,7 @@ public class KioskController implements SceneManagerAware {
     private void onSignupClick(){
         if (!loyaltyTxt.isDisabled()) { // if they haven't clicked signup already, disables the textbox and gets a loyalty number for them
             int loyaltyNum = _loyaltyService.getNewLoyaltyNum();
+            loyaltyLbl.setText(String.valueOf(loyaltyNum));
             loyaltyTxt.setText(String.valueOf(loyaltyNum));
             loyaltyTxt.setDisable(true);
             signupBtn.setText("Cancel Sign up");
@@ -610,6 +672,7 @@ public class KioskController implements SceneManagerAware {
             signupBtn.setText("Click to Sign up");
             loyaltyTxt.setDisable(false);
             loyaltyTxt.setText("");
+            loyaltyLbl.setText("");
         }
     }
 

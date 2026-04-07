@@ -27,19 +27,6 @@ public class BillingRepository implements IBillingRepository {
     }
 
     @Override
-    public void saveBill(Billing b) {
-        Transaction tx=null;
-        try(Session session = sessionFactory.openSession()){
-            tx = session.beginTransaction();
-            session.merge(b);
-            tx.commit();
-        }catch(RuntimeException e){
-            if(tx!=null) tx.rollback();
-            throw e;
-        }
-    }
-
-    @Override
     public Optional<Billing> getBill(int billNum) {
         try(Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.get(Billing.class, billNum));

@@ -1,16 +1,13 @@
 package ca.senecacollege.hotel.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Guest {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "GUEST_ID")
-    private int id;
+    private Integer id = null;
 
     private String name;
 
@@ -57,6 +54,8 @@ public class Guest {
     public boolean isLoyal(){
         return loyaltyNum != null;
     }
+
+    public Integer getId(){return id;}
 
     public String getName() {
         return name;

@@ -50,6 +50,8 @@ public class Payment {
         return date;
     }
 
+    public PaymentMethod getMethod() { return method; }
+
     public Payment(){}
 
     public Payment(Billing bill, Double amount, Guest payee, LocalDate date, PaymentMethod method) {

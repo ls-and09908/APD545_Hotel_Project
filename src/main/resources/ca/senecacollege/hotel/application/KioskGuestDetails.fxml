@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -28,76 +29,160 @@
                   <Insets bottom="20.0" />
                </VBox.margin>
             </Label>
-            <Label text="*Name: " />
-            <Text fx:id="nameLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="NameTxt" />
+            <Label contentDisplay="RIGHT" text="*Name: ">
+               <graphic>
+                  <Text fx:id="nameLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="NameTxt">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+               </graphic>
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
             <HBox alignment="CENTER" prefHeight="29.0" prefWidth="563.0">
                <children>
-                  <TextField fx:id="nameTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="nameTxt" minWidth="150.0" prefWidth="300.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font></TextField>
                </children>
             </HBox>
-            <Button fx:id="updateName" mnemonicParsing="false" onAction="#onUpdateName" text="Update" />
-            <Label text="Loyalty: ">
+            <Button fx:id="updateName" mnemonicParsing="false" onAction="#onUpdateName" text="Update">
+               <font>
+                  <Font size="14.0" />
+               </font></Button>
+            <Label contentDisplay="RIGHT" text="Loyalty: ">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
+               <graphic>
+                  <Text fx:id="loyaltyLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="LoyaltyTxt">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+               </graphic>
+               <font>
+                  <Font size="14.0" />
+               </font>
             </Label>
-            <Text fx:id="loyaltyLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="LoyaltyTxt" />
+            <Text fx:id="loyaltyErr" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
             <HBox alignment="CENTER" prefHeight="0.0" prefWidth="563.0">
                <children>
-                  <TextField fx:id="loyaltyTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
-                  <Text fx:id="loyaltyErr" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Err" />
+                  <TextField fx:id="loyaltyTxt" minWidth="150.0" prefWidth="300.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font></TextField>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="19.0" prefWidth="1400.0">
+            <HBox alignment="CENTER" prefHeight="19.0" prefWidth="1400.0" spacing="25.0">
                <children>
                   <Button fx:id="updateLoyalty" mnemonicParsing="false" onAction="#onUpdateLoyalty" text="Update">
                      <HBox.margin>
-                        <Insets left="25.0" right="25.0" />
+                        <Insets left="30.0" />
                      </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
                   </Button>
                   <Button fx:id="signupBtn" mnemonicParsing="false" onAction="#onSignupClick" text="Click to signup">
                      <HBox.margin>
-                        <Insets left="25.0" right="25.0" />
+                        <Insets />
                      </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
                   </Button>
                </children>
             </HBox>
-            <Label text="*Phone: ">
+            <Label contentDisplay="RIGHT" text="*Phone: ">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
+               <graphic>
+                  <Text fx:id="phoneLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="PhoneTxt">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+               </graphic>
+               <font>
+                  <Font size="14.0" />
+               </font>
             </Label>
-            <Text fx:id="phoneLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="PhoneTxt" />
             <HBox alignment="CENTER" prefHeight="15.0" prefWidth="1400.0">
                <children>
-                  <TextField fx:id="phoneTxt" minWidth="150.0" prefHeight="26.0" prefWidth="180.0" />
+                  <TextField fx:id="phoneTxt" minWidth="150.0" prefWidth="300.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font></TextField>
                </children>
             </HBox>
-            <Button fx:id="updatePhone" mnemonicParsing="false" onAction="#onUpdatePhone" text="Update" />
-            <Label text="*Email: ">
+            <Button fx:id="updatePhone" mnemonicParsing="false" onAction="#onUpdatePhone" text="Update">
+               <font>
+                  <Font size="14.0" />
+               </font></Button>
+            <Label contentDisplay="RIGHT" text="*Email: ">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
+               <graphic>
+                  <Text fx:id="emailLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="EmailTxt">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+               </graphic>
+               <font>
+                  <Font size="14.0" />
+               </font>
             </Label>
-            <Text fx:id="emailLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="EmailTxt" />
+            <Text fx:id="emailErr" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Email already in use" visible="false" />
             <HBox alignment="CENTER" prefHeight="6.0" prefWidth="1400.0">
                <children>
-                  <TextField fx:id="emailTxt" prefWidth="180.0" />
+                  <TextField fx:id="emailTxt" prefWidth="300.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font></TextField>
                </children>
             </HBox>
-            <Button fx:id="updateEmail" mnemonicParsing="false" onAction="#onUpdateEmail" text="Update" />
-            <Label layoutX="686.0" layoutY="494.0" text="*Country ">
+            <HBox alignment="CENTER" spacing="25.0">
+               <children>
+                  <Button fx:id="retrieveGuest" mnemonicParsing="false" onAction="#onRetrieve" text="Retrieve Guest">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="updateEmail" mnemonicParsing="false" onAction="#onUpdateEmail" text="Update">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <Label contentDisplay="RIGHT" layoutX="686.0" layoutY="494.0" text="*Country ">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
+               <graphic>
+                  <Text fx:id="countryLbl" strokeType="OUTSIDE" strokeWidth="0.0" text="countryTxt">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+               </graphic>
+               <font>
+                  <Font size="14.0" />
+               </font>
             </Label>
-            <Text fx:id="countryLbl" layoutX="684.0" layoutY="526.0" strokeType="OUTSIDE" strokeWidth="0.0" text="countryTxt" />
             <HBox alignment="CENTER" layoutX="10.0" layoutY="530.0" prefHeight="6.0" prefWidth="1400.0">
                <children>
-                  <Spinner fx:id="countrySpinner" prefHeight="26.0" prefWidth="373.0" />
+                  <Spinner fx:id="countrySpinner" prefWidth="373.0" />
                </children>
             </HBox>
-            <Button fx:id="updateCountry" layoutX="679.0" layoutY="574.0" mnemonicParsing="false" onAction="#onUpdateCountry" text="Update" />
+            <Button fx:id="updateCountry" layoutX="679.0" layoutY="574.0" mnemonicParsing="false" onAction="#onUpdateCountry" text="Update">
+               <font>
+                  <Font size="14.0" />
+               </font></Button>
          </children>
       </VBox>
    </center>
@@ -108,14 +193,26 @@
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
+               <font>
+                  <Font size="18.0" />
+               </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#rulesAndRegDialog" text="Rules and Reg" />
+            <Button mnemonicParsing="false" onAction="#rulesAndRegDialog" text="Rules and Reg">
+               <font>
+                  <Font size="18.0" />
+               </font></Button>
             <Button fx:id="clientDetailsNextBtn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAddonsPress" text="Next">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
+               <font>
+                  <Font size="18.0" />
+               </font>
             </Button>
          </children>
       </HBox>
    </bottom>
+    <stylesheets>
+        <URL value="@css/application.css" />
+    </stylesheets>
 </BorderPane>

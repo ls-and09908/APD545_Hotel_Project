@@ -12,11 +12,11 @@ import java.util.Set;
 @Entity
 public class Reservation {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "RES_NUM")
-    private int reservationNumber;
+    private Integer reservationNumber = null;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "GUEST_ID")
     private Guest guest;
     private int adults;
@@ -28,13 +28,14 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status = ReservationStatus.BOOKING;
 
-    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "RESERVATION_ADDON", joinColumns = @JoinColumn(name = "RES_NUM"), inverseJoinColumns = @JoinColumn(name="ADDON_ID"))
     private Set<AddOn> addOns = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
-    @JoinTable(name = "RESERVATION_ROOM", joinColumns = @JoinColumn(name = "RES_NUM"), inverseJoinColumns = @JoinColumn(name="ROOM_NUM"))
-    private List<Room> rooms = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "RESERVATION_ROOM", joinColumns = @JoinColumn(name = "RES_NUM"), inverseJoinColumns = @JoinColumn(name="ROOM_NUM"), uniqueConstraints = @UniqueConstraint(columnNames = {"RES_NUM", "ROOM_NUM"}))
+
+    private Set<Room> rooms = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "BILL_NUM")
@@ -87,7 +88,7 @@ public class Reservation {
         this.rooms.addAll(r);
     }
 
-    public List<Room> getRooms() {
+    public Set<Room> getRooms() {
         return rooms;
     }
 
@@ -103,7 +104,7 @@ public class Reservation {
         return checkOut;
     }
 
-    public int getReservationNumber(){
+    public Integer getReservationNumber(){
         return reservationNumber;
     }
 

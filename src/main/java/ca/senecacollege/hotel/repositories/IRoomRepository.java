@@ -1,5 +1,6 @@
 package ca.senecacollege.hotel.repositories;
 
+import ca.senecacollege.hotel.models.Reservation;
 import ca.senecacollege.hotel.models.Room;
 import ca.senecacollege.hotel.models.RoomType;
 
@@ -13,6 +14,8 @@ public interface IRoomRepository {
     Optional<Room> getRoom(int roomNum);
     List<Room> getRoomsByType(RoomType type);
 
-    // gets rooms that are Not reserved during the specified dates
+    /**
+     * gets rooms that are Not reserved during the specified dates
+     */
     List<Room> getAvailableRooms(LocalDate checkIn, LocalDate checkOut);
 }

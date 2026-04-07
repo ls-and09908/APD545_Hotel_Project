@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.senecacollege.hotel.controllers.KioskController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.senecacollege.hotel.controllers.KioskController">
    <top>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -28,12 +24,21 @@
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
+               <font>
+                  <Font size="18.0" />
+               </font>
             </Button>
-            <Button mnemonicParsing="false" text="Rules and Reg" onAction="#rulesAndRegDialog"/>
+            <Button mnemonicParsing="false" onAction="#rulesAndRegDialog" text="Rules and Reg">
+               <font>
+                  <Font size="18.0" />
+               </font></Button>
             <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toConfirmationPress" text="Confirm">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
                </HBox.margin>
+               <font>
+                  <Font size="18.0" />
+               </font>
             </Button>
          </children>
       </HBox>
@@ -41,60 +46,104 @@
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Base Cost" />
-                  <Text fx:id="billBaseCost" strokeType="OUTSIDE" strokeWidth="0.0" text="BaseTxt" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="10.0" layoutY="203.0" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Addon Cost" />
-                  <Text fx:id="billAddonCost" strokeType="OUTSIDE" strokeWidth="0.0" text="AddonTxt" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="10.0" layoutY="225.0" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Seasonal Discount" />
-                  <Text fx:id="billSeasonalCost" strokeType="OUTSIDE" strokeWidth="0.0" text="SDiscountTxt" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Discounts" />
-                  <Text fx:id="billDiscountCost" strokeType="OUTSIDE" strokeWidth="0.0" text="DiscountTxt" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Total Cost: " />
-                  <Text fx:id="billTotalCost" strokeType="OUTSIDE" strokeWidth="0.0" text="TotalTxt" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Cusotmer Name:" />
-                  <Text fx:id="billCustomerName" strokeType="OUTSIDE" strokeWidth="0.0" text="NameTxt" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Card Number:" />
-                  <Text fx:id="billCardNumber" strokeType="OUTSIDE" strokeWidth="0.0" text="CardTxt" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Remaining Balance:" />
-                  <Text fx:id="billRemainingBalance" strokeType="OUTSIDE" strokeWidth="0.0" text="BalanceTxt" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="45.0" prefWidth="1400.0">
-               <children>
-                  <Label text="Deposit Due: " />
-                  <Text fx:id="billDepositCost" strokeType="OUTSIDE" strokeWidth="0.0" text="DepositTxt" />
-               </children>
-            </HBox>
+             <GridPane hgap="10.0" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" prefWidth="600.0" vgap="5.0" VBox.vgrow="ALWAYS">
+                 <columnConstraints>
+                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" percentWidth="15.0" />
+                  <ColumnConstraints />
+                 </columnConstraints>
+                 <rowConstraints>
+                     <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="40.0" prefHeight="30.0" vgrow="ALWAYS" />
+                     <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="20.0" prefHeight="0.0" vgrow="ALWAYS" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                     <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                     <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                     <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                     <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                 </rowConstraints>
+                 <children>
+                     <Label contentDisplay="RIGHT" text="Room Charges:" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
+                         <font>
+                             <Font size="14.0" />
+                         </font>
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                     </Label>
+                     <Label contentDisplay="RIGHT" text="Total:" GridPane.rowIndex="6">
+                         <font>
+                             <Font size="14.0" />
+                         </font>
+                     </Label>
+                     <Label contentDisplay="RIGHT" text="Tax:" GridPane.rowIndex="4">
+                         <font>
+                             <Font size="14.0" />
+                         </font>
+                     </Label>
+                     <Label contentDisplay="RIGHT" text="Subtotal:" GridPane.rowIndex="3">
+                         <font>
+                             <Font size="14.0" />
+                         </font>
+                     </Label>
+                     <Label contentDisplay="RIGHT" text="Add-On Charges:" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
+                         <font>
+                             <Font size="14.0" />
+                         </font>
+                     </Label>
+                     <Label contentDisplay="RIGHT" text="Balance after deposit:" textOverrun="CLIP" GridPane.rowIndex="8">
+                         <font>
+                             <Font size="14.0" />
+                         </font>
+                     </Label>
+                     <Label contentDisplay="RIGHT" text="Deposit Due:" GridPane.rowIndex="7">
+                         <font>
+                             <Font size="14.0" />
+                         </font>
+                     </Label>
+                     <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="5">
+                         <GridPane.margin>
+                             <Insets left="10.0" right="10.0" />
+                         </GridPane.margin>
+                     </Separator>
+                  <Text fx:id="billRoomCost" strokeType="OUTSIDE" strokeWidth="0.0" text="BaseTxt" GridPane.columnIndex="2" GridPane.valignment="BOTTOM">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+                  <Text fx:id="billAddonCost" strokeType="OUTSIDE" strokeWidth="0.0" text="AddonTxt" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+                  <Text fx:id="billTotalCost" strokeType="OUTSIDE" strokeWidth="0.0" text="TotalTxt" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+                  <Text fx:id="billBalance" strokeType="OUTSIDE" strokeWidth="0.0" text="BalanceTxt" GridPane.columnIndex="2" GridPane.rowIndex="8">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+                  <Text fx:id="billDepositCost" strokeType="OUTSIDE" strokeWidth="0.0" text="DepositTxt" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+                  <ListView fx:id="roomCharges" focusTraversable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" GridPane.columnIndex="1" />
+                  <ListView fx:id="addonCharges" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.vgrow="SOMETIMES" />
+                  <Text fx:id="billSubtotalCost" layoutX="547.0" layoutY="436.0" strokeType="OUTSIDE" strokeWidth="0.0" text="subtotalTxt" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+                  <Text fx:id="billTaxCost" layoutX="547.0" layoutY="466.0" strokeType="OUTSIDE" strokeWidth="0.0" text="taxTxt" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+                  <Separator layoutX="20.0" layoutY="604.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                 </children>
+                 <VBox.margin>
+                     <Insets left="10.0" right="10.0" />
+                 </VBox.margin>
+             </GridPane>
          </children>
       </VBox>
    </center>

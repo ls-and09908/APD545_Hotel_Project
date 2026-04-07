@@ -2,6 +2,7 @@ package ca.senecacollege.hotel.services;
 
 import ca.senecacollege.hotel.models.AdminUser;
 import ca.senecacollege.hotel.repositories.IAdminUserRepository;
+import ca.senecacollege.hotel.utilities.UserContext;
 import com.google.inject.Inject;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
@@ -20,23 +21,15 @@ public class AuthService implements IAuthService{
     }
 
     @Override
-    public AdminUser authenticateLogin(String user, String password) {
-        Optional<AdminUser> comparedUser = adminRepo.getAdminUser(user);
-        boolean authenticated = comparedUser.isPresent() && BCrypt.checkpw(password, comparedUser.get().getPasswordHash());
-
-        // if the user was not found, no logging occurs
-        comparedUser.ifPresent(adminUser -> _logService.loginAttempt(adminUser, authenticated));
-        if(authenticated) return comparedUser.get();
-        else return null;
-    }
-
-    @Override
     public boolean authetnicateLogin(String user, String password){
         Optional<AdminUser> comparedUser = adminRepo.getAdminUser(user);
         boolean authenticated = comparedUser.isPresent() && BCrypt.checkpw(password, comparedUser.get().getPasswordHash());
 
         // if the user was not found, no logging occurs
-        comparedUser.ifPresent(adminUser -> _logService.loginAttempt(adminUser, authenticated));
+        comparedUser.ifPresent(adminUser -> {
+            UserContext.setUser(adminUser);
+            _logService.loginAttempt(authenticated);
+        });
         return authenticated ;
     }
 }

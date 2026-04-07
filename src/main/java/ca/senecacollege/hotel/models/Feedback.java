@@ -19,7 +19,7 @@ public class Feedback {
     private Guest guest;
 
     @OneToOne
-    @Cascade({CascadeType.PERSIST, CascadeType.MERGE})
+//    @Cascade({CascadeType.MERGE})
     private Reservation reservation;
 
     @Column

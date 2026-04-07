@@ -7,7 +7,6 @@ import java.util.Optional;
 
 public interface IGuestRepository {
     List<Guest> getAllGuests();
-    void saveGuest(Guest g);
     Optional<Guest> getGuest(int guestID);
     List<Guest> getLoyalGuests();
     Optional<Guest> getLoyaltyMember(int loyaltyNum);

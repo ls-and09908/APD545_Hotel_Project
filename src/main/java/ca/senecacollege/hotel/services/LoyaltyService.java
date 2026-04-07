@@ -67,7 +67,8 @@ public class LoyaltyService implements ILoyaltyService {
 
     @Override
     public void removePoints(double amt, Guest g) {
-
+        int pts = getPointsFromPayment(amt);
+        if(g.isLoyal()) g.setLoyaltyPoints(g.getLoyaltyPoints() - pts);
     }
 
     @Override

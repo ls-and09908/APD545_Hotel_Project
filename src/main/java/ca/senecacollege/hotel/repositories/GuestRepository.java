@@ -27,19 +27,6 @@ public class GuestRepository implements IGuestRepository {
     }
 
     @Override
-    public void saveGuest(Guest g) {
-        Transaction tx=null;
-        try(Session session = sessionFactory.openSession()){
-            tx = session.beginTransaction();
-            session.merge(g);
-            tx.commit();
-        }catch(RuntimeException e){
-            if(tx!=null) tx.rollback();
-            throw e;
-        }
-    }
-
-    @Override
     public Optional<Guest> getGuest(int guestID) {
         try(Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.get(Guest.class, guestID));

@@ -3,30 +3,61 @@ package ca.senecacollege.hotel.services;
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.*;
 import com.google.inject.Inject;
-import javafx.collections.ObservableList;
+import com.google.inject.name.Named;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ReservationService implements IReservationService {
     private IReservationRepository _resRepo;
     private IRoomRepository _roomRepo;
     private IGuestRepository _guestRepo;
     private IAddonRepository _addonRepo;
+    private final IBillingService _billService;
+    private final IActivityLogService _logService;
+    private final ILoyaltyService _loyaltyService;
+    private final int _cancellationDays;
 
     @Inject
-    public ReservationService(IReservationRepository resRepo, IRoomRepository roomRepo, IGuestRepository guestRepo, IAddonRepository addonRepo){
+    public ReservationService(IReservationRepository resRepo, IRoomRepository roomRepo, IGuestRepository guestRepo, IAddonRepository addonRepo, IBillingService billService, IActivityLogService logService, ILoyaltyService loyaltyService, @Named("cancellationDaysPolicy")int cancellationDays){
         this._resRepo = resRepo;
         this._roomRepo = roomRepo;
         this._guestRepo = guestRepo;
         this._addonRepo = addonRepo;
+        _billService = billService;
+        _logService = logService;
+        _loyaltyService = loyaltyService;
+        _cancellationDays = cancellationDays;
     }
 
     @Override
     public void saveReservation(Reservation reservation) {
-        //_guestRepo.saveGuest(reservation.getGuest());
-        _resRepo.saveRes(reservation);
+        List<Integer> rooms = new ArrayList<>();
+        List<Integer> addons = new ArrayList<>();
+        for(Room r: reservation.getRooms()){
+            rooms.add(r.getRoomNumber());
+        }
+        for(AddOn a: reservation.getAddOns()){
+            addons.add(a.getId());
+        }
+        _resRepo.saveRes(reservation, reservation.getGuest().getId(), rooms, addons, reservation.getBilling().getBillNumber());
+        _logService.editReservation(reservation);
+    }
+
+    @Override
+    public void saveNewReservation(Reservation reservation){
+        List<Integer> rooms = new ArrayList<>();
+        List<Integer> addons = new ArrayList<>();
+        for(Room r: reservation.getRooms()){
+            rooms.add(r.getRoomNumber());
+        }
+        for(AddOn a: reservation.getAddOns()){
+            addons.add(a.getId());
+        }
+        _resRepo.saveRes(reservation, reservation.getGuest().getId(), rooms, addons, reservation.getBilling().getBillNumber());
+        _logService.createReservation(reservation);
     }
 
     @Override
@@ -84,18 +115,90 @@ public class ReservationService implements IReservationService {
             return rooms;
         }
 
-    /**
-     * Checks if the email parameter has already been used for an existing guest.
-     * @param email
-     * @return true if the email is valid (doesn't already exist) and false otherwise
-     */
     @Override
     public boolean checkGuestEmail(String email) {
         return _guestRepo.findGuestEmail(email).isEmpty();
     }
 
     @Override
-    public boolean canCheckOut(Reservation reservation){
-        return reservation.getBilling().getBalance() == 0.0;
+    public Guest getGuestByEmail(String email){
+        return _guestRepo.findGuestEmail(email).orElse(null);
     }
+
+    @Override
+    public boolean canCheckOut(Reservation res){
+        return Math.round(res.getBilling().getBalance()*100.00)/100.00 == 0.0;
+    }
+
+    @Override
+    public boolean isCheckOutTime(Reservation res){
+        return res.getCheckOut().isEqual(LocalDate.now());
+    }
+
+    @Override
+    public boolean attemptCheckOut(Reservation res){
+        boolean success = canCheckOut(res);
+        if(success){
+            res.setStatus(ReservationStatus.CHECKEDOUT);
+            saveReservation(res);
+        }
+        _logService.checkoutReservation(res, success);
+        return success;
+    }
+
+    /**
+     * Attempts to cancel a reservation, freeing up rooms and refunding the customer.
+     * <p>Reservations that are already cancelled, checked out, or checked in cannot be cancelled and will return false.</p>
+     * @param res
+     * @return true if the cancellation was successful
+     */
+    @Override
+    public boolean cancelReservation(Reservation res){
+        switch(res.getStatus()){
+            case CANCELLED, CHECKEDOUT, CHECKEDIN:
+                _logService.cancelReservation(res, false);
+                return false;
+            case BOOKED:
+                boolean returnDeposit = LocalDate.now().plusDays(_cancellationDays).isBefore(res.getCheckIn());
+                double refund = _billService.refundCancellation(res.getBilling(), returnDeposit);
+                if (refund > 0.0){
+                    // refunds loyalty points, loyalty service has safety check for non-loyal guests
+                    _loyaltyService.removePoints(refund, res.getGuest());
+                }
+            default:
+                res.getRooms().clear();
+        }
+        res.setStatus(ReservationStatus.CANCELLED);
+        saveReservation(res);
+        _logService.cancelReservation(res, true);
+        return true;
+        // TODO: trigger notifying waitlists?
+    }
+
+    /**
+     * query the DB for any res_num(s) except the current reservation in the room_res table during the specified dates
+     * if the returned value is nothing, the room is available
+     */
+    @Override
+    public boolean extendReservation(Reservation res){
+        LocalDate checkIn = res.getCheckIn();
+        LocalDate checkOut = res.getCheckOut();
+        Set<Room> roomsList = res.getRooms();
+        List<Integer> results;
+        for(Room room : roomsList){
+            results = _resRepo.checkReserved(room, res.getReservationNumber(), checkIn, checkOut);
+            if (!results.isEmpty()) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean attemptCheckin(Reservation res){
+        if (!res.getCheckIn().isEqual(LocalDate.now())) return false;
+        res.setStatus(ReservationStatus.CHECKEDIN);
+        saveReservation(res);
+        _logService.checkinReservation(res);
+        return true;
+    }
+
 }

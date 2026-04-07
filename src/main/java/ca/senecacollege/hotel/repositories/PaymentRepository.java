@@ -30,17 +30,4 @@ public class PaymentRepository implements IPaymentRepository {
             return q.list();
         }
     }
-
-    @Override
-    public void savePayment(Payment p) {
-        Transaction tx=null;
-        try(Session session = sessionFactory.openSession()){
-            tx = session.beginTransaction();
-            session.merge(p);
-            tx.commit();
-        }catch(RuntimeException e){
-            if(tx!=null) tx.rollback();
-            throw e;
-        }
-    }
 }

@@ -5,13 +5,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import jakarta.persistence.*;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -34,10 +29,7 @@ public class App extends Application {
 
     @Override
     public void stop() throws Exception {
-//        EntityManagerFactory emf = injector.getInstance(EntityManagerFactory.class);
-//        if(emf.isOpen()){
-//            emf.close();
-//        }
+
     }
 
     /**

@@ -39,4 +39,22 @@ public class AddOn implements ChargeSource {
     public int getId() {
         return id;
     }
+
+    @Override
+    public String chargeName() {
+        return this.name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AddOn)) return false;
+        AddOn a = (AddOn) o;
+        return id != 0 && id == a.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
 }

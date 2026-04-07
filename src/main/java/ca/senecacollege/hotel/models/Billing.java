@@ -8,11 +8,11 @@ import java.util.List;
 @Entity
 public class Billing {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "BILL_NUM")
-    private int billNumber;
+    private Integer billNumber;
 
-    @OneToOne
+    @OneToOne(mappedBy = "billing")
     private Reservation reservation;
 
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -104,6 +104,10 @@ public class Billing {
 
     public Double getTax(){
         return this.getTotalCharges()*0.13;
+    }
+
+    public Integer getBillNumber() {
+        return billNumber;
     }
 
     // only stage of Billing calculations that actually calculates tax

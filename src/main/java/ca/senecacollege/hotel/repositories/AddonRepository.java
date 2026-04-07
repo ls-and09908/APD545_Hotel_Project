@@ -27,19 +27,6 @@ public class AddonRepository implements IAddonRepository {
     }
 
     @Override
-    public void saveAddOn(AddOn a) {
-        Transaction tx=null;
-        try(Session session = sessionFactory.openSession()){
-            tx = session.beginTransaction();
-            session.merge(a);
-            tx.commit();
-        }catch(RuntimeException e){
-            if(tx!=null) tx.rollback();
-            throw e;
-        }
-    }
-
-    @Override
     public Optional<AddOn> getAddOn(int addOnID) {
         try(Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.get(AddOn.class, addOnID));

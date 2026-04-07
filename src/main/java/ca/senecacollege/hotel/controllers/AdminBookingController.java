@@ -6,11 +6,13 @@ import ca.senecacollege.hotel.models.Reservation;
 import ca.senecacollege.hotel.models.Room;
 import ca.senecacollege.hotel.models.RoomType;
 import ca.senecacollege.hotel.repositories.IGuestRepository;
+import ca.senecacollege.hotel.services.IActivityLogService;
 import ca.senecacollege.hotel.services.IBillingService;
 import ca.senecacollege.hotel.services.ILoyaltyService;
 import ca.senecacollege.hotel.services.IReservationService;
 import ca.senecacollege.hotel.utilities.SceneManager;
 import ca.senecacollege.hotel.utilities.SceneManagerAware;
+import ca.senecacollege.hotel.utilities.UserContext;
 import com.google.inject.Inject;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.*;
@@ -28,7 +30,6 @@ public class AdminBookingController implements SceneManagerAware {
     private final IBillingService _billService;
     private final IReservationService _resService;
     private final ILoyaltyService _loyaltyService;
-    private ObjectProperty<AdminUser> user = new SimpleObjectProperty<>();
     private BooleanProperty showMemberMenus = new SimpleBooleanProperty(false);
     private SceneManager sceneManager;
     private ObjectProperty<Reservation> res = new SimpleObjectProperty<>();
@@ -45,6 +46,7 @@ public class AdminBookingController implements SceneManagerAware {
     private DoubleBinding total;
     private DoubleProperty paymentsMade = new SimpleDoubleProperty();
     private DoubleProperty remainingBalance = new SimpleDoubleProperty();
+    private boolean loadedRes = false;
 
     @Inject
     public AdminBookingController(IBillingService billService, IReservationService resService, ILoyaltyService loyaltyService){
@@ -80,14 +82,14 @@ public class AdminBookingController implements SceneManagerAware {
 
         showMemberMenus.bind(loyaltyTxt.visibleProperty());
         loyaltyInput.disableProperty().bind(loyaltyTxt.visibleProperty());
-        updateLoyalty.disableProperty().bind(loyaltyInput.textProperty().isEmpty().or(loyaltyErr.visibleProperty().or(loyaltyTxt.textProperty().isNotEmpty())));
+        updateLoyalty.disableProperty().bind(loyaltyInput.textProperty().isEmpty().or(loyaltyErr.visibleProperty().or(loyaltyTxt.visibleProperty())));
         updateEmail.disableProperty().bind(emailInput.textProperty().isEmpty().or(emailErr.visibleProperty()));
         updateName.disableProperty().bind(nameInput.textProperty().isEmpty().or(nameErr.visibleProperty()));
         updatePhone.disableProperty().bind(phoneInput.textProperty().isEmpty().or(phoneErr.visibleProperty()));
         updateGuests.disableProperty().bind(adultSpinner.valueProperty().isEqualTo(0).and(childSpinner.valueProperty().isEqualTo(0)));
         roomFilter.disableProperty().bind(dateErr.visibleProperty().or(updateDate.disableProperty().not()));
-        applyDiscount.disableProperty().bind(discountErr.visibleProperty().or(discountInput.textProperty().isEmpty()).or(user.isNull()));
-        applyPayment.disableProperty().bind(paymentErr.visibleProperty().or(paymentInput.textProperty().isEmpty()).or(user.isNull()));
+        applyDiscount.disableProperty().bind(discountErr.visibleProperty().or(discountInput.textProperty().isEmpty()));
+        applyPayment.disableProperty().bind(paymentErr.visibleProperty().or(paymentInput.textProperty().isEmpty()).or(paymentTypeBox.getSelectionModel().selectedItemProperty().isNull()));
         guest.addListener(((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 setupGuest();
@@ -128,14 +130,15 @@ public class AdminBookingController implements SceneManagerAware {
             String text = loyaltyInput.getText();
             if(text.isBlank()) loyaltyErr.setVisible(false);
             try {
-                Integer num = Integer.parseInt(text);
-                Guest g = retrieveMembership(num);
+                int num = Integer.parseInt(text);
+                Guest g = _loyaltyService.getLoyalGuest(num);
                 if (g == null){
                     loyaltyErr.setText("Loyalty number not found");
                     loyaltyErr.setVisible(true);
                 } else {
                     guest.set(g);
                     loyaltyTxt.setText(text);
+                    loyaltyTxt.setVisible(true);
                     loyaltyInput.clear();
                 }
             } catch (NumberFormatException e) {
@@ -171,15 +174,20 @@ public class AdminBookingController implements SceneManagerAware {
         }));
 
         countryBox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            if(newValue != null) updateCountry.setDisable(false);
+            if(newValue != null && !countryBox.isDisabled()) updateCountry.setDisable(false);
         }));
 
         checkinInput.valueProperty().addListener(((observable, oldValue, newValue) -> {
-            if (res.get() != null && newValue != null) updateDate.setDisable(!confirmDates(newValue, checkoutInput.getValue()));
+            if (!checkinInput.isDisabled() && newValue != null){
+                updateDate.setDisable(!validateDates(newValue, checkoutInput.getValue()));
+            }
         }));
 
         checkoutInput.valueProperty().addListener(((observable, oldValue, newValue) -> {
-            if (res.get() != null && newValue != null) updateDate.setDisable(!confirmDates(checkinInput.getValue(), newValue));
+            if (newValue != null) {
+                if (checkinInput.isDisabled()) updateDate.setDisable(!validateCheckout(newValue));
+                else updateDate.setDisable(!validateDates(checkinInput.getValue(), newValue));
+            }
         }));
 
         resRooms.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
@@ -225,8 +233,7 @@ public class AdminBookingController implements SceneManagerAware {
         }));
 
         reservationRooms.addListener((ListChangeListener<Room>) change -> {
-            res.get().setBilling(_billService.updateBillCharges(res.get()));
-            roomCharge.setValue(res.get().getBilling().getRoomCharges());
+            updateRoomCharges();
         });
 
         paymentTypeBox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
@@ -247,17 +254,11 @@ public class AdminBookingController implements SceneManagerAware {
         }));
     }
 
-    @FXML
-    private Guest retrieveMembership(int loyaltyNum){
-        return _loyaltyService.getLoyalGuest(loyaltyNum);
-    }
-
     private void handleAddOnChecks(CheckBox cb, boolean checked){
         if (res.get() != null) {
             if (checked) res.get().addAddOn((AddOn) cb.getUserData());
             else res.get().removeAddOn((AddOn) cb.getUserData());
-            _billService.updateBillCharges(res.get());
-            addonCharge.set(res.get().getBilling().getAddOnCharges());
+            updateAddonCharges();
         }
     }
 
@@ -351,13 +352,10 @@ public class AdminBookingController implements SceneManagerAware {
      * Initializes the form to update an existing reservation
      */
     private void setupReservation(){
+        loadedRes = true;
         adminBookingHeader.setText("Update Booking");
         saveBtn.setText("Save Changes");
         cancellationBtn.setVisible(true);
-        checkoutBtn.setVisible(true);
-        checkoutBtn.disableProperty().bind(billBalance.textProperty().isNotEqualTo("$0.00"));
-
-        System.out.println("Guest: " + res.get().getGuest());
 
         checkinInput.setValue(res.get().getCheckIn());
         checkoutInput.setValue(res.get().getCheckOut());
@@ -371,13 +369,52 @@ public class AdminBookingController implements SceneManagerAware {
                 cb.selectedProperty().setValue(true);
             }
         }
-        if(res.get().getStatus() != ReservationStatus.BOOKING) {
-            paymentTypeBox.getItems().remove(PaymentMethod.DEPOSIT);
+        switch (res.get().getStatus()){
+            case BOOKING:
+                break;
+            case CANCELLED, CHECKEDOUT:
+                disableChanges();
+                break;
+            case CHECKEDIN:
+                checkinInput.setDisable(true);
+                checkoutBtn.setVisible(true);
+            case BOOKED:
+            default:
+                paymentTypeBox.getItems().remove(PaymentMethod.DEPOSIT);
         }
 
         clearRooms();
         reservationRooms.addAll(res.get().getRooms());
         refreshAvailableRooms(null);
+        Billing b = res.get().getBilling();
+        if(res.get().getStatus() != ReservationStatus.CANCELLED) {
+            roomCharge.set(b.getRoomCharges());
+            addonCharge.set(b.getAddOnCharges());
+            discount.set(subtotal.multiply(b.getDiscount()/100).getValue());
+        }
+        paymentsMade.set(b.getTotalPayments());
+    }
+
+    private void disableChanges(){
+        adminBookingHeader.setText("View Booking");
+        nameInput.setDisable(true);
+        loyaltyTxt.setVisible(true);
+        phoneInput.setDisable(true);
+        emailInput.setDisable(true);
+        discountInput.setDisable(true);
+        paymentInput.setDisable(true);
+        checkinInput.setDisable(true);
+        checkoutInput.setDisable(true);
+        countryBox.setDisable(true);
+        updateCountry.setDisable(true);
+        adultSpinner.setDisable(true);
+        childSpinner.setDisable(true);
+        paymentTypeBox.setDisable(true);
+        resRooms.setDisable(true);
+        availRooms.setDisable(true);
+        saveBtn.setVisible(false);
+        cancellationBtn.setVisible(false);
+        checkoutBtn.setVisible(false);
     }
 
     private void setupRoomFilter(){
@@ -404,14 +441,30 @@ public class AdminBookingController implements SceneManagerAware {
         childSpinner.setValueFactory(cValueFactory);
     }
 
-    private boolean confirmDates(LocalDate in, LocalDate out){
-        if(in.isAfter(out)) {
-            dateErr.setText("Check-in date must be before check-out");
+    private boolean validateDates(LocalDate in, LocalDate out){
+        if(in.isBefore(LocalDate.now())){
+            dateErr.setText("Cannot check-in before the current date.");
             dateErr.setVisible(true);
             return false;
         }
-        else if(in.isBefore(LocalDate.now())){
-            dateErr.setText("Must be on or after the current date");
+        if (!out.isAfter(LocalDate.now())){
+            dateErr.setText("Must check-out after the current date");
+            dateErr.setVisible(true);
+            return false;
+        }
+        else if(!in.isBefore(out)) {
+            dateErr.setText("Stays must be at minimum one night.");
+            dateErr.setVisible(true);
+            return false;
+        }
+        dateErr.setVisible(false);
+        return true;
+        // TODO: log validation failure
+    }
+
+    private boolean validateCheckout(LocalDate out){
+        if(out.isBefore(LocalDate.now())){
+            dateErr.setText("Must check-out on or after the current date");
             dateErr.setVisible(true);
             return false;
         }
@@ -519,9 +572,16 @@ public class AdminBookingController implements SceneManagerAware {
 
     @FXML
     private void onUpdateDate(){
+        LocalDate originalCheckout = res.get().getCheckOut();
         res.get().setCheckIn(checkinInput.getValue());
         res.get().setCheckOut(checkoutInput.getValue());
-        refreshRoomsList();
+        if(res.get().getStatus() == ReservationStatus.CHECKEDIN) {
+            if(!_resService.extendReservation(res.get())){
+                res.get().setCheckOut(originalCheckout);
+                // TODO: set up a dialog to tell the adminuser to make a new reservation bc extending is not easy
+                // suggest creating a new reservation where checkIn = original checkOut and checkout = new checkout
+            }
+        } else refreshRoomsList();
         updateDate.setDisable(true);
     }
 
@@ -539,7 +599,7 @@ public class AdminBookingController implements SceneManagerAware {
     private void onApplyDiscount(){
         try{
             Double percent = Double.parseDouble(discountInput.getText());
-            if(!_billService.applyDiscount(res.get().getBilling(), percent, user.get().getRole())){
+            if(!_billService.applyDiscount(res.get().getBilling(), percent, UserContext.getUser().getRole())){
                 discountErr.setText("Discount value is above maximum allowed.");
                 discountErr.setVisible(true);
             } else {
@@ -563,7 +623,6 @@ public class AdminBookingController implements SceneManagerAware {
             if (type == PaymentMethod.REFUND) amt = -amt;
             if(_billService.addPaymentToBill(amt, type, bill)){ // payment successful
                 if(type == PaymentMethod.DEPOSIT){
-                    res.get().setStatus(ReservationStatus.BOOKED);
                     paymentTypeBox.getItems().remove(PaymentMethod.DEPOSIT);
                 }
                 paymentErr.setVisible(false);
@@ -577,6 +636,8 @@ public class AdminBookingController implements SceneManagerAware {
             // TODO: log validation failure
             paymentErr.setText("Invalid value, parse failed.");
             paymentErr.setVisible(true);
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -584,7 +645,7 @@ public class AdminBookingController implements SceneManagerAware {
         // TODO: Log points transactions
         int numPoints;
         String billPointsText = billPoints.getText();
-        int ptsEarned = Integer.parseInt(billPointsText);
+        int ptsEarned = billPointsText.isBlank() ? 0 : Integer.parseInt(billPointsText);
         switch(type){
             case LOYALTY:
                 numPoints = _loyaltyService.spendPoints(amt, guest.get());
@@ -609,31 +670,80 @@ public class AdminBookingController implements SceneManagerAware {
         if(res.get().getStatus() == ReservationStatus.BOOKING){
             paymentErr.setText("Must pay deposit to confirm.");
             paymentErr.setVisible(true);
-            return;
         } else {
             res.get().setGuest(guest.get());
-            _resService.saveReservation(res.get());
+            if(!loadedRes){
+                _resService.saveNewReservation(res.get());
+            } else _resService.saveReservation(res.get());
             toDash();
         }
     }
 
     @FXML
+    private void onCancel() throws IOException {
+        if (_resService.cancelReservation(res.get())) toDash();
+    }
+
+    @FXML
     private void onCheckout() throws IOException {
-        if (_resService.canCheckOut(res.get())){
-            res.get().setStatus(ReservationStatus.CHECKEDOUT);
+        if(_resService.isCheckOutTime(res.get())){
+            if(!checkout()){
+                checkoutBtn.disableProperty().bind(billBalance.textProperty().isNotEqualTo("$0.00"));
+                paymentErr.setText("Please settle bill balance to finish checkout.");
+                paymentErr.setVisible(true);
+            }
+        } else { // early checkout
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"Early Check-Out Attempt", ButtonType.YES, ButtonType.CANCEL);
+            alert.setTitle("Early Check-Out Attempt");
+            alert.setContentText("Proceeding will check the guest out earlier than their booked check-out date. Proceed?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.YES) {
+                checkoutInput.setValue(LocalDate.now());
+                onUpdateDate();
+                updateRoomCharges();
+                updateAddonCharges();
+                onCheckout(); // yes, don't worry about it.
+                // might have to ignore errors here
+            }
+        }
+    }
+
+    private void updateRoomCharges(){
+        res.get().setBilling(_billService.updateBillCharges(res.get()));
+        roomCharge.setValue(res.get().getBilling().getRoomCharges());
+    }
+
+    private void updateAddonCharges(){
+        res.get().setBilling(_billService.updateBillCharges(res.get()));
+        addonCharge.set(res.get().getBilling().getAddOnCharges());
+    }
+
+    private boolean checkout() throws IOException {
+        if (_resService.attemptCheckOut(res.get())) {
             _resService.saveReservation(res.get());
+            toDash();
+            return true;
+        }
+        return false;
+    }
+
+    @FXML
+    private void onReturn() throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"Changes will not be saved", ButtonType.OK, ButtonType.CANCEL);
+        alert.setTitle(" ");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             toDash();
         }
     }
 
     @FXML
     private void toDash() throws IOException {
-        sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", (AdminController controller) -> controller.setAdminuser(this.user.get()));
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", null);
     }
 
     public void setRes(Reservation res) { if(res != null) this.res.setValue(res); }
     public void setGuest(Guest guest){ if(guest != null) this.guest.setValue(guest); }
-    public void setUser(AdminUser user) { if(user != null) this.user.setValue(user); }
 
     @Override
     public void setSceneManager(SceneManager sceneManager){

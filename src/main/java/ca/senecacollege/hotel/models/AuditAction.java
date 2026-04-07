@@ -2,10 +2,12 @@ package ca.senecacollege.hotel.models;
 
 public enum AuditAction {
     LOGIN("Login Attempt"),
-    SEARCH("Search"),
-    UPDATE_RES("Reservation Update"),
-    CHECKOUT("Check-out"),
-    CANCELLATION("Cancellation"),
+    SEARCH("Searched For"),
+    CREATE_RES("Added Reservation"),
+    EDIT_RES("Edited Reservation"),
+    CHECKOUT("Checked Out Reservation"),
+    CHECKIN("Checked In Reservation"),
+    CANCELLATION("Cancelled Reservation"),
     DISCOUNT("Discount Application"),
     PAYMENT("Processed Payment"),
     REFUND("Processed Refund"),

@@ -84,4 +84,12 @@ public class Charge {
     public PricingModel getPricing() {
         return pricing;
     }
+
+    @Override
+    public String toString() {
+        return source.chargeName() +
+                (quantity > 1 ? String.format(" %dx nights @",quantity,pricing.getPrice(source.getBasePrice(), 1)) : " -------------")
+                + String.format("%16s", pricingModelName)
+                + " $" + this.amount;
+    }
 }
