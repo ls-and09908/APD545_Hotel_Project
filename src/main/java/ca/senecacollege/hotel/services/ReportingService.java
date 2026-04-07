@@ -37,6 +37,10 @@ public class ReportingService implements IReportingService {
 //        return paymentRepo.getAllPayments();
 //    }
 
+    public ObservableList<AuditLog> getAllAuditLogs(){
+        return FXCollections.observableArrayList(auditRepo.getAllAuditLogs());
+    }
+
     public List<Room> getRoomWithOccupancyStatus(LocalDate from, LocalDate to){
         List<Room> allRooms = roomRepo.getAllRooms();
         List<Room> availableRooms = roomRepo.getAvailableRooms(from, to);

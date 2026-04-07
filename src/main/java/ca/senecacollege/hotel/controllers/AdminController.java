@@ -118,10 +118,8 @@ public class AdminController implements SceneManagerAware {
 
     @FXML
     private void handleSearch(){
-
         ObservableList<Reservation> observableMasterData = FXCollections.observableArrayList(_resService.getAllReservations());
         FilteredList<Reservation> filteredRes = getReservations(observableMasterData);
-//        adminTable.setItems(filteredList);
         setTableData(filteredRes);
     }
 
@@ -140,8 +138,6 @@ public class AdminController implements SceneManagerAware {
                     || r.getCheckOut().equals(searchedOut)
                     || r.getCheckIn().equals(searchedIn);
         });
-
-        SortedList<Reservation> filteredList = new SortedList<>(filteredRes);
         return filteredRes;
     }
 

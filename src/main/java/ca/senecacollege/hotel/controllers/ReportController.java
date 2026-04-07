@@ -16,7 +16,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -97,8 +99,11 @@ public class ReportController implements SceneManagerAware {
         LocalDate earlierRange = fromDatePicker.getValue() == null ? LocalDate.now(): fromDatePicker.getValue();
         LocalDate laterRange = toDatePicker.getValue() == null ? earlierRange.plusYears(1) : toDatePicker.getValue();
         ObservableList<Room> allRooms = FXCollections.observableArrayList(_reportingService.getRoomWithOccupancyStatus(earlierRange, laterRange));
-
-//        List<Reservation> reservationDates = FXCollections.observableArrayList(_reportingService.getAllReservationsBetweenDates(earlierRange,laterRange));
+        int occupiedRooms = 0;
+        for(Room r: allRooms){
+            if(r.getStatus().equals("Occupied")) occupiedRooms+=1;
+        }
+        subtitleLbl.setText(subtitleLbl.getText() + " - Occupancy: " + new DecimalFormat("#").format((occupiedRooms/40.00) * 100) + "%");
 
         TableColumn<Room, LocalDate> date = new TableColumn<>("Date");
         date.setMinWidth(500);
@@ -107,7 +112,27 @@ public class ReportController implements SceneManagerAware {
         reportTable.setItems(allRooms);
         reportTable.getColumns().addAll(date, status);
         status.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getStatus()));
-        //TODO display Date,  Occupancy%
+        //TODO display Date
+    }
+
+    @FXML
+    private void loadAudits(){
+        clearTable();
+        ObservableList<AuditLog> allAuditLogs = FXCollections.observableArrayList(_reportingService.getAllAuditLogs());
+        TableColumn<AuditLog, LocalDateTime> time = new TableColumn<>("Timestamp");
+        TableColumn<AuditLog, String> actor = new TableColumn<>("Actor");
+        TableColumn<AuditLog, String> action = new TableColumn<>("Action");
+        TableColumn<AuditLog, Integer> entity = new TableColumn<>("Entity");
+        TableColumn<AuditLog, String> type = new TableColumn<>("Entity Identifier");
+        TableColumn<AuditLog, String> message = new TableColumn<>("Message");
+        reportTable.setItems(allAuditLogs);
+        time.setCellValueFactory(a -> new SimpleObjectProperty<>(a.getValue().getTimestamp()));
+        actor.setCellValueFactory(a -> new SimpleObjectProperty<>(a.getValue().getActor().getUsername()));
+        action.setCellValueFactory(a -> new SimpleObjectProperty<>(a.getValue().getAction().getLabel()));
+        entity.setCellValueFactory(a -> new SimpleObjectProperty<>(a.getValue().getEntity()));
+        type.setCellValueFactory(a -> new SimpleObjectProperty<>(a.getValue().getEntityType()));
+        message.setCellValueFactory(a -> new SimpleObjectProperty<>(a.getValue().getMessage()));
+        reportTable.getColumns().addAll(time, actor, action, entity, type, message);
     }
 
     private void loadRevenue(){
@@ -122,7 +147,6 @@ public class ReportController implements SceneManagerAware {
 
         for(Billing b: allBillings){
             LocalDate checkIn = b.getReservation().getCheckIn();
-//            b = _reportingService.generateBillingWrapper(b.getReservation());
             if(checkIn.isEqual(LocalDate.now()) && revenueReportPeriod.equals("Day")){
                 reservationCount+=1;
                 allTotal += b.getTotalPayments();
@@ -170,10 +194,10 @@ public class ReportController implements SceneManagerAware {
     @FXML
     public void occupancyPress(){
         loadOccupancy();
-        subtitleLbl.setText("Occupancy");
     }
     @FXML
     public void activityPress(){
+        loadAudits();
         subtitleLbl.setText("Activity");
     }
     @FXML
@@ -200,10 +224,31 @@ public class ReportController implements SceneManagerAware {
     }
     @FXML
     private void exportToTxt(){
+        try {
+            File file = new File("testFile.txt");
+            Writer writer = new BufferedWriter(new FileWriter(file));
 
+            //This writes header
+            for(Object c: reportTable.getColumns()){
+                TableColumn<?,?> col = (TableColumn<?, ?>) c;
+                writer.write(col.getText() + ",");
+            }
+            writer.write("\n");
+
+            for (int i = 0; i < reportTable.getItems().size(); i++) {
+                for (int j = 0; j < reportTable.getColumns().size(); j++) {
+                    TableColumn<?, ?> col = (TableColumn<?, ?>) reportTable.getColumns().get(j);
+                    writer.write(String.valueOf(col.getCellData(i) + " "));
+                }
+                writer.write("\n");
+            }
+            writer.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     @FXML
-    private void exportToCSV(){
+    private void exportToCSV(){ //TODO Fix this
         try {
             File file = new File("testFile.csv");
             Writer writer = new BufferedWriter(new FileWriter(file));
@@ -215,27 +260,18 @@ public class ReportController implements SceneManagerAware {
             }
             writer.write("\n");
 
-            System.out.println(reportTable.getColumns().size());
-            System.out.println(reportTable.getItems().size());
-            if(reportTable.getColumns().size() > reportTable.getItems().size()) {
-                for (int i = 0; i < reportTable.getColumns().size(); i++) {
-                    TableColumn<?, ?> col = (TableColumn<?, ?>) reportTable.getColumns().get(i);
-                    for (int j = 0; j < reportTable.getItems().size(); j++) {
-                        String display = String.valueOf(col.getCellData(j));
-                        writer.write(display + ",");
-                    }
-                    writer.write("\n");
-                }
-            }
-            else {
                 for (int i = 0; i < reportTable.getItems().size(); i++) {
                     for (int j = 0; j < reportTable.getColumns().size(); j++) {
                         TableColumn<?, ?> col = (TableColumn<?, ?>) reportTable.getColumns().get(j);
-                        writer.write(String.valueOf(col.getCellData(i) + ","));
+                        if(j != reportTable.getColumns().size()-1) {
+                            writer.write(String.valueOf(col.getCellData(i) + ","));
+                        }
+                        else{
+                            writer.write(String.valueOf(col.getCellData(i)));
+                        }
                     }
                     writer.write("\n");
                 }
-            }
             writer.close();
         }catch (Exception e){
             e.printStackTrace();

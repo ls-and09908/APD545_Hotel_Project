@@ -152,7 +152,7 @@
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Home">
+            <Button mnemonicParsing="false" text="Home" onAction="#toHome">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
