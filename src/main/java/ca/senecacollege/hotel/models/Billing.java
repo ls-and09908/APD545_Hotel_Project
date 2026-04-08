@@ -116,4 +116,8 @@ public class Billing {
         balance = balance + getTax() - (this.discount/100)*balance - this.getTotalPayments();
         setBalance(balance);
     }
+
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
+    }
 }

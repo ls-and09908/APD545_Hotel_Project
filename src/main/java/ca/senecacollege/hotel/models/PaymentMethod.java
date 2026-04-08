@@ -16,12 +16,12 @@ public enum PaymentMethod {
         this.label = label;
     }
 
-    public String label(){ return this.label; }
+    public String asLabel(){ return this.label; }
 
     public static List<String> labels(){
         List<String> labels = new ArrayList<>();
         for (PaymentMethod p : PaymentMethod.values()){
-            labels.add(p.label());
+            labels.add(p.asLabel());
         }
         return labels;
     }

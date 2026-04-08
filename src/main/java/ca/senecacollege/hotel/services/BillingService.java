@@ -2,6 +2,8 @@ package ca.senecacollege.hotel.services;
 
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.IBillingRepository;
+import ca.senecacollege.hotel.repositories.IReservationRepository;
+import ca.senecacollege.hotel.utilities.UserContext;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
@@ -12,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BillingService implements IBillingService {
+    private final IReservationService _resService;
     private final IBillingRepository _billRepo;
+    private final IActivityLogService _logService;
     private final ILoyaltyService _loyaltyService;
     private final PricingModel _stdPrice;
     private final PricingModel _wkndPrice;
@@ -21,8 +25,10 @@ public class BillingService implements IBillingService {
     private final double depositPercent;
 
     @Inject
-    public BillingService(IBillingRepository billRepo, ILoyaltyService loyaltyService, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, @Named("adminDiscount")double adminDiscount, @Named("managerDiscount")double managerDiscount, @Named("depositPercent")double depositPercent){
+    public BillingService(IReservationService resService, IBillingRepository billRepo, IActivityLogService logService, ILoyaltyService loyaltyService, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, @Named("adminDiscount")double adminDiscount, @Named("managerDiscount")double managerDiscount, @Named("depositPercent")double depositPercent){
+        _resService = resService;
         this._billRepo = billRepo;
+        this._logService = logService;
         this._loyaltyService = loyaltyService;
         this._stdPrice = std;
         this._wkndPrice = wknd;
@@ -125,35 +131,55 @@ public class BillingService implements IBillingService {
     @Override
     public boolean addPaymentToBill(Double amount, PaymentMethod type, Billing bill) {
         if(amount != 0.0) {
-            if (type == PaymentMethod.REFUND && amount >= 0.0) return false;
-            Guest guest = bill.getReservation().getGuest();
+            Reservation r = bill.getReservation();
+            Guest guest = r.getGuest();
             bill.calculateBalance();
             Payment payment = new Payment(bill, amount, guest, LocalDate.now(), type);
+            if (type == PaymentMethod.REFUND && amount >= 0.0) {
+                _logService.processRefund(bill, amount, type, false);
+                return false;
+            }
 
             double newBalance = bill.getBalance() - payment.getAmount();
             if (Math.round(newBalance * 100.0) / 100.0 < 0.0) {
+                _logService.processPayment(bill, amount, type, false);
                 return false;
             }
-            if (type == PaymentMethod.DEPOSIT) bill.getReservation().setStatus(ReservationStatus.BOOKED);
 
             bill.addPayment(payment);
-            bill.setBalance(newBalance);
-            System.out.println("Paying: " + amount + " | Balance: " + newBalance);
+            bill.calculateBalance();
+//            bill.setBalance(newBalance);
+            r.setBilling(bill);
+            if (type == PaymentMethod.DEPOSIT) {
+                r.setStatus(ReservationStatus.BOOKED);
+                _resService.saveNewReservation(r);
+            } else {
+                _resService.saveReservation(r);
+            }
+            if (type == PaymentMethod.REFUND) {_logService.processRefund(bill, amount, type, true);}
+            _logService.processPayment(bill, amount, type, true);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean applyDiscount(Billing b, double percent, Role user){
-        if(user == Role.MANAGER && percent > managerDiscount){
+    public boolean applyDiscount(Billing b, double percent){
+        if(UserContext.getUser().getRole() == Role.MANAGER && percent > managerDiscount){
+            _logService.processDiscount(b, false, percent);
             return false;
         }
-        if(user == Role.ADMINISTRATOR && percent > adminDiscount){
+        if(UserContext.getUser().getRole() == Role.ADMINISTRATOR && percent > adminDiscount){
+            _logService.processDiscount(b, false, percent);
             return false;
         }
+        Reservation r = b.getReservation();
         b.setDiscount(percent);
         checkUpdateBillBalance(b);
+
+        r.setBilling(b);
+        _resService.saveReservation(r);
+        _logService.processDiscount(b, true, percent);
         return true;
     }
 
@@ -183,7 +209,7 @@ public class BillingService implements IBillingService {
     @Override
     public double refundCancellation(Billing b, boolean refundDeposit) {
         double refund = getRefundableAmount(b, refundDeposit);
-        if (addPaymentToBill(refund, PaymentMethod.REFUND, b)) return refund;
+        if (addPaymentToBill(-refund, PaymentMethod.REFUND, b)) return refund;
         return 0.0;
     }
 

@@ -378,6 +378,7 @@ public class AdminBookingController implements SceneManagerAware {
             case CHECKEDIN:
                 checkinInput.setDisable(true);
                 checkoutBtn.setVisible(true);
+                dateErr.setVisible(false);
             case BOOKED:
             default:
                 paymentTypeBox.getItems().remove(PaymentMethod.DEPOSIT);
@@ -441,25 +442,27 @@ public class AdminBookingController implements SceneManagerAware {
         childSpinner.setValueFactory(cValueFactory);
     }
 
-    private boolean validateDates(LocalDate in, LocalDate out){
-        if(in.isBefore(LocalDate.now())){
+    private boolean validateDates(LocalDate in, LocalDate out) {
+        if(checkinInput.isDisabled()) {
+            dateErr.setVisible(false);
+            return true;
+        }
+        if (in.isBefore(LocalDate.now())) {
             dateErr.setText("Cannot check-in before the current date.");
             dateErr.setVisible(true);
             return false;
         }
-        if (!out.isAfter(LocalDate.now())){
+        if (!out.isAfter(LocalDate.now())) {
             dateErr.setText("Must check-out after the current date");
             dateErr.setVisible(true);
             return false;
-        }
-        else if(!in.isBefore(out)) {
+        } else if (!in.isBefore(out)) {
             dateErr.setText("Stays must be at minimum one night.");
             dateErr.setVisible(true);
             return false;
         }
         dateErr.setVisible(false);
         return true;
-        // TODO: log validation failure
     }
 
     private boolean validateCheckout(LocalDate out){
@@ -470,7 +473,6 @@ public class AdminBookingController implements SceneManagerAware {
         }
         dateErr.setVisible(false);
         return true;
-        // TODO: log validation failure
     }
 
     private void setupRoomLists(){
@@ -597,9 +599,14 @@ public class AdminBookingController implements SceneManagerAware {
 
     @FXML
     private void onApplyDiscount(){
+        if(res.get().getReservationNumber() == null){
+            discountErr.setText("Please confirm the reservation before applying discounts.");
+            discountErr.setVisible(true);
+            return;
+        }
         try{
             Double percent = Double.parseDouble(discountInput.getText());
-            if(!_billService.applyDiscount(res.get().getBilling(), percent, UserContext.getUser().getRole())){
+            if(!_billService.applyDiscount(res.get().getBilling(), percent)){
                 discountErr.setText("Discount value is above maximum allowed.");
                 discountErr.setVisible(true);
             } else {
@@ -618,6 +625,7 @@ public class AdminBookingController implements SceneManagerAware {
     private void onApplyPayment(){
         try {
             PaymentMethod type = paymentTypeBox.getSelectionModel().getSelectedItem();
+            if(type == PaymentMethod.DEPOSIT) res.get().setGuest(guest.get());
             Billing bill = res.get().getBilling();
             double amt = Double.parseDouble(paymentInput.getText());
             if (type == PaymentMethod.REFUND) amt = -amt;
@@ -702,8 +710,7 @@ public class AdminBookingController implements SceneManagerAware {
                 onUpdateDate();
                 updateRoomCharges();
                 updateAddonCharges();
-                onCheckout(); // yes, don't worry about it.
-                // might have to ignore errors here
+                onCheckout();
             }
         }
     }
@@ -743,7 +750,7 @@ public class AdminBookingController implements SceneManagerAware {
     }
 
     public void setRes(Reservation res) { if(res != null) this.res.setValue(res); }
-    public void setGuest(Guest guest){ if(guest != null) this.guest.setValue(guest); }
+    public void setGuest(Guest guest){ if(guest != null) this.guest.setValue(guest);}
 
     @Override
     public void setSceneManager(SceneManager sceneManager){

@@ -145,7 +145,7 @@
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Button>
-            <Button disable="true" layoutX="74.0" layoutY="499.0" mnemonicParsing="false" onAction="#onCheckin" text="Check-in">
+            <Button fx:id="checkinBtn" disable="true" layoutX="74.0" layoutY="499.0" mnemonicParsing="false" onAction="#onCheckin" text="Check-in">
                <VBox.margin>
                   <Insets bottom="25.0" top="25.0" />
                </VBox.margin>

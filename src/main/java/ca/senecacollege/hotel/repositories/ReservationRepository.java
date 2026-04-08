@@ -19,41 +19,106 @@ public class ReservationRepository implements IReservationRepository {
 
     @Override
     public List<Reservation> getAllReservations() {
+        Transaction tx=null;
         try(Session session = sessionFactory.openSession()) {
+            tx = session.beginTransaction();
             var q = session.createQuery("FROM Reservation", Reservation.class);
+            tx.commit();
             return q.list();
         }
     }
 
+//    @Override
+//    public void saveRes(Reservation r, Integer guestID, List<Integer> rooms, List<Integer> addons, Integer billNum) {
+//        Transaction tx=null;
+//        try(Session session = sessionFactory.openSession()){
+//            tx = session.beginTransaction();
+//            Integer resNum = r.getReservationNumber();
+//            Reservation res = null;
+//            if (resNum != null){
+//                res = session.find(Reservation.class, resNum);
+//            }
+//            if(guestID != null){
+//                Guest g = session.find(Guest.class, guestID);
+//                res.setGuest(g);
+//            } else {
+//                session.persist(r.getGuest());
+//            }
+//            Billing b = r.getBilling();
+//            res.setBilling(b);
+//            if(billNum != null){
+//                Billing bill = session.find(Billing.class, billNum);
+//                bill.setReservation(res);
+//
+//                res.setBilling(bill);
+//
+//            }
+//            r.getRooms().clear();
+//            for(Integer id : rooms){
+//                r.addRoom(session.find(Room.class, id));
+//            }
+//            r.getAddOns().clear();
+//            for(Integer id : addons){
+//                r.addAddOn(session.find(AddOn.class, id));
+//            }
+//            if(res != null){
+//                session.merge(res);
+//            } else session.persist(r);
+//            tx.commit();
+//        } catch(RuntimeException e){
+//            if(tx!=null) tx.rollback();
+//            throw e;
+//        }
+//    }
+
+
     @Override
     public void saveRes(Reservation r, Integer guestID, List<Integer> rooms, List<Integer> addons, Integer billNum) {
-        Transaction tx=null;
-        try(Session session = sessionFactory.openSession()){
+        Transaction tx = null;
+        try (Session session = sessionFactory.openSession()) {
             tx = session.beginTransaction();
-            if(guestID != null){
-                Guest g = session.find(Guest.class, guestID);
-                r.setGuest(g);
+            Reservation res;
+            if (r.getReservationNumber() == null) {
+                res = r;
+                if (guestID != null) res.setGuest(session.find(Guest.class, guestID));
+                else session.persist(res.getGuest());
+                if (res.getBilling() != null) session.persist(res.getBilling());
+
+                res.getRooms().clear();
+                res.getAddOns().clear();
+                for (Integer id : rooms) {
+                    res.getRooms().add(session.find(Room.class, id));
+                }
+                for (Integer id : addons) {
+                    res.getAddOns().add(session.find(AddOn.class, id));
+                }
+                session.persist(res);
             } else {
-                session.persist(r.getGuest());
+                res = session.find(Reservation.class, r.getReservationNumber());
+                if (guestID != null) res.setGuest(session.find(Guest.class, guestID));
+                updateResFromDB(r, res);
+
+                if (r.getBilling() != null) {
+                    Billing bill = session.merge(r.getBilling());
+                    res.setBilling(bill);
+                    bill.setReservation(res);
+                } else res.setBilling(null);
+
+                res.getRooms().clear();
+                session.flush();
+                for (Integer id : rooms) {
+                    res.getRooms().add(session.find(Room.class, id));
+                }
+
+                res.getAddOns().clear();
+                session.flush();
+                for (Integer id : addons) {
+                    res.getAddOns().add(session.find(AddOn.class, id));
+                }
             }
-            if(billNum != null){
-                Billing b = session.find(Billing.class, billNum);
-                r.setBilling(b);
-            }
-            r.getRooms().clear();
-            for(Integer id : rooms){
-                r.addRoom(session.find(Room.class, id));
-            }
-            r.getAddOns().clear();
-            for(Integer id : addons){
-                r.addAddOn(session.find(AddOn.class, id));
-            }
-            if(r.getReservationNumber() != null){
-                session.merge(r);
-            } else session.persist(r);
             tx.commit();
-        }catch(RuntimeException e){
-            if(tx!=null) tx.rollback();
+        } catch (RuntimeException e) {
+            if (tx != null) tx.rollback();
             throw e;
         }
     }
@@ -67,7 +132,9 @@ public class ReservationRepository implements IReservationRepository {
 
     @Override
     public List<Integer> checkReserved(Room r, int resNum, LocalDate checkIn, LocalDate checkOut) {
+        Transaction tx=null;
         try(Session session = sessionFactory.openSession()){
+            tx = session.beginTransaction();
             var q = session.createQuery("""
                 SELECT res.reservationNumber
                 FROM Reservation res
@@ -81,7 +148,17 @@ public class ReservationRepository implements IReservationRepository {
             q.setParameter("checkIn", checkIn);
             q.setParameter("checkOut", checkOut);
             q.setParameter("roomNum", r.getRoomNumber());
+            tx.commit();
             return q.list();
         }
+    }
+
+    @Override
+    public void updateResFromDB(Reservation src, Reservation dest) {
+        dest.setCheckIn(src.getCheckIn());
+        dest.setCheckOut(src.getCheckOut());
+        dest.setAdults(src.getAdults());
+        dest.setChildren(src.getChildren());
+        dest.setStatus(src.getStatus());
     }
 }

@@ -14,4 +14,6 @@ public interface IReservationRepository {
     Optional<Reservation> getRes(int resNum);
 
     List<Integer> checkReserved(Room r, int resNum, LocalDate checkIn, LocalDate checkOut);
+
+    void updateResFromDB(Reservation src, Reservation dest);
 }

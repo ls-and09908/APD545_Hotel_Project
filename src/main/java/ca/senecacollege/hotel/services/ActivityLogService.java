@@ -1,8 +1,6 @@
 package ca.senecacollege.hotel.services;
 
-import ca.senecacollege.hotel.models.AuditAction;
-import ca.senecacollege.hotel.models.AuditLog;
-import ca.senecacollege.hotel.models.Reservation;
+import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.IAuditLogRepository;
 import ca.senecacollege.hotel.utilities.UserContext;
 import com.google.inject.Inject;
@@ -69,7 +67,7 @@ public class ActivityLogService implements IActivityLogService {
     @Override
     public void cancelReservation(Reservation res, boolean success){
         int entityId = res.getReservationNumber();
-        String message = success ? "" : "FAILURE" +  reservationMsg(res);
+        String message = success ? "SUCCESS" : "FAILURE" +  reservationMsg(res);
         AuditLog log = new AuditLog(UserContext.getUser(), timestamp(), AuditAction.CANCELLATION, res.getClass().getSimpleName(), entityId, message);
         writeLog(log);
     }
@@ -77,7 +75,7 @@ public class ActivityLogService implements IActivityLogService {
     @Override
     public void checkoutReservation(Reservation res, boolean success){
         int entityId = res.getReservationNumber();
-        String message = success ? "" : "FAILURE" + reservationMsg(res);
+        String message = success ? "SUCCESS" : "FAILURE" + reservationMsg(res);
         AuditLog log = new AuditLog(UserContext.getUser(), timestamp(), AuditAction.CHECKOUT, res.getClass().getSimpleName(), entityId, message);
         writeLog(log);
     }
@@ -86,13 +84,37 @@ public class ActivityLogService implements IActivityLogService {
     public void checkinReservation(Reservation res){
         int entityId = res.getReservationNumber();
         String message = reservationMsg(res);
-        AuditLog log = new AuditLog(UserContext.getUser(), timestamp(), AuditAction.CHECKOUT, res.getClass().getSimpleName(), entityId, message);
+        AuditLog log = new AuditLog(UserContext.getUser(), timestamp(), AuditAction.CHECKIN, res.getClass().getSimpleName(), entityId, message);
+        writeLog(log);
+    }
+
+    @Override
+    public void processRefund(Billing bill, double amount, PaymentMethod type, boolean success){
+        int entityId = bill.getBillNumber();
+        String message = success ? "SUCCESS" : "FAILURE" + String.format(" Refunded $%.2f", amount);
+        AuditLog log = new AuditLog(UserContext.getUser(), timestamp(), AuditAction.REFUND, bill.getClass().getSimpleName(), entityId, message);
+        writeLog(log);
+    }
+
+    @Override
+    public void processDiscount(Billing bill, boolean success, double percent){
+        int entityId = bill.getBillNumber();
+        String message = success ? "SUCCESS" : "FAILURE" + String.format(" Apply discount of %.2f", percent) + "%";
+        AuditLog log = new AuditLog(UserContext.getUser(), timestamp(), AuditAction.DISCOUNT, bill.getClass().getSimpleName(), entityId, message);
+        writeLog(log);
+    }
+
+    @Override
+    public void processPayment(Billing bill, double amount, PaymentMethod type, boolean success){
+        int entityId = bill.getBillNumber();
+        String message = success ? "SUCCESS" : "FAILURE" + String.format(" Paid $%.2f using %s", amount,type.asLabel());
+        AuditLog log = new AuditLog(UserContext.getUser(), timestamp(), AuditAction.PAYMENT, bill.getClass().getSimpleName(), entityId, message);
         writeLog(log);
     }
 
     @Override
     public String reservationMsg(Reservation res){
-        return "Rooms: " + res.getRooms() + " | FROM: " + res.getCheckIn().format(resDateFormat) + " - " + res.getCheckOut().format(resDateFormat);
+        return " Rooms: " + res.getRooms() + " | FROM: " + res.getCheckIn().format(resDateFormat) + " - " + res.getCheckOut().format(resDateFormat);
     }
 
     @Override
@@ -107,7 +129,7 @@ public class ActivityLogService implements IActivityLogService {
                         log.getMessage())
                 );
                 break;
-            case EDIT_RES, CREATE_RES, CANCELLATION, CHECKOUT:
+            default:
                 message = message.concat(String.format("(%s)%s: %s %d - %s",
                         log.getActorRole(),
                         log.getActorUsername(),

@@ -1,9 +1,6 @@
 package ca.senecacollege.hotel.services;
 
-import ca.senecacollege.hotel.models.AdminUser;
-import ca.senecacollege.hotel.models.AuditAction;
-import ca.senecacollege.hotel.models.AuditLog;
-import ca.senecacollege.hotel.models.Reservation;
+import ca.senecacollege.hotel.models.*;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +16,12 @@ public interface IActivityLogService {
     void checkoutReservation(Reservation res, boolean success);
 
     void checkinReservation(Reservation res);
+
+    void processRefund(Billing bill, double amount, PaymentMethod type, boolean success);
+
+    void processDiscount(Billing bill, boolean success, double percent);
+
+    void processPayment(Billing bill, double amount, PaymentMethod type, boolean success);
 
     String reservationMsg(Reservation res);
 

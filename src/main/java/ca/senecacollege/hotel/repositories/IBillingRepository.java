@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface IBillingRepository {
     List<Billing> getAllBillings();
-    Optional<Billing> getBill(int billNum);
+    void saveBill(Billing b);
 }

@@ -8,7 +8,7 @@ public interface IBillingService {
     int getWeekendDays(Reservation r);
     void checkUpdateBillBalance(Billing b);
     boolean addPaymentToBill(Double amount, PaymentMethod type, Billing bill);
-    boolean applyDiscount(Billing b, double percent, Role user);
+    boolean applyDiscount(Billing b, double percent);
     double getDeposit(Billing b);
     double getRefundableAmount(Billing b, boolean includeDeposit);
 
