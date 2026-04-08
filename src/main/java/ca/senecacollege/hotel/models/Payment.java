@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Entity
 public class Payment {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "PAYMENT_NUM")
     private int paymentNumber;
 

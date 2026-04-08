@@ -2,6 +2,7 @@ package ca.senecacollege.hotel.services;
 
 import ca.senecacollege.hotel.models.*;
 import ca.senecacollege.hotel.repositories.*;
+import ca.senecacollege.hotel.utilities.UserContext;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
@@ -57,7 +58,7 @@ public class ReservationService implements IReservationService {
             addons.add(a.getId());
         }
         _resRepo.saveRes(reservation, reservation.getGuest().getId(), rooms, addons, reservation.getBilling().getBillNumber());
-        _logService.createReservation(reservation);
+        if(UserContext.getUser() != null) _logService.createReservation(reservation);
     }
 
     @Override

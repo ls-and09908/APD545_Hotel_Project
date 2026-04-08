@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class AdminBookingController implements SceneManagerAware {
+    private final IActivityLogService _logService;
     private final IBillingService _billService;
     private final IReservationService _resService;
     private final ILoyaltyService _loyaltyService;
@@ -49,13 +50,15 @@ public class AdminBookingController implements SceneManagerAware {
     private boolean loadedRes = false;
 
     @Inject
-    public AdminBookingController(IBillingService billService, IReservationService resService, ILoyaltyService loyaltyService){
+    public AdminBookingController(IActivityLogService logService, IBillingService billService, IReservationService resService, ILoyaltyService loyaltyService){
+        _logService = logService;
         _billService = billService;
         _resService = resService;
         _loyaltyService = loyaltyService;
     }
 
     public void initialize(){
+        _logService.setPending(true);
         addOnCheckboxes.addAll(List.of(breakfast, parking, wifi, spa));
         setupBlankGuest();
         setupNewBooking();
@@ -324,6 +327,7 @@ public class AdminBookingController implements SceneManagerAware {
      */
     private void setupLoyalGuest(){
         loyaltyTxt.setText(String.valueOf(guest.get().getLoyaltyNum()));
+        loyaltyTxt.setVisible(true);
         loyaltyErr.setVisible(false);
         signUp.setDisable(true);
         signUp.setVisible(false);
@@ -683,6 +687,7 @@ public class AdminBookingController implements SceneManagerAware {
             if(!loadedRes){
                 _resService.saveNewReservation(res.get());
             } else _resService.saveReservation(res.get());
+            _logService.writePending();
             toDash();
         }
     }
@@ -728,6 +733,7 @@ public class AdminBookingController implements SceneManagerAware {
     private boolean checkout() throws IOException {
         if (_resService.attemptCheckOut(res.get())) {
             _resService.saveReservation(res.get());
+            _logService.writePending();
             toDash();
             return true;
         }
@@ -740,6 +746,7 @@ public class AdminBookingController implements SceneManagerAware {
         alert.setTitle(" ");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
+            _logService.clearPendingLogs();
             toDash();
         }
     }

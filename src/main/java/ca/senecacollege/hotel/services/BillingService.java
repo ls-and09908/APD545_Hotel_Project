@@ -153,8 +153,6 @@ public class BillingService implements IBillingService {
             if (type == PaymentMethod.DEPOSIT) {
                 r.setStatus(ReservationStatus.BOOKED);
                 _resService.saveNewReservation(r);
-            } else {
-                _resService.saveReservation(r);
             }
             if (type == PaymentMethod.REFUND) {_logService.processRefund(bill, amount, type, true);}
             _logService.processPayment(bill, amount, type, true);

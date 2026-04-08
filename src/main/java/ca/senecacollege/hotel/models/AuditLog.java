@@ -73,7 +73,6 @@ public class AuditLog {
     }
 
     /**
-     *
      * @return the actor's role in shortened format for use in logging
      */
     public String getActorRole(){
