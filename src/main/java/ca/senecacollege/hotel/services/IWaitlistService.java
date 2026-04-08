@@ -11,4 +11,5 @@ public interface IWaitlistService {
     Waitlist getWaitlist(int waitlistNum);
     public ObservableList<Waitlist> getAllWaitlist();
     public void removeWaitlist(Waitlist w);
+    public void alert(List<RoomSet> freedRooms);
 }

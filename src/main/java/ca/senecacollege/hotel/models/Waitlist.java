@@ -54,4 +54,15 @@ public class Waitlist {
     public void setGuest(Guest guest) {
         this.guest = guest;
     }
+
+    public void setRooms(List<RoomSet> neededRooms){
+        rooms = neededRooms;
+    }
+    public List<RoomSet> getRooms(){
+        return rooms;
+    }
+
+    public void alert(){
+        System.out.println("Rooms available");
+    }
 }

@@ -210,7 +210,7 @@ public class AdminController implements SceneManagerAware {
         DialogPane dialogPane = loader.load();
         Dialog<String> dialog = new Dialog<>();
         WaitlistController wc = loader.getController();
-        wc.setWaitService(_waitService);
+        wc.setWaitService(_waitService, _resService);
         dialog.setTitle("Waitlist");
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.setDialogPane(dialogPane);
