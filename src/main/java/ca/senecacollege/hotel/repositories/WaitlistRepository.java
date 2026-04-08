@@ -24,8 +24,21 @@ public class WaitlistRepository implements IWaitlistRepository {
         }
     }
 
+//    @Override
+//    public void saveWaitlist(Waitlist w) {
+//        Transaction tx=null;
+//        try(Session session = sessionFactory.openSession()){
+//            tx = session.beginTransaction();
+//            session.merge(w);
+//            tx.commit();
+//        }catch(RuntimeException e){
+//            if(tx!=null) tx.rollback();
+//            throw e;
+//        }
+//    }
+
     @Override
-    public void saveWaitlist(Waitlist w) {
+    public void saveWaitlist(Waitlist w){
         Transaction tx=null;
         try(Session session = sessionFactory.openSession()){
             tx = session.beginTransaction();

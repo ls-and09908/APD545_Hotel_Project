@@ -110,6 +110,11 @@ public class AdminController implements SceneManagerAware {
         }
     }
 
+    public void refreshTable(){
+        allReservations = FXCollections.observableArrayList(_resService.getAllReservations());
+        setTableData(null);
+    }
+
     private void setTableData(ObservableList<Reservation> resList){
         ObservableList<Reservation> allRes = FXCollections.observableArrayList();
         if(resList == null) {
@@ -223,6 +228,7 @@ public class AdminController implements SceneManagerAware {
         Dialog<String> dialog = new Dialog<>();
         WaitlistController wc = loader.getController();
         wc.setWaitService(_waitService, _resService);
+        wc.setAdminControl(this);
         dialog.setTitle("Waitlist");
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.setDialogPane(dialogPane);

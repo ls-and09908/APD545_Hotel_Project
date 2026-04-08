@@ -26,6 +26,7 @@ import java.time.LocalDate;
 public class WaitlistController {
     private IWaitlistService waitService;
     private IReservationService resService;
+    private AdminController ac;
 
     public void setWaitService(IWaitlistService waitService, IReservationService resService){
         this.waitService = waitService;
@@ -142,6 +143,7 @@ public class WaitlistController {
         resService.saveReservation(newRes);
         waitService.removeWaitlist(selectedWaitlist);
         setTables();
+        ac.refreshTable();
     }
 
     @FXML
@@ -149,6 +151,10 @@ public class WaitlistController {
         Waitlist selectedWaitlist = (Waitlist) waitlistTable.getSelectionModel().getSelectedItem();
         waitService.removeWaitlist(selectedWaitlist);
         setTables();
+    }
+
+    public void setAdminControl(AdminController ac){
+        this.ac = ac;
     }
 
     @FXML
