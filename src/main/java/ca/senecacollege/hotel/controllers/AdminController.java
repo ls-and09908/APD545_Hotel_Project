@@ -19,12 +19,14 @@ import javafx.stage.Modality;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.List;
 
 public class AdminController implements SceneManagerAware {
     private final IAuthService _authService;
     private final IReservationService _resService;
     private final IWaitlistService _waitService;
     SceneManager sceneManager;
+    private List<Reservation> allReservations;
 
     @FXML
     Label errLbl;
@@ -66,12 +68,15 @@ public class AdminController implements SceneManagerAware {
     private Button checkinBtn;
     @FXML
     private Button editBtn;
+    @FXML
+    private Pagination adminPage;
 
     @Inject
     public AdminController(IAuthService authService, IReservationService resService, IWaitlistService waitService){
         _authService = authService;
         _resService = resService;
         _waitService = waitService;
+        allReservations = _resService.getAllReservations();
     }
 
     @Override
@@ -106,10 +111,27 @@ public class AdminController implements SceneManagerAware {
     }
 
     private void setTableData(ObservableList<Reservation> resList){
+        ObservableList<Reservation> allRes = FXCollections.observableArrayList();
         if(resList == null) {
-            adminTable.setItems(FXCollections.observableArrayList(_resService.getAllReservations()));
+            allRes = FXCollections.observableArrayList(allReservations);
         }
-        adminTable.setItems(resList);
+        else{
+            allRes = resList;
+        }
+
+        int maxItemPerPage = 30;
+        int numOfData = allRes.size();
+        int numPages = numOfData / maxItemPerPage;
+        adminPage.setPageCount(numPages > 0 ? numPages : 1);
+        ObservableList<Reservation> finalAllRes = allRes;
+        adminPage.setPageFactory((Integer idx) ->{
+            int from = idx * (Math.min(maxItemPerPage, finalAllRes.size()));
+            int to = Math.min(from + maxItemPerPage, finalAllRes.size());
+            adminTable.setItems(FXCollections.observableArrayList(finalAllRes.subList(from, to)));
+            return adminTable;
+        });
+
+        adminTable.setMinHeight(500);
         nameCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getName()));
         phoneCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getPhone()));
         emailCol.setCellValueFactory(r -> new SimpleObjectProperty<>(r.getValue().getGuest().getEmail()));
@@ -132,7 +154,7 @@ public class AdminController implements SceneManagerAware {
 
     @FXML
     private void handleSearch(){
-        ObservableList<Reservation> observableMasterData = FXCollections.observableArrayList(_resService.getAllReservations());
+        ObservableList<Reservation> observableMasterData = FXCollections.observableArrayList(allReservations);
         FilteredList<Reservation> filteredRes = getReservations(observableMasterData);
         setTableData(filteredRes);
     }
@@ -152,6 +174,7 @@ public class AdminController implements SceneManagerAware {
                     && !r.getCheckOut().isAfter(searchedOut)
                     && !r.getCheckIn().isBefore(searchedIn);
         });
+        System.out.println(filteredRes);
         return filteredRes;
     }
 
@@ -170,7 +193,6 @@ public class AdminController implements SceneManagerAware {
     @FXML
     private void toHome() throws IOException{
         sceneManager.switchScene("/ca/senecacollege/hotel/application/Welcome.fxml", null);
-        UserContext.clear();
     }
     @FXML
     private void toDash() throws IOException{
