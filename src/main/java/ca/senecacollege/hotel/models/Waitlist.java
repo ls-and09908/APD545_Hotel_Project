@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 public class Waitlist {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "WAITLIST_NUM")
     private int waitlistNum;
 
@@ -21,7 +21,7 @@ public class Waitlist {
     private LocalDate checkIn;
     private LocalDate checkOut;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "waitlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomSet> rooms = new ArrayList<>();
 
     public Waitlist(){}

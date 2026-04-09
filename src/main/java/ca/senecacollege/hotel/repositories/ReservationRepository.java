@@ -28,50 +28,6 @@ public class ReservationRepository implements IReservationRepository {
         }
     }
 
-//    @Override
-//    public void saveRes(Reservation r, Integer guestID, List<Integer> rooms, List<Integer> addons, Integer billNum) {
-//        Transaction tx=null;
-//        try(Session session = sessionFactory.openSession()){
-//            tx = session.beginTransaction();
-//            Integer resNum = r.getReservationNumber();
-//            Reservation res = null;
-//            if (resNum != null){
-//                res = session.find(Reservation.class, resNum);
-//            }
-//            if(guestID != null){
-//                Guest g = session.find(Guest.class, guestID);
-//                res.setGuest(g);
-//            } else {
-//                session.persist(r.getGuest());
-//            }
-//            Billing b = r.getBilling();
-//            res.setBilling(b);
-//            if(billNum != null){
-//                Billing bill = session.find(Billing.class, billNum);
-//                bill.setReservation(res);
-//
-//                res.setBilling(bill);
-//
-//            }
-//            r.getRooms().clear();
-//            for(Integer id : rooms){
-//                r.addRoom(session.find(Room.class, id));
-//            }
-//            r.getAddOns().clear();
-//            for(Integer id : addons){
-//                r.addAddOn(session.find(AddOn.class, id));
-//            }
-//            if(res != null){
-//                session.merge(res);
-//            } else session.persist(r);
-//            tx.commit();
-//        } catch(RuntimeException e){
-//            if(tx!=null) tx.rollback();
-//            throw e;
-//        }
-//    }
-
-
     @Override
     public void saveRes(Reservation r, Integer guestID, List<Integer> rooms, List<Integer> addons, Integer billNum) {
         Transaction tx = null;

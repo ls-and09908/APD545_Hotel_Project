@@ -42,7 +42,6 @@ public class WaitlistRepository implements IWaitlistRepository {
         Transaction tx=null;
         try(Session session = sessionFactory.openSession()){
             tx = session.beginTransaction();
-            w.getRooms().add(session.find(RoomSet.class, set));
             if (guestID != null) w.setGuest(session.find(Guest.class, guestID));
             else session.persist(w.getGuest());
             session.persist(w);

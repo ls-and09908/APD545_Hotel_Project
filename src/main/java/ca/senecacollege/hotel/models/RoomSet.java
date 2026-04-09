@@ -11,7 +11,7 @@ public class RoomSet {
     private int quantity;
 
     @Id
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "WAITLIST_ID", nullable = false)
     private Waitlist waitlist = null;
 
@@ -38,5 +38,9 @@ public class RoomSet {
 
     public Waitlist getWaitlist() {
         return waitlist;
+    }
+
+    public void setWaitlist(Waitlist w){
+        this.waitlist = w;
     }
 }

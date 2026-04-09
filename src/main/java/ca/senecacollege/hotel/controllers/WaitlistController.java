@@ -2,6 +2,7 @@ package ca.senecacollege.hotel.controllers;
 
 import ca.senecacollege.hotel.models.Guest;
 import ca.senecacollege.hotel.models.Reservation;
+import ca.senecacollege.hotel.models.RoomSet;
 import ca.senecacollege.hotel.models.Waitlist;
 import ca.senecacollege.hotel.services.IReservationService;
 import ca.senecacollege.hotel.services.IWaitlistService;
@@ -131,6 +132,9 @@ public class WaitlistController {
         else{
             Waitlist newWaitlist = new Waitlist(new Guest(name,phone,email,country), adult, child, in, out);
             newWaitlist.setRooms(resService.getRoomSuggestion(newWaitlist.getAdults(), newWaitlist.getChildren()));
+            for(RoomSet rm : newWaitlist.getRooms()){
+                rm.setWaitlist(newWaitlist);
+            }
             waitService.saveWaitlistRes(newWaitlist);
         }
         setTables();
