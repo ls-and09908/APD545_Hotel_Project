@@ -147,7 +147,7 @@ public class ActivityLogService implements IActivityLogService {
             message += "[status: " + statusCriteria + "],";
         }
         message += "[dates: " + fromDate.format(resDateFormat) + " - " + toDate.format(resDateFormat) + "]";
-        AuditLog log = new AuditLog(null, timestamp(), AuditAction.SEARCH, Reservation.class.getSimpleName(), 0, message);
+        AuditLog log = new AuditLog(UserContext.getUser(), timestamp(), AuditAction.SEARCH, Reservation.class.getSimpleName(), 0, message);
         writeLog(log);
     }
 
@@ -185,11 +185,10 @@ public class ActivityLogService implements IActivityLogService {
                 );
                 break;
             case SEARCH:
-                message = message.concat(String.format("(%s)%s: %s %d - %s",
+                message = message.concat(String.format("(%s)%s: %s - %s",
                         log.getActorRole(),
                         log.getActorUsername(),
                         log.getActionLabel(),
-                        log.getEntityType(),
                         log.getMessage())
                 );
                 break;

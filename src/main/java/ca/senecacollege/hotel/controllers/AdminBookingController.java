@@ -148,7 +148,6 @@ public class AdminBookingController implements SceneManagerAware {
             } catch (NumberFormatException e) {
                 loyaltyErr.setText("Not a number");
                 loyaltyErr.setVisible(true);
-                // TODO: log this
             }
         });
 
@@ -173,7 +172,6 @@ public class AdminBookingController implements SceneManagerAware {
             } else if (!newValue.matches("^[0-9]{1,12}$")) {
                 phoneErr.setText("Must be numerical");
                 phoneErr.setVisible(true);
-                // TODO: log validation failure
             } else { phoneErr.setVisible(false); }
         }));
 
@@ -565,7 +563,6 @@ public class AdminBookingController implements SceneManagerAware {
         } else {
             emailErr.setText("Email already in use.");
             emailErr.setVisible(true);
-            // TODO: log validation failure
         }
     }
 
@@ -585,8 +582,6 @@ public class AdminBookingController implements SceneManagerAware {
         if(res.get().getStatus() == ReservationStatus.CHECKEDIN) {
             if(!_resService.extendReservation(res.get())){
                 res.get().setCheckOut(originalCheckout);
-                // TODO: set up a dialog to tell the adminuser to make a new reservation bc extending is not easy
-                // suggest creating a new reservation where checkIn = original checkOut and checkout = new checkout
             }
         } else refreshRoomsList();
         updateDate.setDisable(true);
@@ -620,7 +615,6 @@ public class AdminBookingController implements SceneManagerAware {
                 billDiscount.textProperty().bind(discount.asString("$%.2f"));
             }
         } catch (NumberFormatException e) {
-            // TODO: log validation failure
             discountErr.setText("Invalid value");
             discountErr.setVisible(true);
         }
@@ -646,7 +640,6 @@ public class AdminBookingController implements SceneManagerAware {
                 paymentErr.setVisible(true);
             }
         } catch (NumberFormatException e){
-            // TODO: log validation failure
             paymentErr.setText("Invalid value, parse failed.");
             paymentErr.setVisible(true);
         } catch (Exception e){
