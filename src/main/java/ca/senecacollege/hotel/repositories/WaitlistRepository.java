@@ -1,6 +1,6 @@
 package ca.senecacollege.hotel.repositories;
 
-import ca.senecacollege.hotel.models.Waitlist;
+import ca.senecacollege.hotel.models.*;
 import com.google.inject.Inject;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -38,11 +38,14 @@ public class WaitlistRepository implements IWaitlistRepository {
 //    }
 
     @Override
-    public void saveWaitlist(Waitlist w){
+    public void saveWaitlist(Waitlist w, Integer guestID, List<RoomSet> set){
         Transaction tx=null;
         try(Session session = sessionFactory.openSession()){
             tx = session.beginTransaction();
-            session.merge(w);
+            w.getRooms().add(session.find(RoomSet.class, set));
+            if (guestID != null) w.setGuest(session.find(Guest.class, guestID));
+            else session.persist(w.getGuest());
+            session.persist(w);
             tx.commit();
         }catch(RuntimeException e){
             if(tx!=null) tx.rollback();

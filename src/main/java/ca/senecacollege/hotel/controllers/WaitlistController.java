@@ -130,6 +130,7 @@ public class WaitlistController {
         }
         else{
             Waitlist newWaitlist = new Waitlist(new Guest(name,phone,email,country), adult, child, in, out);
+            newWaitlist.setRooms(resService.getRoomSuggestion(newWaitlist.getAdults(), newWaitlist.getChildren()));
             waitService.saveWaitlistRes(newWaitlist);
         }
         setTables();

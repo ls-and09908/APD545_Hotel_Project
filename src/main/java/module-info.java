@@ -14,6 +14,7 @@ module ca.senecacollege.application {
     requires java.naming;
     requires java.desktop;
 
+
     opens ca.senecacollege.hotel.application to javafx.fxml;
     exports ca.senecacollege.hotel.application;
     exports ca.senecacollege.hotel.controllers;

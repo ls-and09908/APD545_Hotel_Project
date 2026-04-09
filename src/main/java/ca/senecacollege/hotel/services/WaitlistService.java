@@ -22,7 +22,7 @@ public class WaitlistService implements IWaitlistService {
     @Override
     public void saveWaitlistRes(Waitlist w) {
 //        w.setRooms(resService.getRoomSuggestion(w.getAdults(), w.getChildren())); //This should work, however I don't know if we should set these rooms to waitlisted here
-        waitRepo.saveWaitlist(w);
+        waitRepo.saveWaitlist(w, w.getGuest().getId(), w.getRooms());
     }
 
     @Override
