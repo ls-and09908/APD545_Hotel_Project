@@ -59,6 +59,7 @@ public class AdminBookingController implements SceneManagerAware {
 
     public void initialize(){
         _logService.setPending(true);
+        _loyaltyService.setHoldTransactions(true);
         addOnCheckboxes.addAll(List.of(breakfast, parking, wifi, spa));
         setupBlankGuest();
         setupNewBooking();
@@ -654,7 +655,6 @@ public class AdminBookingController implements SceneManagerAware {
     }
 
     private void handlePaymentPts(PaymentMethod type, Billing bill, double amt){
-        // TODO: Log points transactions
         int numPoints;
         String billPointsText = billPoints.getText();
         int ptsEarned = billPointsText.isBlank() ? 0 : Integer.parseInt(billPointsText);
@@ -688,6 +688,7 @@ public class AdminBookingController implements SceneManagerAware {
                 _resService.saveNewReservation(res.get());
             } else _resService.saveReservation(res.get());
             _logService.writePending();
+            _loyaltyService.saveHeldTransactions();
             toDash();
         }
     }
@@ -734,6 +735,7 @@ public class AdminBookingController implements SceneManagerAware {
         if (_resService.attemptCheckOut(res.get())) {
             _resService.saveReservation(res.get());
             _logService.writePending();
+            _loyaltyService.saveHeldTransactions();
             toDash();
             return true;
         }
@@ -747,6 +749,7 @@ public class AdminBookingController implements SceneManagerAware {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             _logService.clearPendingLogs();
+            _loyaltyService.clearTransactions();
             toDash();
         }
     }

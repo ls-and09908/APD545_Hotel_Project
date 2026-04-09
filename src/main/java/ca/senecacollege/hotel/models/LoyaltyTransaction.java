@@ -21,6 +21,9 @@ public class LoyaltyTransaction {
     private int newBalance;
     private String transactionType;
 
+    public LoyaltyTransaction() {
+    }
+
     public LoyaltyTransaction(LocalDateTime time, Guest guest, int transactionPoints, int newBalance, String transactionType) {
         this.time = time;
         this.guest = guest;

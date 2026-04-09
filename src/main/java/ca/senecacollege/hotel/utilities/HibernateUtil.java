@@ -86,6 +86,8 @@ public class HibernateUtil {
                     ca.senecacollege.hotel.models.Waitlist.class);
             metadataSources.addAnnotatedClass(
                     ca.senecacollege.hotel.models.RoomSet.class);
+            metadataSources.addAnnotatedClass(
+                    ca.senecacollege.hotel.models.LoyaltyTransaction.class);
 
 
             //Build metadata and sessionfactory

@@ -9,6 +9,7 @@ import com.google.inject.name.Named;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +21,20 @@ public class BillingService implements IBillingService {
     private final ILoyaltyService _loyaltyService;
     private final PricingModel _stdPrice;
     private final PricingModel _wkndPrice;
+    private final PricingModel _peakPrice;
     private final double adminDiscount;
     private final double managerDiscount;
     private final double depositPercent;
 
     @Inject
-    public BillingService(IReservationService resService, IBillingRepository billRepo, IActivityLogService logService, ILoyaltyService loyaltyService, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, @Named("adminDiscount")double adminDiscount, @Named("managerDiscount")double managerDiscount, @Named("depositPercent")double depositPercent){
+    public BillingService(IReservationService resService, IBillingRepository billRepo, IActivityLogService logService, ILoyaltyService loyaltyService, @Named("standard")PricingModel std, @Named("weekend")PricingModel wknd, @Named("peak") PricingModel peakPrice, @Named("adminDiscount")double adminDiscount, @Named("managerDiscount")double managerDiscount, @Named("depositPercent")double depositPercent){
         _resService = resService;
         this._billRepo = billRepo;
         this._logService = logService;
         this._loyaltyService = loyaltyService;
         this._stdPrice = std;
         this._wkndPrice = wknd;
+        this._peakPrice = peakPrice;
         this.adminDiscount = adminDiscount;
         this.managerDiscount = managerDiscount;
         this.depositPercent = depositPercent;
@@ -62,19 +65,26 @@ public class BillingService implements IBillingService {
         }
         bill.setCharges(new ArrayList<>());
 
-        int days = Math.toIntExact(ChronoUnit.DAYS.between(r.getCheckIn(), r.getCheckOut()));
+        LocalDate checkin = r.getCheckIn();
+        LocalDate checkout = r.getCheckOut();
+
+        int days = Math.toIntExact(ChronoUnit.DAYS.between(checkin, checkout));
         int weekendDays = getWeekendDays(r);
 
         // recreate charges
         for (Room rm : r.getRooms()){
-            // TODO: Add logic for seasonal pricing
-            if(weekendDays > 0){
-                Charge weekendCharge = new Charge(rm, bill, weekendDays, _wkndPrice);
-                bill.addCharge(weekendCharge);
-            }
-            if(days - weekendDays > 0){
-                Charge weekdayCharge = new Charge(rm, bill, days - weekendDays, _stdPrice);
-                bill.addCharge(weekdayCharge);
+            if(checkin.getMonth() == Month.JUNE || checkin.getMonth() == Month.JULY){
+                Charge peakCharge = new Charge(rm, bill, days, _peakPrice);
+                bill.addCharge(peakCharge);
+            } else {
+                if (weekendDays > 0) {
+                    Charge weekendCharge = new Charge(rm, bill, weekendDays, _wkndPrice);
+                    bill.addCharge(weekendCharge);
+                }
+                if (days - weekendDays > 0) {
+                    Charge weekdayCharge = new Charge(rm, bill, days - weekendDays, _stdPrice);
+                    bill.addCharge(weekdayCharge);
+                }
             }
         }
 
@@ -148,7 +158,6 @@ public class BillingService implements IBillingService {
 
             bill.addPayment(payment);
             bill.calculateBalance();
-//            bill.setBalance(newBalance);
             r.setBilling(bill);
             if (type == PaymentMethod.DEPOSIT) {
                 r.setStatus(ReservationStatus.BOOKED);

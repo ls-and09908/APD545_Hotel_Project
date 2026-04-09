@@ -132,7 +132,7 @@ public class ActivityLogService implements IActivityLogService {
     }
 
     @Override
-    public void search(Object entity, String nameCriteria, String phoneCriteria, String emailCriteria, String statusCriteria, LocalDate fromDate, LocalDate toDate) {
+    public void search(String nameCriteria, String phoneCriteria, String emailCriteria, String statusCriteria, LocalDate fromDate, LocalDate toDate) {
         String message = "Criteria;";
         if(!nameCriteria.isEmpty()){
             message += "[name: " + nameCriteria + "],";
@@ -147,7 +147,7 @@ public class ActivityLogService implements IActivityLogService {
             message += "[status: " + statusCriteria + "],";
         }
         message += "[dates: " + fromDate.format(resDateFormat) + " - " + toDate.format(resDateFormat) + "]";
-        AuditLog log = new AuditLog(null, timestamp(), AuditAction.SEARCH, entity.getClass().getSimpleName(), 0, message);
+        AuditLog log = new AuditLog(null, timestamp(), AuditAction.SEARCH, Reservation.class.getSimpleName(), 0, message);
         writeLog(log);
     }
 

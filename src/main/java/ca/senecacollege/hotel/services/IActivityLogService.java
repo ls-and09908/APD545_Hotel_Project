@@ -28,7 +28,7 @@ public interface IActivityLogService {
 
     void receiveFeedback(Feedback fb);
 
-    void search(Object entity, String nameCriteria, String phoneCriteria, String emailCriteria, String statusCriteria, LocalDate fromDate, LocalDate toDate);
+    void search(String nameCriteria, String phoneCriteria, String emailCriteria, String statusCriteria, LocalDate fromDate, LocalDate toDate);
 
     String reservationMsg(Reservation res);
 

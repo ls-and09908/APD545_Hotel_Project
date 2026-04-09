@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 
 public class AdminController implements SceneManagerAware {
+    private final IActivityLogService _logService;
     private final IAuthService _authService;
     private final IReservationService _resService;
     private final IWaitlistService _waitService;
@@ -68,7 +69,8 @@ public class AdminController implements SceneManagerAware {
     private Button editBtn;
 
     @Inject
-    public AdminController(IAuthService authService, IReservationService resService, IWaitlistService waitService){
+    public AdminController(IActivityLogService logService, IAuthService authService, IReservationService resService, IWaitlistService waitService){
+        _logService = logService;
         _authService = authService;
         _resService = resService;
         _waitService = waitService;
@@ -152,6 +154,12 @@ public class AdminController implements SceneManagerAware {
                     && !r.getCheckOut().isAfter(searchedOut)
                     && !r.getCheckIn().isBefore(searchedIn);
         });
+        String statuses = "{ | ";
+        for(ReservationStatus rs : searchedStatus){
+            statuses += rs.name() + " | ";
+        }
+        statuses += " | }";
+        _logService.search(searchedName, phoneSearch.getText(), emailSearch.getText(),statuses, searchedIn, searchedOut );
         return filteredRes;
     }
 
@@ -175,6 +183,10 @@ public class AdminController implements SceneManagerAware {
     @FXML
     private void toDash() throws IOException{
         sceneManager.switchScene("/ca/senecacollege/hotel/application/AdminDashboard.fxml", null);
+    }
+    @FXML
+    private void toLoyalty() throws IOException{
+        sceneManager.switchScene("/ca/senecacollege/hotel/application/LoyaltyDashboard.fxml", null);
     }
 
     @FXML
