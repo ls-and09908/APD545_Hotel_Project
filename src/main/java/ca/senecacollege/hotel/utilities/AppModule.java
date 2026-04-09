@@ -1,5 +1,6 @@
 package ca.senecacollege.hotel.utilities;
 
+import ca.senecacollege.hotel.models.PeakPricingModel;
 import ca.senecacollege.hotel.models.PricingModel;
 import ca.senecacollege.hotel.models.StandardPricingModel;
 import ca.senecacollege.hotel.models.WeekendPricingModel;
@@ -36,6 +37,7 @@ public class AppModule extends AbstractModule {
         bind(IWaitlistRepository.class).to(WaitlistRepository.class).in(Singleton.class);
         bind(IWaitlistService.class).to(WaitlistService.class).in(Singleton.class);
         bind(IFeedbackRepository.class).to(FeedbackRepository.class).in(Singleton.class);
+        bind(ILoyaltyRepository.class).to(LoyaltyRepository.class).in(Singleton.class);
 
         bind(IReportingService.class).to(ReportingService.class).in(Singleton.class);
         bind(IBillingService.class).to(BillingService.class).in(Singleton.class);
@@ -45,6 +47,7 @@ public class AppModule extends AbstractModule {
         bind(AppConfig.class).asEagerSingleton();
         bind(PricingModel.class).annotatedWith(Names.named("standard")).to(StandardPricingModel.class).in(Singleton.class);
         bind(PricingModel.class).annotatedWith(Names.named("weekend")).to(WeekendPricingModel.class).in(Singleton.class);
+        bind(PricingModel.class).annotatedWith(Names.named("peak")).to(PeakPricingModel.class).in(Singleton.class);
         bind(DBInitializer.class).asEagerSingleton();
     }
 
@@ -105,4 +108,9 @@ public class AppModule extends AbstractModule {
     @Provides
     @Named("cancellationDaysPolicy")
     int provideCancellationDays(){ return AppConfig.getDepositCancellationDays(); }
+
+    @Provides
+    @Named("peakBaseIncrease")
+    double providePeakBase(){ return AppConfig.getPeakBase(); }
+
 }

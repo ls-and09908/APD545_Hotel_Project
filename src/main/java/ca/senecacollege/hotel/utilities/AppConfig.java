@@ -21,8 +21,11 @@ public class AppConfig {
         }
     }
 
-    public static double getWeekendMultiplier(){ return Double.parseDouble(config.getProperty("weekend_pricing_rate")); }
     public static double getPeakMultiplier(){
+        return Double.parseDouble(config.getProperty("peak_pricing_increase"));
+    }
+    public static double getWeekendMultiplier(){ return Double.parseDouble(config.getProperty("weekend_pricing_rate")); }
+    public static double getPeakBase(){
         return Double.parseDouble(config.getProperty("peak_pricing_rate"));
     }
     public static double getAdminDiscount(){

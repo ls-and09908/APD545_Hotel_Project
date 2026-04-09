@@ -71,4 +71,8 @@ public class Feedback {
     }
 
     public Reservation getReservation() { return reservation; }
+
+    public int getFeedbackId() {
+        return feedbackId;
+    }
 }

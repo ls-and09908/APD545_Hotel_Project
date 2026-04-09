@@ -281,4 +281,9 @@ public class ReportController implements SceneManagerAware {
         }
 
     }
+
+    @FXML
+    private void exportToTxt(){
+        //TODO
+    }
 }
